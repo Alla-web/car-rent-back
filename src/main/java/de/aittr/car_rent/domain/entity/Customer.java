@@ -39,13 +39,12 @@ public class Customer {
     @Column(name = "active")
     boolean isActive;
 
-//    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL)
+//    @OneToMany(mappedBy = "customer")
 //    private Booking booking;
-
+//
 //    @ManyToOne
-//@JoinColumn(name = "role_id")
+//    @JoinColumn(name = "role_id")
 //    private Role role;
-
 
     @Override
     public String toString() {
