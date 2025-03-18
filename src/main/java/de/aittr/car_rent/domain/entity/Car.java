@@ -27,28 +27,34 @@ public class Car {
     @Column(name = "brand", nullable = false)
     private String brand;
 
-    @NotNull(message = "{model.notBlank}")
+    @NotNull(message = "{car.model.notBlank}")
     @Column(name = "model", nullable = false)
     private String model;
 
+    @NotNull(message = "{car.year.notBlank}")
     @Column(name = "year", nullable = false)
     private int year;
 
+    @NotNull(message = "{car.type.notBlank}")
     @Column(name = "type", nullable = false)
     private String type;
 
+    @NotNull(message = "{car.fuel_type.notBlank}")
     @Column(name = "fuel_type", nullable = false)
     private String fuelType;
 
+    @NotNull(message = "{car.transmission_type.notBlank}")
     @Column(name = "transmission_type", nullable = false)
     private String transmissionType;
 
+    @NotNull(message = "{car.active.notBlank}")
     @Column(name = "active", nullable = false)
     private boolean active;
 
     @Column(name = "car_status")
     private String carStatus;
 
+    @NotNull(message = "{car.day_rental_price.notBlank}")
     @Column(name = "day_rental_price", nullable = false)
     private BigDecimal dayRentalPrice;
 
