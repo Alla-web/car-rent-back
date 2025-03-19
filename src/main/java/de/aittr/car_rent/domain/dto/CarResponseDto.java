@@ -2,7 +2,7 @@ package de.aittr.car_rent.domain.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import java.beans.BeanInfo;
+import java.math.BigDecimal;
 
 @Schema(description = "Car entity with brand and model")
 public record CarResponseDto(
@@ -36,7 +36,7 @@ public record CarResponseDto(
         String carStatus,
 
         @Schema(description = "Car day rental price", example = "150.00")
-        BeanInfo dayRentalPrice,
+        BigDecimal dayRentalPrice,
 
         @Schema(description = "Car image", example = "https://shop-bucket.fra1.digitaloceanspaces.com/coconut-caf872c7-2ebd-4ec0-bd28-ff198091392c.png")
         String carImage) {
