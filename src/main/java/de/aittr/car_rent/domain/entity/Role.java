@@ -19,12 +19,13 @@ public class Role {
     @Column(name = "id")
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "title")
-    private String title;
+    private RoleTitle title;
 
     @Override
     public String toString() {
-        return String.format("Role: id=%d; title=%s", id, title);
+        return String.format("Role: id - %d; title - %s", id, title);
     }
 
     @Override
