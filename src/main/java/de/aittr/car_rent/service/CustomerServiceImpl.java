@@ -1,11 +1,11 @@
 package de.aittr.car_rent.service;
 
 import de.aittr.car_rent.domain.dto.CustomerResponseDto;
+import de.aittr.car_rent.domain.dto.CustomerUpdateRequestDto;
 import de.aittr.car_rent.domain.entity.Booking;
 import de.aittr.car_rent.domain.entity.Customer;
 import de.aittr.car_rent.exception_handling.exceptions.CustomerNotFoundException;
 import de.aittr.car_rent.repository.CustomerRepository;
-import de.aittr.car_rent.service.interfaces.BookingService;
 import de.aittr.car_rent.service.interfaces.CustomerService;
 import de.aittr.car_rent.service.mapping.CustomerMapper;
 import jakarta.transaction.Transactional;
@@ -24,28 +24,22 @@ public class CustomerServiceImpl implements CustomerService {
     @Override
     @Transactional
     public CustomerResponseDto save(CustomerResponseDto customer) {
-        try{
-            Customer entity = customerMapper.toEntity(customer);
-            entity = repository.save(entity);
-            return customerMapper.toDto(entity);
-        }
-        catch (Exception e){
-            throw new RuntimeException(e);
-        }
+        Customer entity = customerMapper.toEntity(customer);
+        entity = repository.save(entity);
+        return customerMapper.toDto(entity);
     }
 
     @Override
     public List<CustomerResponseDto> getAllActiveCustomers() {
         return repository
-                .findAll()
+                .findAllByActiveTrue()
                 .stream()
-                .filter(Customer::isActive)
                 .map(customerMapper::toDto)
                 .toList();
     }
 
     @Override
-    public CustomerResponseDto getActiveCustomerById(Long id){
+    public CustomerResponseDto getActiveCustomerById(Long id) {
         return customerMapper.toDto(getActiveCustomerEntityById(id));
     }
 
@@ -58,71 +52,41 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void update(CustomerResponseDto dtoCustomer) {
-        Long id= dtoCustomer.id();
-        Customer customer = repository.findById(id).orElseThrow(CustomerNotFoundException::new);
-        customer.setAdult(dtoCustomer.isAdult());
-        customer.setEmail(dtoCustomer.email());
-        customer.setFirstName(dtoCustomer.firstName());
-        customer.setLastName(dtoCustomer.lastName());
+    public CustomerResponseDto update(CustomerUpdateRequestDto updateDto, long customerId) {
+        Customer customer = repository
+                .findById(customerId)
+                .orElseThrow(CustomerNotFoundException::new);
+        customer.setFirstName(updateDto.firstName());
+        customer.setLastName(updateDto.lastName());
+        customer.setEmail(updateDto.email());
+        return customerMapper.toDto(repository.save(customer));
     }
 
     @Override
     public void deleteById(Long id) {
-        try {
-            repository.findById(id).
-                    ifPresent(customer -> {
-                        customer.setActive(false);});
-        }catch (Exception e){
-            throw new CustomerNotFoundException();
-        }
-    }
-
-    @Override
-    public void deleteByFirstName(String firstName) {
-        try {
-            repository
-                    .findByFirstName(firstName)
-                    .ifPresent(customer -> {
-                        customer.setActive(false);});
-        }catch (Exception e){
-            throw new CustomerNotFoundException();
-        }
-    }
-
-    @Override
-    public void deleteByLastName(String lastName) {
-        try {
-            repository
-                    .findByFirstName(lastName)
-                    .ifPresent(customer -> {
-                        customer.setActive(false);});
-        }catch (Exception e){
-            throw new CustomerNotFoundException();
-        }
+        Customer customer = getOrThrow(id);
+        customer.setActive(false);
+        repository.save(customer);
     }
 
     @Override
     public void restoreById(Long id) {
-        try {
-            repository
-                    .findById(id)
-                    .ifPresent(customer -> {
-                        customer.setActive(true);
-                    });
-        } catch (Exception e){
-            throw new CustomerNotFoundException();
-        }
-
+        Customer customer = getOrThrow(id);
+        customer.setActive(true);
+        repository.save(customer);
     }
 
     @Override
-    public List<Booking> getAllBookingsByCustomerId(Long customerId){
-        return repository
-                .findById(customerId)
-                .get()
+    public List<Booking> getAllBookingsByCustomerId(Long customerId) {
+        return getOrThrow(customerId)
                 .getBookings()
                 .stream()
                 .toList();
+    }
+
+    public Customer getOrThrow(Long customerId) {
+        return repository
+                .findById(customerId)
+                .orElseThrow(CustomerNotFoundException::new);
     }
 }
