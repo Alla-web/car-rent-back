@@ -1,6 +1,7 @@
 package de.aittr.car_rent.service.interfaces;
 
 import de.aittr.car_rent.domain.dto.CustomerResponseDto;
+import de.aittr.car_rent.domain.dto.CustomerUpdateRequestDto;
 import de.aittr.car_rent.domain.entity.Booking;
 import de.aittr.car_rent.domain.entity.Customer;
 
@@ -16,13 +17,9 @@ public interface CustomerService {
 
     CustomerResponseDto getActiveCustomerById(Long id);
 
-    void update(CustomerResponseDto customer);
+    CustomerResponseDto update(CustomerUpdateRequestDto updateDto, long customerId);
 
     void deleteById(Long id);
-
-    void deleteByFirstName(String firstName);
-
-    void deleteByLastName(String lastName);
 
     void restoreById(Long id);
 
