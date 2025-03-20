@@ -86,7 +86,7 @@ public class CustomerServiceImpl implements CustomerService {
                     .ifPresent(customer -> {
                         customer.setActive(false);});
         }catch (Exception e){
-            throw new RuntimeException();
+            throw new CustomerNotFoundException();
         }
     }
 
@@ -98,7 +98,7 @@ public class CustomerServiceImpl implements CustomerService {
                     .ifPresent(customer -> {
                         customer.setActive(false);});
         }catch (Exception e){
-            throw new RuntimeException();
+            throw new CustomerNotFoundException();
         }
     }
 
