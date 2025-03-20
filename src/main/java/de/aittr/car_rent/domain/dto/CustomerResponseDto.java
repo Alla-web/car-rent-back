@@ -4,7 +4,7 @@ public record CustomerResponseDto(
         Long id,
         String firstName,
         String lastName,
-        boolean is18,
+        boolean isAdult,
         String email
 ) {
 }

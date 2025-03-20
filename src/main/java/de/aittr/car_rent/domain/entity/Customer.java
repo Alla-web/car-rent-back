@@ -21,19 +21,19 @@ public class Customer {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "first_name")
+    @Column(name = "first_name", nullable = false)
     private String firstName;
 
-    @Column(name = "last_name")
+    @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "is_18")
-    private boolean is18;
+    @Column(name = "is_18", nullable = false)
+    private boolean isAdult;
 
-    @Column(name = "password")
+    @Column(name = "password", nullable = false)
     private String password;
 
-    @Column(name = "email")
+    @Column(name = "email", nullable = false)
     private String email;
 
     @Column(name = "active")
@@ -42,14 +42,14 @@ public class Customer {
 //    @OneToMany(mappedBy = "customer")
 //    private Booking booking;
 //
-//    @ManyToOne
-//    @JoinColumn(name = "role_id")
-//    private Role role;
+    @ManyToOne
+    @JoinColumn(name = "role_id")
+    private Role role;
 
     @Override
     public String toString() {
         return String.format("Customer: id - %d, name - %s, last name - %s, email - %s, " +
-                "is 18 - %s, active - %s.", id, firstName, lastName, email, is18 ? "yes" : "no", isActive ? "yes" : "no");
+                "is 18 - %s, active - %s.", id, firstName, lastName, email, isAdult ? "yes" : "no", isActive ? "yes" : "no");
     }
 
     @Override
