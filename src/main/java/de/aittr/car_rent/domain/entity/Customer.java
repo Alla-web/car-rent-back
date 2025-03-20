@@ -6,6 +6,8 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -39,9 +41,9 @@ public class Customer {
     @Column(name = "active")
     boolean isActive;
 
-//    @OneToMany(mappedBy = "customer")
-//    private Booking booking;
-//
+    @OneToMany(mappedBy = "customer")
+    private List<Booking> bookings = new ArrayList<>();
+
     @ManyToOne
     @JoinColumn(name = "role_id")
     private Role role;
