@@ -6,6 +6,7 @@ import de.aittr.car_rent.exception_handling.exceptions.CarNotFoundException;
 import de.aittr.car_rent.repository.CarRepository;
 import de.aittr.car_rent.service.interfaces.CarService;
 import de.aittr.car_rent.service.mapping.CarMappingService;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,14 +25,9 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public CarResponseDto saveCar(CarResponseDto carDto) {
-        try {
-            Car entity = carMappingService.mapDtoToEntity(carDto);
-            entity = carRepository.save(entity);
-            return carMappingService.mapEntityToDto(entity);
-        } catch (Exception e) {
-            //TODO дописать исключения по валидации полей объекта авто
-            throw new RuntimeException(e);
-        }
+        Car entity = carMappingService.mapDtoToEntity(carDto);
+        entity = carRepository.save(entity);
+        return carMappingService.mapEntityToDto(entity);
     }
 
     @Override
@@ -45,10 +41,12 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public CarResponseDto getCarById(Long id) {
-        return carMappingService.mapEntityToDto(getCarEntityById(id));
+        return carMappingService.mapEntityToDto(getOrThrow(id));
     }
 
-    private Car getCarEntityById(Long id) {
+    @Transactional
+    @Override
+    public Car getOrThrow(Long id) {
         return carRepository.findById(id).orElseThrow(() -> new CarNotFoundException(id));
     }
 
@@ -56,7 +54,6 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByBrand(String brand) {
         return carRepository.findAll()
                 .stream()
-                //TODO нужно ли использовать обрезку пробелов или это фронт сделает?
                 .filter(car -> car.getBrand().equals(brand))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
@@ -66,7 +63,6 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByModel(String model) {
         return carRepository.findAll()
                 .stream()
-                //TODO нужно ли использовать обрезку пробелов или это фронт сделает?
                 .filter(car -> car.getModel().equals(model))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
@@ -76,7 +72,6 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByYear(int year) {
         return carRepository.findAll()
                 .stream()
-                //TODO нужно ли использовать обрезку пробелов или это фронт сделает?
                 .filter(car -> car.getYear() == year)
                 .map(carMappingService::mapEntityToDto)
                 .toList();
@@ -86,8 +81,7 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByType(String type) {
         return carRepository.findAll()
                 .stream()
-                //TODO нужно ли использовать обрезку пробелов или это фронт сделает?
-                .filter(car->car.getType().equals(type))
+                .filter(car -> car.getType().equals(type))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -96,8 +90,7 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByFuelType(String fuelType) {
         return carRepository.findAll()
                 .stream()
-                //TODO нужно ли использовать обрезку пробелов или это фронт сделает?
-                .filter(car->car.getFuelType().equals(fuelType))
+                .filter(car -> car.getFuelType().equals(fuelType))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -106,7 +99,6 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByTransmissionType(String transmissionType) {
         return carRepository.findAll()
                 .stream()
-                //TODO нужно ли использовать обрезку пробелов или это фронт сделает?
                 .filter(car -> car.getTransmissionType().equals(transmissionType))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
@@ -125,36 +117,36 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByDayRentalPrice(BigDecimal minDayRentalPrice, BigDecimal maxDayRentalPrice) {
         return carRepository.findAll()
                 .stream()
-                .filter(car-> car.getDayRentalPrice().compareTo(minDayRentalPrice) >= 0 &&
+                .filter(car -> car.getDayRentalPrice().compareTo(minDayRentalPrice) >= 0 &&
                         car.getDayRentalPrice().compareTo(maxDayRentalPrice) <= 0)
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
 
     @Override
+    @Transactional
     public void updateCar(CarResponseDto carDto) {
         Long id = carDto.id();
-        Car existCar = carRepository.findById(id)
-                .orElseThrow(() -> new CarNotFoundException(id));
+        Car existCar = getOrThrow(id);
         //TODO нужно ли ещё что-то обновлять?
         existCar.setDayRentalPrice(carDto.dayRentalPrice());
         existCar.setCarStatus(carDto.carStatus());
     }
 
     @Override
+    @Transactional
     public void deleteCarById(Long id) {
-        try {
-            Car existingCar = carRepository.findById(id)
-                    .orElseThrow(() -> new CarNotFoundException(id));
-            existingCar.setActive(false);
-        } catch (Exception e) {
-            //TODO поменять на общую ошибку
-            throw new RuntimeException("Error while deleting car", e);
-        }
+        Car existingCar = getOrThrow(id);
+        existingCar.setActive(false);
+        carRepository.save(existingCar);
     }
 
     @Override
+    @Transactional
     public void attachImageToCar(Long id, String imageUrl) {
-        //TODO доделать после контроллера
+        carRepository.findById(id)
+                .orElseThrow(()->new CarNotFoundException(id))
+                .setCarImage(imageUrl);
+
     }
 }
