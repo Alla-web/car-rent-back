@@ -1,6 +1,7 @@
 package de.aittr.car_rent.service.interfaces;
 
 import de.aittr.car_rent.domain.dto.CustomerResponseDto;
+import de.aittr.car_rent.domain.entity.Booking;
 import de.aittr.car_rent.domain.entity.Customer;
 
 import java.util.List;
@@ -13,13 +14,17 @@ public interface CustomerService {
 
     Customer getActiveCustomerEntityById(Long id);
 
+    CustomerResponseDto getActiveCustomerById(Long id);
+
     void update(CustomerResponseDto customer);
 
     void deleteById(Long id);
 
-    void deleteByName(String name);
+    void deleteByFirstName(String firstName);
+
+    void deleteByLastName(String lastName);
 
     void restoreById(Long id);
 
-    long getAllActiveCustomersNumber();
+    List<Booking> getAllBookingsByCustomerId(Long customerId);
 }
