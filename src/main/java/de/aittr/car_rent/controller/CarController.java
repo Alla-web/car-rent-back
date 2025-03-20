@@ -2,11 +2,11 @@ package de.aittr.car_rent.controller;
 
 import de.aittr.car_rent.domain.dto.CarResponseDto;
 import de.aittr.car_rent.service.interfaces.CarService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -14,66 +14,135 @@ import java.util.List;
 @RestController
 @RequestMapping("/cars")
 @RequiredArgsConstructor
+@Tag(name = "Car controller", description = "Controller for various operations with cars")
 public class CarController {
 
-private final CarService carService;
+    private final CarService carService;
 
-    // POST -> http://IP-adress:8080/cars
+    // POST -> localhost:8080/cars
     @PostMapping
-    public CarResponseDto saveCar(@RequestBody CarResponseDto carDto) {
+    public CarResponseDto saveCar(
+            @RequestBody
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Instance of a Car")
+            CarResponseDto carDto) {
         return carService.saveCar(carDto);
     }
 
+    // GET -> localhost:8080/cars/all
+    @GetMapping("/all")
+    @Operation(
+            summary = "Get all cars",
+            description = "Getting all cars that exist in the database"
+    )
     public List<CarResponseDto> getAllCars() {
         return carService.getAllCars();
     }
 
-    public CarResponseDto getCarById(Long id){
+    // GET -> localhost:8080/cars/5
+    @GetMapping("/{id}")
+    public CarResponseDto getCarById(
+            @PathVariable
+            @Parameter(description = "Car unique identifier")
+            Long id) {
         return carService.getCarById(id);
     }
 
-    public List<CarResponseDto> getCarsByBrand(String brand) {
+    // GET -> localhost:8080/cars/brand
+    @GetMapping("/{brand}")
+    public List<CarResponseDto> getCarsByBrand(
+            @PathVariable
+            @Parameter(description = "Car brand title")
+            String brand) {
         return carService.getCarsByBrand(brand);
     }
 
-    public List<CarResponseDto> getCarsByModel(String model) {
+    // GET -> localhost:8080/cars/model
+    @GetMapping("/{model}")
+    public List<CarResponseDto> getCarsByModel(
+            @PathVariable
+            @Parameter(description = "Car model title")
+            String model) {
         return carService.getCarsByModel(model);
     }
 
-    public List<CarResponseDto> getCarsByYear(int year) {
+    // GET -> localhost:8080/cars/year
+    @GetMapping("/{year}")
+    public List<CarResponseDto> getCarsByYear(
+            @PathVariable
+            @Parameter(description = "Car build year")
+            int year) {
         return carService.getCarsByYear(year);
     }
 
-    public List<CarResponseDto> getCarsByType(String type) {
+    // GET -> localhost:8080/cars/type
+    @GetMapping("/{type}")
+    public List<CarResponseDto> getCarsByType(
+            @PathVariable
+            @Parameter(description = "Car type title")
+            String type) {
         return carService.getCarsByType(type);
     }
 
-    public List<CarResponseDto> getCarsByFuelType(String fuelType) {
+    // GET -> localhost:8080/cars/fuelType
+    @GetMapping("/{fuelType}")
+    public List<CarResponseDto> getCarsByFuelType(
+            @PathVariable
+            @Parameter(description = "Car fuel type title")
+            String fuelType) {
         return carService.getCarsByFuelType(fuelType);
     }
 
-    public List<CarResponseDto> getCarsByTransmissionType(String transmissionType) {
+    // GET -> localhost:8080/cars/transmissionType
+    @GetMapping("/{transmissionType}")
+    public List<CarResponseDto> getCarsByTransmissionType(
+            @PathVariable
+            @Parameter(description = "Car transmission type title")
+            String transmissionType) {
         return carService.getCarsByTransmissionType(transmissionType);
     }
 
-    public List<CarResponseDto> getCarsByCarStatus(String carStatus) {
+    // GET -> localhost:8080/cars/available
+    // GET -> localhost:8080/cars/under-repair
+    @GetMapping("/{carStatus}")
+    public List<CarResponseDto> getCarsByCarStatus(
+            @PathVariable
+            @Parameter(description = "Car status title")
+            String carStatus) {
         return carService.getCarsByCarStatus(carStatus);
     }
 
-    public List<CarResponseDto> getCarsByDayRentalPrice(BigDecimal minDayRentalPrice, BigDecimal maxDayRentalPrice) {
+    // GET -> localhost:8080/cars/150-200
+    @GetMapping("/{minDayRentalPrice}-{maxDayRentalPrice}")
+    public List<CarResponseDto> getCarsByDayRentalPrice(
+            @PathVariable
+            @Parameter(description = "Minimal day rental car price")
+            BigDecimal minDayRentalPrice,
+
+            @PathVariable
+            @Parameter(description = "Maximal day rental car price")
+            BigDecimal maxDayRentalPrice) {
         return carService.getCarsByDayRentalPrice(minDayRentalPrice, maxDayRentalPrice);
     }
 
-    public void updateCar(CarResponseDto carDto) {
+    // PUT -> localhost:8080/cars  (идентификатор отправляется в теле запроса)
+    @PutMapping
+    @Operation(
+            summary = "Update car",
+            description = "Update car day rental price and car status in the database based on the passed CarResponseDto object"
+    )
+    public void updateCar(
+            @RequestBody
+            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Instance of a Car")
+            CarResponseDto carDto) {
         carService.updateCar(carDto);
     }
 
-    public void deleteCarById(Long id) {
+    // DELETE -> localhost:8080/cars/3
+    @DeleteMapping("/{id}")
+    @Operation(summary = "Delete car",
+            description = "Change car property active in the database on false")
+    public void deleteCarById(@PathVariable Long id) {
         carService.deleteCarById(id);
-    }
-
-    public void attachImageToCar(Long id, String imageUrl) {
-        carService.attachImageToCar(id, imageUrl);
     }
 
 }

@@ -144,9 +144,12 @@ public class CarServiceImpl implements CarService {
     @Override
     public void deleteCarById(Long id) {
         try {
-            carRepository.deleteById(id);
+            Car existingCar = carRepository.findById(id)
+                    .orElseThrow(() -> new CarNotFoundException(id));
+            existingCar.setActive(false);
         } catch (Exception e) {
-            throw new CarNotFoundException(id);
+            //TODO поменять на общую ошибку
+            throw new RuntimeException("Error while deleting car", e);
         }
     }
 
