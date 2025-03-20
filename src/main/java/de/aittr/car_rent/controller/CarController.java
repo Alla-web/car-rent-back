@@ -38,8 +38,8 @@ public class CarController {
         return carService.getAllCars();
     }
 
-    // GET -> localhost:8080/cars/5
-    @GetMapping("/{id}")
+    // GET -> localhost:8080/cars/id/5
+    @GetMapping("/id/{id}")
     public CarResponseDto getCarById(
             @PathVariable
             @Parameter(description = "Car unique identifier")
@@ -47,8 +47,8 @@ public class CarController {
         return carService.getCarById(id);
     }
 
-    // GET -> localhost:8080/cars/brand
-    @GetMapping("/{brand}")
+    // GET -> localhost:8080/cars/brand/toyota
+    @GetMapping("/brand/{brand}")
     public List<CarResponseDto> getCarsByBrand(
             @PathVariable
             @Parameter(description = "Car brand title")
@@ -56,8 +56,8 @@ public class CarController {
         return carService.getCarsByBrand(brand);
     }
 
-    // GET -> localhost:8080/cars/model
-    @GetMapping("/{model}")
+    // GET -> localhost:8080/cars/model/corolla
+    @GetMapping("/model/{model}")
     public List<CarResponseDto> getCarsByModel(
             @PathVariable
             @Parameter(description = "Car model title")
@@ -65,8 +65,8 @@ public class CarController {
         return carService.getCarsByModel(model);
     }
 
-    // GET -> localhost:8080/cars/year
-    @GetMapping("/{year}")
+    // GET -> localhost:8080/cars/year/2006
+    @GetMapping("/year/{year}")
     public List<CarResponseDto> getCarsByYear(
             @PathVariable
             @Parameter(description = "Car build year")
@@ -74,8 +74,8 @@ public class CarController {
         return carService.getCarsByYear(year);
     }
 
-    // GET -> localhost:8080/cars/type
-    @GetMapping("/{type}")
+    // GET -> localhost:8080/cars/type/sedan
+    @GetMapping("/type/{type}")
     public List<CarResponseDto> getCarsByType(
             @PathVariable
             @Parameter(description = "Car type title")
@@ -83,8 +83,8 @@ public class CarController {
         return carService.getCarsByType(type);
     }
 
-    // GET -> localhost:8080/cars/fuelType
-    @GetMapping("/{fuelType}")
+    // GET -> localhost:8080/cars/fuel-type/petrol
+    @GetMapping("/fuel-type/{fuelType}")
     public List<CarResponseDto> getCarsByFuelType(
             @PathVariable
             @Parameter(description = "Car fuel type title")
@@ -92,8 +92,8 @@ public class CarController {
         return carService.getCarsByFuelType(fuelType);
     }
 
-    // GET -> localhost:8080/cars/transmissionType
-    @GetMapping("/{transmissionType}")
+    // GET -> localhost:8080/cars/transmission-type/manual
+    @GetMapping("/transmission-type/{transmissionType}")
     public List<CarResponseDto> getCarsByTransmissionType(
             @PathVariable
             @Parameter(description = "Car transmission type title")
@@ -102,8 +102,8 @@ public class CarController {
     }
 
     // GET -> localhost:8080/cars/available
-    // GET -> localhost:8080/cars/under-repair
-    @GetMapping("/{carStatus}")
+    // GET -> localhost:8080/cars/car-status/under_repair
+    @GetMapping("/car-status/{carStatus}")
     public List<CarResponseDto> getCarsByCarStatus(
             @PathVariable
             @Parameter(description = "Car status title")
@@ -111,8 +111,8 @@ public class CarController {
         return carService.getCarsByCarStatus(carStatus);
     }
 
-    // GET -> localhost:8080/cars/150-200
-    @GetMapping("/{minDayRentalPrice}-{maxDayRentalPrice}")
+    // GET -> localhost:8080/cars/rental-price/150-200
+    @GetMapping("/rental-price/{minDayRentalPrice}-{maxDayRentalPrice}")
     public List<CarResponseDto> getCarsByDayRentalPrice(
             @PathVariable
             @Parameter(description = "Minimal day rental car price")
@@ -138,7 +138,7 @@ public class CarController {
     }
 
     // DELETE -> localhost:8080/cars/3
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete car",
             description = "Change car property active in the database on false")
     public void deleteCarById(@PathVariable Long id) {

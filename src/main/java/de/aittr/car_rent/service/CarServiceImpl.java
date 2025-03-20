@@ -13,7 +13,9 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 
 @Service
 @RequiredArgsConstructor
@@ -54,7 +56,7 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByBrand(String brand) {
         return carRepository.findAll()
                 .stream()
-                .filter(car -> car.getBrand().equals(brand))
+                .filter(car -> car.getBrand().equalsIgnoreCase(brand.trim()))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -63,7 +65,7 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByModel(String model) {
         return carRepository.findAll()
                 .stream()
-                .filter(car -> car.getModel().equals(model))
+                .filter(car -> car.getModel().equalsIgnoreCase(model.trim()))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -81,7 +83,7 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByType(String type) {
         return carRepository.findAll()
                 .stream()
-                .filter(car -> car.getType().equals(type))
+                .filter(car -> car.getType().equalsIgnoreCase(type.trim()))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -90,7 +92,7 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByFuelType(String fuelType) {
         return carRepository.findAll()
                 .stream()
-                .filter(car -> car.getFuelType().equals(fuelType))
+                .filter(car -> car.getFuelType().equalsIgnoreCase(fuelType.trim()))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -99,7 +101,7 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByTransmissionType(String transmissionType) {
         return carRepository.findAll()
                 .stream()
-                .filter(car -> car.getTransmissionType().equals(transmissionType))
+                .filter(car -> car.getTransmissionType().equalsIgnoreCase(transmissionType.trim()))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -108,7 +110,7 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByCarStatus(String carStatus) {
         return carRepository.findAll()
                 .stream()
-                .filter(car -> car.getCarStatus().equals(carStatus))
+                .filter(car -> Objects.nonNull(car.getCarStatus()) && car.getCarStatus().equalsIgnoreCase(carStatus.trim()))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -119,6 +121,7 @@ public class CarServiceImpl implements CarService {
                 .stream()
                 .filter(car -> car.getDayRentalPrice().compareTo(minDayRentalPrice) >= 0 &&
                         car.getDayRentalPrice().compareTo(maxDayRentalPrice) <= 0)
+                .sorted(Comparator.comparing(Car::getDayRentalPrice))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
