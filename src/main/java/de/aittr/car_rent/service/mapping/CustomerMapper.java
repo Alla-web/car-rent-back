@@ -8,7 +8,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface CustomerMapper {
 
-    @Mapping(target = "isAdult", source = "adult")
+
     CustomerResponseDto toDto(Customer customer);
 
     @Mapping(target = "id", ignore = true)

@@ -1,5 +1,6 @@
 package de.aittr.car_rent.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -29,9 +30,6 @@ public class Customer {
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
-    @Column(name = "is_18", nullable = false)
-    private boolean isAdult;
-
     @Column(name = "password", nullable = false)
     private String password;
 
@@ -42,6 +40,7 @@ public class Customer {
     boolean isActive;
 
     @OneToMany(mappedBy = "customer")
+    @JsonIgnore
     private List<Booking> bookings = new ArrayList<>();
 
     @ManyToOne
@@ -50,8 +49,7 @@ public class Customer {
 
     @Override
     public String toString() {
-        return String.format("Customer: id - %d, name - %s, last name - %s, email - %s, " +
-                "is 18 - %s, active - %s.", id, firstName, lastName, email, isAdult ? "yes" : "no", isActive ? "yes" : "no");
+        return String.format("Customer: id - %d, name - %s, last name - %s, email - %s, active - %s.", id, firstName, lastName, email, isActive ? "yes" : "no");
     }
 
     @Override
