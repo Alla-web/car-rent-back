@@ -1,7 +1,7 @@
 package de.aittr.car_rent.repository;
 
 import de.aittr.car_rent.domain.dto.CarResponseDto;
-import de.aittr.car_rent.domain.entity.Car;
+import de.aittr.car_rent.domain.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.math.BigDecimal;
@@ -22,16 +22,16 @@ public interface CarRepository extends JpaRepository<Car, Long> {
     List<CarResponseDto> getCarsByYear(int year);
 
     //найти авто по типу кузова
-    List<CarResponseDto> getCarsByType(String type);
+    List<CarResponseDto> getCarsByType(CarType type);
 
     //найти авто по типу топлива
-    List<CarResponseDto> getCarsByFuelType(String fuelType);
+    List<CarResponseDto> getCarsByFuelType(CarFuelType fuelType);
 
     //найти авто по типу коробки передач
-    List<CarResponseDto> getCarsByTransmissionType(String transmissionType);
+    List<CarResponseDto> getCarsByTransmissionType(CarTransmissionType transmissionType);
 
     //найти авто по статусу авто (доступно, арендовано, в ремонте, снято с аренды)
-    List<CarResponseDto> getCarsByCarStatus(String carStatus);
+    List<CarResponseDto> getCarsByCarStatus(CarStatus carStatus);
 
     //найти авто по стоимости аренды в день
     List<CarResponseDto> getCarsByDayRentalPrice(BigDecimal dayRentalPrice);

@@ -2,6 +2,7 @@ package de.aittr.car_rent.service;
 
 import de.aittr.car_rent.domain.dto.CarResponseDto;
 import de.aittr.car_rent.domain.entity.Car;
+import de.aittr.car_rent.domain.entity.CarStatus;
 import de.aittr.car_rent.exception_handling.exceptions.CarNotFoundException;
 import de.aittr.car_rent.repository.CarRepository;
 import de.aittr.car_rent.service.interfaces.CarService;
@@ -83,7 +84,7 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByType(String type) {
         return carRepository.findAll()
                 .stream()
-                .filter(car -> car.getType().equalsIgnoreCase(type.trim()))
+                .filter(car -> car.getType().name().equalsIgnoreCase(type.trim()))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -92,7 +93,7 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByFuelType(String fuelType) {
         return carRepository.findAll()
                 .stream()
-                .filter(car -> car.getFuelType().equalsIgnoreCase(fuelType.trim()))
+                .filter(car -> car.getFuelType().name().equalsIgnoreCase(fuelType.trim()))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -101,7 +102,7 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByTransmissionType(String transmissionType) {
         return carRepository.findAll()
                 .stream()
-                .filter(car -> car.getTransmissionType().equalsIgnoreCase(transmissionType.trim()))
+                .filter(car -> car.getTransmissionType().name().equalsIgnoreCase(transmissionType.trim()))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -110,7 +111,7 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getCarsByCarStatus(String carStatus) {
         return carRepository.findAll()
                 .stream()
-                .filter(car -> Objects.nonNull(car.getCarStatus()) && car.getCarStatus().equalsIgnoreCase(carStatus.trim()))
+                .filter(car -> Objects.nonNull(car.getCarStatus()) && car.getCarStatus().name().equalsIgnoreCase(carStatus.trim()))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -133,7 +134,7 @@ public class CarServiceImpl implements CarService {
         Car existCar = getOrThrow(id);
         //TODO нужно ли ещё что-то обновлять?
         existCar.setDayRentalPrice(carDto.dayRentalPrice());
-        existCar.setCarStatus(carDto.carStatus());
+        existCar.setCarStatus(CarStatus.valueOf(carDto.carStatus()));
     }
 
     @Override

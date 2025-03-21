@@ -1,6 +1,8 @@
 package de.aittr.car_rent.domain.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -33,26 +35,32 @@ public class Car {
 
     @NotNull(message = "{car.year.notBlank}")
     @Column(name = "year", nullable = false)
+    @Max(3000)
+    @Min(1600)
     private int year;
 
     @NotNull(message = "{car.type.notBlank}")
     @Column(name = "type", nullable = false)
-    private String type;
+    @Enumerated(EnumType.STRING)
+    private CarType type;
 
     @NotNull(message = "{car.fuel_type.notBlank}")
     @Column(name = "fuel_type", nullable = false)
-    private String fuelType;
+    @Enumerated(EnumType.STRING)
+    private CarFuelType fuelType;
 
     @NotNull(message = "{car.transmission_type.notBlank}")
     @Column(name = "transmission_type", nullable = false)
-    private String transmissionType;
+    @Enumerated(EnumType.STRING)
+    private CarTransmissionType transmissionType;
 
     @NotNull(message = "{car.active.notBlank}")
     @Column(name = "active", nullable = false)
     private boolean active;
 
     @Column(name = "car_status")
-    private String carStatus;
+    @Enumerated(EnumType.STRING)
+    private CarStatus carStatus;
 
     @NotNull(message = "{car.day_rental_price.notBlank}")
     @Column(name = "day_rental_price", nullable = false)
@@ -64,9 +72,9 @@ public class Car {
     public Car(String brand,
                String model,
                int year,
-               String type,
-               String fuelType,
-               String transmissionType,
+               CarType type,
+               CarFuelType fuelType,
+               CarTransmissionType transmissionType,
                BigDecimal dayRentalPrice) {
         this.brand = brand;
         this.model = model;

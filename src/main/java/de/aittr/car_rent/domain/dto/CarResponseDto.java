@@ -1,5 +1,8 @@
 package de.aittr.car_rent.domain.dto;
 
+import de.aittr.car_rent.domain.entity.CarFuelType;
+import de.aittr.car_rent.domain.entity.CarTransmissionType;
+import de.aittr.car_rent.domain.entity.CarType;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
@@ -23,16 +26,31 @@ public record CarResponseDto(
         @Schema(description = "Car build year", example = "2025")
         int year,
 
-        @Schema(description = "Сar body type", example = "Sedan")
-        String type,
+        @Schema(
+                description = "Сar body type",
+                example = "Sedan",
+                allowableValues = {"SEDAN", "HATCHBACK", "COUPE", "CONVERTIBLE", "SUV",
+                        "CROSSOVER", "PICKUP", "MINIVAN", "WAGON", "ROADSTER", "CABRIOLET",
+                        "LIMOUSINE", "VAN", "TRUCK", "JEEP"})
+        CarType type,
 
-        @Schema(description = "Car fuel type", example = "Petrol")
-        String fuelType,
+        @Schema(
+                description = "Car fuel type",
+                example = "Petrol",
+                allowableValues = {"PETROL", "DIESEL", "ELECTRIC", "HYBRID", "LPG", "CNG",
+                        "BIOFUEL", "HYDROGEN", "ETHANOL"})
+        CarFuelType fuelType,
 
-        @Schema(description = "Car transmission type", example = "Automatic")
-        String transmissionType,
+        @Schema(
+                description = "Car transmission type",
+                example = "Automatic",
+                allowableValues = {"MANUAL", "AUTOMATIC", "SEMI_AUTOMATIC", "DUAL_CLUTCH", "TIPTRONIC"})
+        CarTransmissionType transmissionType,
 
-        @Schema(description = "Car status", example = "Rented, Available, Under repair")
+        @Schema(
+                description = "Car status",
+                example = "Rented, Available, Under repair",
+                allowableValues = {"RENTED", "AVAILABLE", "UNDER_REPAIR", "REMOVER_FROM_RENT"})
         String carStatus,
 
         @Schema(description = "Car day rental price", example = "150.00")
