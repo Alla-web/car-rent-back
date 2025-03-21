@@ -1,10 +1,7 @@
 package de.aittr.car_rent.service;
 
 import de.aittr.car_rent.domain.dto.BookingDto;
-import de.aittr.car_rent.domain.entity.Booking;
-import de.aittr.car_rent.domain.entity.BookingStatus;
-import de.aittr.car_rent.domain.entity.Car;
-import de.aittr.car_rent.domain.entity.Customer;
+import de.aittr.car_rent.domain.entity.*;
 import de.aittr.car_rent.exception_handling.exceptions.BookingNotFoundException;
 import de.aittr.car_rent.exception_handling.exceptions.RestApiException;
 import de.aittr.car_rent.repository.BookingRepository;
@@ -58,7 +55,7 @@ public class BookingServiceImpl implements BookingService {
         long days = ChronoUnit.DAYS.between(bookingDto.rentalStartDate(), bookingDto.rentalEndDate());
         BigDecimal totalPrice = BigDecimal.valueOf(days + 1).multiply(car.getDayRentalPrice());
 
-        car.setCarStatus("booked");
+        car.setCarStatus(CarStatus.RENTED);
         carRepository.save(car);
 
         Booking booking = bookingMapper.mapDtoToEntity(bookingDto);
