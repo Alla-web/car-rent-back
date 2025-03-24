@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
 
 import java.util.Objects;
 
@@ -12,20 +13,19 @@ import java.util.Objects;
 @NoArgsConstructor
 @Entity
 @Table(name = "role")
-public class Role {
+public class Role implements GrantedAuthority {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
-    @Enumerated(EnumType.STRING)
     @Column(name = "title")
-    private RoleTitle title;
+    private String role;
 
     @Override
     public String toString() {
-        return String.format("Role: id - %d; title - %s", id, title);
+        return String.format("Role: id - %d; title - %s", id, role);
     }
 
     @Override
@@ -38,5 +38,14 @@ public class Role {
     @Override
     public int hashCode() {
         return Objects.hashCode(id);
+    }
+
+    /**
+     * Метод предоставляет название роли в Spring Security
+     * @return название роли
+     */
+    @Override
+    public String getAuthority() {
+        return role;
     }
 }

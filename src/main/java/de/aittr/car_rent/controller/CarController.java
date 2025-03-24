@@ -6,13 +6,14 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cars")
+@RequestMapping("/api/cars")
 @RequiredArgsConstructor
 @Tag(name = "Car controller", description = "Controller for various operations with cars")
 public class CarController {
@@ -21,6 +22,7 @@ public class CarController {
 
     // POST -> localhost:8080/cars
     @PostMapping
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN'})")
     public CarResponseDto saveCar(
             @RequestBody
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Instance of a Car")
@@ -29,7 +31,7 @@ public class CarController {
     }
 
     // GET -> localhost:8080/cars/all
-    @GetMapping("/all")
+    @GetMapping
     @Operation(
             summary = "Get all cars",
             description = "Getting all cars that exist in the database"
@@ -104,6 +106,7 @@ public class CarController {
     // GET -> localhost:8080/cars/available
     // GET -> localhost:8080/cars/car-status/under_repair
     @GetMapping("/car-status/{carStatus}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public List<CarResponseDto> getCarsByCarStatus(
             @PathVariable
             @Parameter(description = "Car status title")
@@ -130,6 +133,7 @@ public class CarController {
             summary = "Update car",
             description = "Update car day rental price and car status in the database based on the passed CarResponseDto object"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void updateCar(
             @RequestBody
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Instance of a Car")
@@ -141,6 +145,7 @@ public class CarController {
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete car",
             description = "Change car property active in the database on false")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     public void deleteCarById(@PathVariable Long id) {
         carService.deleteCarById(id);
     }

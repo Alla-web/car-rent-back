@@ -10,12 +10,16 @@ import de.aittr.car_rent.service.interfaces.CustomerService;
 import de.aittr.car_rent.service.mapping.CustomerMapper;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository repository;
@@ -88,5 +92,23 @@ public class CustomerServiceImpl implements CustomerService {
         return repository
                 .findById(customerId)
                 .orElseThrow(CustomerNotFoundException::new);
+    }
+
+    /**
+     * Метод получения объектов покупателей с их ролями Spring Security
+     * @param email
+     * @return объект юзера, который бует использоваться в аутентификации и авторизации
+     * @throws UsernameNotFoundException
+     */
+    @Override
+    public Customer findByEmailOrThrow(String email) {
+        return findByEmail(email).orElseThrow(
+                ()-> new UsernameNotFoundException("User with email " + email + " not found")
+        );
+    }
+
+    @Override
+    public Optional<Customer> findByEmail(String email) {
+        return repository.findByEmail(email);
     }
 }

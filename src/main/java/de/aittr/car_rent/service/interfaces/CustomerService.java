@@ -6,6 +6,7 @@ import de.aittr.car_rent.domain.entity.Booking;
 import de.aittr.car_rent.domain.entity.Customer;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface CustomerService {
 
@@ -24,4 +25,7 @@ public interface CustomerService {
     void restoreById(Long id);
 
     List<Booking> getAllBookingsByCustomerId(Long customerId);
+
+    Customer findByEmailOrThrow(String email);
+    Optional<Customer> findByEmail(String email);
 }

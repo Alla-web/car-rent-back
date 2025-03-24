@@ -11,4 +11,6 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
 
     @Query("select c from Customer c where c.isActive = true")
     List<Customer> findAllByActiveTrue();
+
+    Optional<Customer> findByEmail(String email);
 }

@@ -6,17 +6,18 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 @Getter
 @Setter
 @NoArgsConstructor
 @Entity
 @Table(name = "customer")
-public class Customer {
+public class Customer implements UserDetails {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -63,4 +64,27 @@ public class Customer {
     public int hashCode() {
         return Objects.hashCode(id);
     }
+
+    /**
+     * Метод получения списка ролей покупателя Spring Security
+     * @return список ролей, которыми обладает покупатель
+     */
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role.getRole()));
+    }
+
+    /**
+     * Метод получения полного имени (имя + фамилия) покупателя Spring Security
+     * @return имя покупателя
+     */
+    @Override
+    public String getUsername() {
+        return email;
+    }
+
+//    // временный метод для создания тестового зашифрованного пароля
+//     public static void main(String[] args) {
+//     System.out.println(new BCryptPasswordEncoder().encode("111"));
+//     }
 }
