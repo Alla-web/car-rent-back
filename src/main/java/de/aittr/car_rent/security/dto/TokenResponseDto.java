@@ -1,4 +1,4 @@
-package de.aittr.car_rent.security.sec_dto;
+package de.aittr.car_rent.security.dto;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -12,11 +12,10 @@ public class TokenResponseDto {
     private String accessToken;
     private String refreshToken;
 
-    public TokenResponseDto(){}
-
     /**
      * Конструктор для отправки accessToken покупателю для получения refreshToken
-     * @param accessToken
+     *
+     * @param accessToken jwt токен
      */
     public TokenResponseDto(String accessToken) {
         this.accessToken = accessToken;

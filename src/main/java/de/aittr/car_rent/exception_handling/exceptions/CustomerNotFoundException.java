@@ -4,6 +4,6 @@ import org.springframework.http.HttpStatus;
 
 public class CustomerNotFoundException extends RestApiException {
     public CustomerNotFoundException() {
-        super(String.format("Customer is not found"), HttpStatus.NOT_FOUND);
+        super("Customer is not found", HttpStatus.NOT_FOUND);
     }
 }

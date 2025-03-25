@@ -1,4 +1,4 @@
-package de.aittr.car_rent.security.sec_service;
+package de.aittr.car_rent.security.service;
 
 import de.aittr.car_rent.service.interfaces.CustomerService;
 import lombok.RequiredArgsConstructor;

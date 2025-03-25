@@ -28,29 +28,24 @@ public record CarResponseDto(
 
         @Schema(
                 description = "Сar body type",
-                example = "Sedan",
-                allowableValues = {"SEDAN", "HATCHBACK", "COUPE", "CONVERTIBLE", "SUV",
-                        "CROSSOVER", "PICKUP", "MINIVAN", "WAGON", "ROADSTER", "CABRIOLET",
-                        "LIMOUSINE", "VAN", "TRUCK", "JEEP"})
+                example = "SEDAN"
+              )
         CarType type,
 
         @Schema(
                 description = "Car fuel type",
-                example = "Petrol",
-                allowableValues = {"PETROL", "DIESEL", "ELECTRIC", "HYBRID", "LPG", "CNG",
-                        "BIOFUEL", "HYDROGEN", "ETHANOL"})
+                example = "PETROL"
+                )
         CarFuelType fuelType,
 
         @Schema(
                 description = "Car transmission type",
-                example = "Automatic",
-                allowableValues = {"MANUAL", "AUTOMATIC", "SEMI_AUTOMATIC", "DUAL_CLUTCH", "TIPTRONIC"})
+                example = "AUTOMATIC")
         CarTransmissionType transmissionType,
 
         @Schema(
                 description = "Car status",
-                example = "Rented, Available, Under repair",
-                allowableValues = {"RENTED", "AVAILABLE", "UNDER_REPAIR", "REMOVER_FROM_RENT"})
+                example = "RENTED")
         String carStatus,
 
         @Schema(description = "Car day rental price", example = "150.00")

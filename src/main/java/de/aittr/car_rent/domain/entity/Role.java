@@ -20,12 +20,16 @@ public class Role implements GrantedAuthority {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "title")
-    private String role;
+    @Column(name = "title", unique = true)
+    private String name;
+
+    public Role(String name) {
+        this.name = name;
+    }
 
     @Override
     public String toString() {
-        return String.format("Role: id - %d; title - %s", id, role);
+        return String.format("Role: id - %d; title - %s", id, name);
     }
 
     @Override
@@ -42,10 +46,11 @@ public class Role implements GrantedAuthority {
 
     /**
      * Метод предоставляет название роли в Spring Security
+     *
      * @return название роли
      */
     @Override
     public String getAuthority() {
-        return role;
+        return name;
     }
 }
