@@ -59,6 +59,7 @@ public class BookingServiceImpl implements BookingService {
         carRepository.save(car);
 
         Booking booking = bookingMapper.mapDtoToEntity(bookingDto);
+        booking.setCreateBookingDate(LocalDateTime.now());
         booking.setCustomer(customer);
         booking.setCar(car);
         booking.setTotalPrice(totalPrice);
