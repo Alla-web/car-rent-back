@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -145,4 +146,9 @@ public class CarController {
         carService.deleteCarById(id);
     }
 
+// GET -> localhost:8080/api/cars/renting-time/{startDateTime}-{endDateTime}
+    @GetMapping("/renting-time/{startDateTime}-{endDateTime}")
+    public List<CarResponseDto> getAllAvailableCarsByDates(LocalDateTime startDateTime, LocalDateTime endDateTime){
+    return carService.getAllAvailableCarsByDates(startDateTime, endDateTime);
+    }
 }
