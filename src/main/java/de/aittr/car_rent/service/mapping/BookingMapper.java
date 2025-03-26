@@ -1,6 +1,7 @@
 package de.aittr.car_rent.service.mapping;
 
-import de.aittr.car_rent.domain.dto.BookingDto;
+import de.aittr.car_rent.domain.dto.BookingRequestDto;
+import de.aittr.car_rent.domain.dto.BookingResponseDto;
 import de.aittr.car_rent.domain.entity.Booking;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
@@ -11,9 +12,17 @@ public interface BookingMapper {
 
     @Mapping(target = "carId", source = "car.id")
     @Mapping(target = "customerId", source = "customer.id")
-    BookingDto mapEntityToDto(Booking entity);
+    @Mapping(target = "carStatus", source = "car.carStatus")
+    @Mapping(target = "updateBookingDate", source = "updateBookingDate")
+    BookingResponseDto mapEntityToDto(Booking entity);
 
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "customer", ignore = true)
+    @Mapping(target = "bookingStatus", ignore = true)
+    @Mapping(target = "createBookingDate", ignore = true)
+    @Mapping(target = "updateBookingDate", ignore = true)
     @Mapping(target = "totalPrice", ignore = true)
-    Booking mapDtoToEntity(BookingDto dto);
+    Booking mapDtoToEntity(BookingRequestDto dto);
+
+
 }

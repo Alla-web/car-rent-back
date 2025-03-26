@@ -1,6 +1,7 @@
 package de.aittr.car_rent.controller;
 
-import de.aittr.car_rent.domain.dto.BookingDto;
+import de.aittr.car_rent.domain.dto.BookingRequestDto;
+import de.aittr.car_rent.domain.dto.BookingResponseDto;
 import de.aittr.car_rent.service.interfaces.BookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,21 +29,21 @@ public class BookingController {
     @Operation(summary = "Create a new booking", description = "Creates a new booking for a car")
     @PreAuthorize("isAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
-    public BookingDto createBooking(
+    public BookingResponseDto createBooking(
             @AuthenticationPrincipal
             @Parameter(hidden = true)
             String userEmail,
             @RequestBody
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Booking details")
-            BookingDto bookingDto) {
-        return bookingService.createBooking(bookingDto, userEmail);
+            BookingRequestDto bookingDto) {
+        return bookingService.createBooking(bookingDto);
     }
 
     @GetMapping("/all")
     @Operation(summary = "Get all bookings", description = "Returns all bookings from the database")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
-    public List<BookingDto> getAllBookings() {
+    public List<BookingResponseDto> getAllBookings() {
         return bookingService.getAllBookings();
     }
 
@@ -51,7 +52,7 @@ public class BookingController {
     @Operation(summary = "Get a booking by ID", description = "Returns a booking by its unique identifier")
     @PreAuthorize("isAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
-    public BookingDto getBookingById(
+    public BookingResponseDto getBookingById(
             @PathVariable
             @Parameter(description = "Booking unique identifier") Long id) {
         return bookingService.getBookingById(id);
@@ -61,7 +62,7 @@ public class BookingController {
     @Operation(summary = "Get bookings by car ID", description = "Returns bookings associated with a specific car")
     @PreAuthorize("hasAnyRole({'ROLE_ADMIN'})")
     @SecurityRequirement(name = "bearerAuth")
-    public List<BookingDto> getBookingsByCarId(@PathVariable Long carId) {
+    public List<BookingResponseDto> getBookingsByCarId(@PathVariable Long carId) {
         return bookingService.getBookingsByCarId(carId);
     }
 
@@ -69,7 +70,7 @@ public class BookingController {
     @Operation(summary = "Cancel a booking", description = "Cancels a booking by its ID")
     @PreAuthorize("isAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<BookingDto> cancelBooking(@PathVariable Long id) {
+    public ResponseEntity<BookingResponseDto> cancelBooking(@PathVariable Long id) {
         return ResponseEntity.ok(bookingService.cancelBooking(id));
     }
 
@@ -78,7 +79,7 @@ public class BookingController {
     @PreAuthorize("isAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
     @SecurityRequirement(name = "bearerAuth")
-    public BookingDto extendBooking(
+    public BookingResponseDto extendBooking(
             @PathVariable Long id,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime newEndDate) {
         return bookingService.extendBooking(id, newEndDate);
@@ -87,7 +88,7 @@ public class BookingController {
     @PutMapping("/{id}/restore")
     @Operation(summary = "Restore a cancelled booking", description = "Restores a cancelled booking by its ID")
     @PreAuthorize("hasAnyRole({'ROLE_ADMIN'})")
-    public BookingDto restoreBooking(@PathVariable Long id) {
+    public BookingResponseDto restoreBooking(@PathVariable Long id) {
         return bookingService.restoreBooking(id);
     }
 

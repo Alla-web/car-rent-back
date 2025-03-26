@@ -44,6 +44,7 @@ public class CarServiceImpl implements CarService {
         return carRepository.findAll()
                 .stream()
                 .filter(Car::isActive)
+                .filter((car->car.getCarStatus() == CarStatus.RENTED || car.getCarStatus() == CarStatus.AVAILABLE))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -166,18 +167,17 @@ public class CarServiceImpl implements CarService {
             LocalDateTime startDateTime,
             LocalDateTime endDateTime) {
 
-        return
-                carRepository.findAll()
-                        .stream()
-                        .filter((car -> car.isActive() && car.getCarStatus() == CarStatus.AVAILABLE))
-                        .filter(car -> bookingRepository.findAllByCarId(car.getId()).stream()
-                                .noneMatch(booking ->
-                                        booking.getRentalStartDate().isBefore(endDateTime) &&
-                                                booking.getRentalEndDate().isAfter(startDateTime)
-                                )
+        return carRepository.findAll()
+                .stream()
+                .filter((car -> car.isActive() && car.getCarStatus() == CarStatus.AVAILABLE))
+                .filter(car -> bookingRepository.findAllByCarId(car.getId()).stream()
+                        .noneMatch(booking ->
+                                booking.getRentalStartDate().isBefore(endDateTime) &&
+                                        booking.getRentalEndDate().isAfter(startDateTime)
                         )
-                        .map(carMappingService::mapEntityToDto)
-                        .collect(Collectors.toList());
+                )
+                .map(carMappingService::mapEntityToDto)
+                .collect(Collectors.toList());
     }
 
     @Override
@@ -189,7 +189,7 @@ public class CarServiceImpl implements CarService {
             String fuelType,
             String transmissionType,
             BigDecimal minPrice,
-            BigDecimal maxPrice){
+            BigDecimal maxPrice) {
         return getAllAvailableCarsByDates(startDateTime, endDateTime)
                 .stream()
                 .filter(car -> brand == null || car.brand().equalsIgnoreCase(brand.trim()))
