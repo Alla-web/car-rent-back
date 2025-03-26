@@ -118,6 +118,14 @@ public interface CarService {
      */
     void attachImageToCar(Long id, String imageUrl);
 
-
     List<CarResponseDto> getAllAvailableCarsByDates(LocalDateTime startDate, LocalDateTime endDate);
+
+    List<CarResponseDto> filterAvailableCars(
+            LocalDateTime startDateTime,
+            LocalDateTime endDateTime,
+            String brand,
+            String fuelType,
+            String transmissionType,
+            BigDecimal minPrice,
+            BigDecimal maxPrice);
 }
