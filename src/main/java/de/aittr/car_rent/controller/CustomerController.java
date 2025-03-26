@@ -1,5 +1,6 @@
 package de.aittr.car_rent.controller;
 
+import de.aittr.car_rent.domain.dto.BookingDto;
 import de.aittr.car_rent.domain.dto.CustomerResponseDto;
 import de.aittr.car_rent.domain.dto.CustomerUpdateRequestDto;
 import de.aittr.car_rent.domain.entity.Booking;
@@ -56,7 +57,7 @@ public class CustomerController {
     //  DELETE ->  http://localhost:8080/customers/1/delete
     @DeleteMapping("{id}/delete")
     @Operation(description = "Delete customer from the database")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN'})")
     @SecurityRequirement(name = "bearerAuth")
     public void deleteById(@PathVariable Long id) {
         customerService.deleteById(id);
@@ -76,7 +77,17 @@ public class CustomerController {
     @Operation(description = "Finds all bookings by customer id")
     @PreAuthorize("isAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
-    public List<Booking> getAllBookingsByCustomerId(@PathVariable Long id) {
+    public List<BookingDto> getAllBookingsByCustomerId(@PathVariable Long id) {
         return customerService.getAllBookingsByCustomerId(id);
+    }
+
+    //TODO not working
+    //GET -> http://localhost:8080/customers/{email}/all-bookings
+    @GetMapping("/all-bookings/{email}")
+    @Operation(description = "Finds all bookings by customer email")
+    @PreAuthorize("isAuthenticated()")
+    @SecurityRequirement(name = "bearerAuth")
+    public List<BookingDto> getAllBookingsByCustomerEmail(String email){
+        return customerService.getAllBookingsByCustomerEmail(email);
     }
 }

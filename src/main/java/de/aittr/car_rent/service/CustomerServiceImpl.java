@@ -1,5 +1,6 @@
 package de.aittr.car_rent.service;
 
+import de.aittr.car_rent.domain.dto.BookingDto;
 import de.aittr.car_rent.domain.dto.CustomerResponseDto;
 import de.aittr.car_rent.domain.dto.CustomerUpdateRequestDto;
 import de.aittr.car_rent.domain.entity.Booking;
@@ -7,6 +8,7 @@ import de.aittr.car_rent.domain.entity.Customer;
 import de.aittr.car_rent.exception_handling.exceptions.CustomerNotFoundException;
 import de.aittr.car_rent.repository.CustomerRepository;
 import de.aittr.car_rent.service.interfaces.CustomerService;
+import de.aittr.car_rent.service.mapping.BookingMapper;
 import de.aittr.car_rent.service.mapping.CustomerMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -22,6 +24,7 @@ public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository repository;
     private final CustomerMapper customerMapper;
+    private final BookingMapper bookingMapper;
 
     @Override
     public List<CustomerResponseDto> getAllActiveCustomers() {
@@ -71,10 +74,22 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<Booking> getAllBookingsByCustomerId(Long customerId) {
+    public List<BookingDto> getAllBookingsByCustomerId(Long customerId) {
         return getOrThrow(customerId)
                 .getBookings()
                 .stream()
+                .map(bookingMapper::mapEntityToDto)
+                .toList();
+    }
+
+    @Override
+    public List<BookingDto> getAllBookingsByCustomerEmail(String email) {
+        return repository
+                .findByEmail(email)
+                .orElseThrow(CustomerNotFoundException::new)
+                .getBookings()
+                .stream()
+                .map(bookingMapper::mapEntityToDto)
                 .toList();
     }
 
