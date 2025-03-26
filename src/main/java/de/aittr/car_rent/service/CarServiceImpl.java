@@ -153,14 +153,17 @@ public class CarServiceImpl implements CarService {
     @Transactional
     public void attachImageToCar(Long id, String imageUrl) {
         carRepository.findById(id)
-                .orElseThrow(()->new CarNotFoundException(id))
+                .orElseThrow(() -> new CarNotFoundException(id))
                 .setCarImage(imageUrl);
 
     }
 
     @Override
     @Transactional
-    public List<CarResponseDto> getAllAvailableCarsByDates(LocalDateTime startDateTime, LocalDateTime endDateTime) {
+    public List<CarResponseDto> getAllAvailableCarsByDates(
+            LocalDateTime startDateTime,
+            LocalDateTime endDateTime) {
+
         return
                 carRepository.findAll()
                         .stream()
@@ -173,6 +176,26 @@ public class CarServiceImpl implements CarService {
                         )
                         .map(carMappingService::mapEntityToDto)
                         .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<CarResponseDto> filterAvailableCars(
+            LocalDateTime startDateTime,
+            LocalDateTime endDateTime,
+            String brand,
+            String fuelType,
+            String transmissionType,
+            BigDecimal minPrice,
+            BigDecimal maxPrice){
+        return getAllAvailableCarsByDates(startDateTime, endDateTime)
+                .stream()
+                .filter(car -> brand == null || car.brand().equalsIgnoreCase(brand.trim()))
+                .filter(car -> fuelType == null || car.fuelType().name().equalsIgnoreCase(fuelType.trim()))
+                .filter(car -> transmissionType == null || car.transmissionType().name().equalsIgnoreCase(transmissionType.trim()))
+                .filter(car -> minPrice == null || car.dayRentalPrice().compareTo(minPrice) >= 0)
+                .filter(car -> maxPrice == null || car.dayRentalPrice().compareTo(maxPrice) <= 0)
+                .collect(Collectors.toList());
     }
 }
 

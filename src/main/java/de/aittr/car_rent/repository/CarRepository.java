@@ -5,6 +5,8 @@ import de.aittr.car_rent.domain.entity.*;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CarRepository extends JpaRepository<Car, Long> {
@@ -35,5 +37,4 @@ public interface CarRepository extends JpaRepository<Car, Long> {
 
     //найти авто по стоимости аренды в день
     List<CarResponseDto> getCarsByDayRentalPrice(BigDecimal dayRentalPrice);
-
 }
