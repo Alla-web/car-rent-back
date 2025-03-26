@@ -13,11 +13,11 @@ public interface CustomerMapper {
     CustomerResponseDto toDto(Customer customer);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "role", ignore = true)
     @Mapping(target = "password", ignore = true)
     @Mapping(target = "authorities", ignore = true)
-    @Mapping(target = "bookings", ignore = true)
     @Mapping(target = "active", constant = "true")
+    @Mapping(target = "bookings", ignore = true)
+    @Mapping(target = "role", ignore = true)
     Customer toEntity(CustomerResponseDto customerResponseDto);
 
 }

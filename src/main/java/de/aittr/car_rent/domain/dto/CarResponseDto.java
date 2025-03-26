@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.math.BigDecimal;
 
-@Schema(description = "Car entity with brand and model")
+@Schema(description = "Car entity with id, brand, model, year, type, fuelType, transmissionType, status, dayRentalPrice and carImage")
 public record CarResponseDto(
 
         @Schema(
