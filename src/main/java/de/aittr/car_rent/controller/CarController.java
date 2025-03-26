@@ -11,6 +11,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -155,4 +156,44 @@ public class CarController {
         carService.deleteCarById(id);
     }
 
+    // GET -> localhost:8080/api/cars/renting-time/{startDateTime}-{endDateTime}
+//    @GetMapping("/renting-time/{startDateTime}-{endDateTime}")
+//    public List<CarResponseDto> getAllAvailableCarsByDates(LocalDateTime startDateTime, LocalDateTime endDateTime){
+//    return carService.getAllAvailableCarsByDates(startDateTime, endDateTime);
+//    }
+    @GetMapping("/filter")
+    @Operation(
+            summary = "Filter available cars",
+            description = "Filter available cars by various criteria including dates, brand, fuel type, transmission type and price range"
+    )
+    public List<CarResponseDto> filterAvailableCars(
+            @RequestParam(required = false)
+            @Parameter(description = "Start date and time of rental period")
+            LocalDateTime startDateTime,
+
+            @RequestParam(required = false)
+            @Parameter(description = "End date and time of rental period")
+            LocalDateTime endDateTime,
+
+            @RequestParam(required = false)
+            @Parameter(description = "Car brand")
+            String brand,
+
+            @RequestParam(required = false)
+            @Parameter(description = "Car fuel type")
+            String fuelType,
+
+            @RequestParam(required = false)
+            @Parameter(description = "Car transmission type")
+            String transmissionType,
+
+            @RequestParam(required = false)
+            @Parameter(description = "Minimum rental price per day")
+            BigDecimal minPrice,
+
+            @RequestParam(required = false)
+            @Parameter(description = "Maximum rental price per day")
+            BigDecimal maxPrice) {
+        return carService.filterAvailableCars(startDateTime, endDateTime, brand, fuelType, transmissionType, minPrice, maxPrice);
+    }
 }

@@ -4,6 +4,7 @@ import de.aittr.car_rent.domain.dto.CarResponseDto;
 import de.aittr.car_rent.domain.entity.Car;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CarService {
@@ -117,4 +118,14 @@ public interface CarService {
      */
     void attachImageToCar(Long id, String imageUrl);
 
+    List<CarResponseDto> getAllAvailableCarsByDates(LocalDateTime startDate, LocalDateTime endDate);
+
+    List<CarResponseDto> filterAvailableCars(
+            LocalDateTime startDateTime,
+            LocalDateTime endDateTime,
+            String brand,
+            String fuelType,
+            String transmissionType,
+            BigDecimal minPrice,
+            BigDecimal maxPrice);
 }
