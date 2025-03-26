@@ -146,11 +146,7 @@ public class CarController {
         carService.deleteCarById(id);
     }
 
-    // GET -> localhost:8080/api/cars/renting-time/{startDateTime}-{endDateTime}
-//    @GetMapping("/renting-time/{startDateTime}-{endDateTime}")
-//    public List<CarResponseDto> getAllAvailableCarsByDates(LocalDateTime startDateTime, LocalDateTime endDateTime){
-//    return carService.getAllAvailableCarsByDates(startDateTime, endDateTime);
-//    }
+//    GET-> localhost:8080/api/cars/filter?startDateTime=2024-03-20T10:00:00&endDateTime=2024-03-25T10:00:00&minPrice=50&maxPrice=200
     @GetMapping("/filter")
     @Operation(
             summary = "Filter available cars",
