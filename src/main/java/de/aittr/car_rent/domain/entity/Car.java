@@ -58,6 +58,7 @@ public class Car {
     @Column(name = "active", nullable = false)
     private boolean active;
 
+    @NotNull(message = "{car.car_status.notBlank}")
     @Column(name = "car_status")
     @Enumerated(EnumType.STRING)
     private CarStatus carStatus;
@@ -83,6 +84,7 @@ public class Car {
         this.fuelType = fuelType;
         this.transmissionType = transmissionType;
         this.dayRentalPrice = dayRentalPrice;
+        this.carStatus=CarStatus.AVAILABLE;
         this.active = true;
     }
 

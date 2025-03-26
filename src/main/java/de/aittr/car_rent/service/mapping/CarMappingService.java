@@ -12,6 +12,7 @@ public interface CarMappingService {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "active", constant = "true")
+    @Mapping(target = "carStatus", constant = "AVAILABLE")
     Car mapDtoToEntity(CarResponseDto carDto);
 
 }

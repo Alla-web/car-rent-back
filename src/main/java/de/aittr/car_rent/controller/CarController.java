@@ -4,8 +4,10 @@ import de.aittr.car_rent.domain.dto.CarResponseDto;
 import de.aittr.car_rent.service.interfaces.CarService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -22,6 +24,8 @@ public class CarController {
 
     // POST -> localhost:8080/cars
     @PostMapping
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN'})")
+    @SecurityRequirement(name = "bearerAuth")
     public CarResponseDto saveCar(
             @RequestBody
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Instance of a Car")
@@ -49,7 +53,7 @@ public class CarController {
     }
 
     // GET -> localhost:8080/cars/brand/toyota
-    @GetMapping("/brand/{brand}")
+    @GetMapping("/filter/brand/{brand}")
     public List<CarResponseDto> getCarsByBrand(
             @PathVariable
             @Parameter(description = "Car brand title")
@@ -58,7 +62,7 @@ public class CarController {
     }
 
     // GET -> localhost:8080/cars/model/corolla
-    @GetMapping("/model/{model}")
+    @GetMapping("/filter/model/{model}")
     public List<CarResponseDto> getCarsByModel(
             @PathVariable
             @Parameter(description = "Car model title")
@@ -67,7 +71,7 @@ public class CarController {
     }
 
     // GET -> localhost:8080/cars/year/2006
-    @GetMapping("/year/{year}")
+    @GetMapping("/filter/year/{year}")
     public List<CarResponseDto> getCarsByYear(
             @PathVariable
             @Parameter(description = "Car build year")
@@ -76,7 +80,7 @@ public class CarController {
     }
 
     // GET -> localhost:8080/cars/type/sedan
-    @GetMapping("/type/{type}")
+    @GetMapping("/filter/type/{type}")
     public List<CarResponseDto> getCarsByType(
             @PathVariable
             @Parameter(description = "Car type title")
@@ -85,7 +89,7 @@ public class CarController {
     }
 
     // GET -> localhost:8080/cars/fuel-type/petrol
-    @GetMapping("/fuel-type/{fuelType}")
+    @GetMapping("/filter/fuel-type/{fuelType}")
     public List<CarResponseDto> getCarsByFuelType(
             @PathVariable
             @Parameter(description = "Car fuel type title")
@@ -94,7 +98,7 @@ public class CarController {
     }
 
     // GET -> localhost:8080/cars/transmission-type/manual
-    @GetMapping("/transmission-type/{transmissionType}")
+    @GetMapping("/filter/transmission-type/{transmissionType}")
     public List<CarResponseDto> getCarsByTransmissionType(
             @PathVariable
             @Parameter(description = "Car transmission type title")
@@ -104,7 +108,9 @@ public class CarController {
 
     // GET -> localhost:8080/cars/available
     // GET -> localhost:8080/cars/car-status/under_repair
-    @GetMapping("/car-status/{carStatus}")
+    @GetMapping("/filter/car-status/{carStatus}")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     public List<CarResponseDto> getCarsByCarStatus(
             @PathVariable
             @Parameter(description = "Car status title")
@@ -113,7 +119,7 @@ public class CarController {
     }
 
     // GET -> localhost:8080/cars/rental-price/150-200
-    @GetMapping("/rental-price/{minDayRentalPrice}-{maxDayRentalPrice}")
+    @GetMapping("/filter/rental-price/{minDayRentalPrice}-{maxDayRentalPrice}")
     public List<CarResponseDto> getCarsByDayRentalPrice(
             @PathVariable
             @Parameter(description = "Minimal day rental car price")
@@ -131,6 +137,8 @@ public class CarController {
             summary = "Update car",
             description = "Update car day rental price and car status in the database based on the passed CarResponseDto object"
     )
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     public void updateCar(
             @RequestBody
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Instance of a Car")
@@ -142,6 +150,8 @@ public class CarController {
     @DeleteMapping("/delete/{id}")
     @Operation(summary = "Delete car",
             description = "Change car property active in the database on false")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     public void deleteCarById(@PathVariable Long id) {
         carService.deleteCarById(id);
     }

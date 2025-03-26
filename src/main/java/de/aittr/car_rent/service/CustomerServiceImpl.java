@@ -8,26 +8,20 @@ import de.aittr.car_rent.exception_handling.exceptions.CustomerNotFoundException
 import de.aittr.car_rent.repository.CustomerRepository;
 import de.aittr.car_rent.service.interfaces.CustomerService;
 import de.aittr.car_rent.service.mapping.CustomerMapper;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CustomerServiceImpl implements CustomerService {
 
     private final CustomerRepository repository;
     private final CustomerMapper customerMapper;
-
-    @Override
-    @Transactional
-    public CustomerResponseDto save(CustomerResponseDto customer) {
-        Customer entity = customerMapper.toEntity(customer);
-        entity = repository.save(entity);
-        return customerMapper.toDto(entity);
-    }
 
     @Override
     public List<CustomerResponseDto> getAllActiveCustomers() {
@@ -84,9 +78,25 @@ public class CustomerServiceImpl implements CustomerService {
                 .toList();
     }
 
+    @Override
     public Customer getOrThrow(Long customerId) {
         return repository
                 .findById(customerId)
                 .orElseThrow(CustomerNotFoundException::new);
+    }
+
+    @Override
+    public Customer findByEmailOrThrow(String email) {
+        return findByEmail(email).orElseThrow(CustomerNotFoundException::new);
+    }
+
+    @Override
+    public Optional<Customer> findByEmail(String email) {
+        return repository.findByEmail(email);
+    }
+
+    @Override
+    public Customer save(Customer customer) {
+        return repository.save(customer);
     }
 }

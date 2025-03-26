@@ -3,11 +3,12 @@ package de.aittr.car_rent.controller;
 import de.aittr.car_rent.domain.dto.CustomerResponseDto;
 import de.aittr.car_rent.domain.dto.CustomerUpdateRequestDto;
 import de.aittr.car_rent.domain.entity.Booking;
-import de.aittr.car_rent.domain.entity.Customer;
 import de.aittr.car_rent.service.interfaces.CustomerService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -20,19 +21,11 @@ public class CustomerController {
 
     private final CustomerService customerService;
 
-    // POST -> http://localhost:8080/customers/add
-    @PostMapping("/add")
-    @Operation(description = "Saves new customer do the database")
-    public CustomerResponseDto save(
-            @RequestBody
-            @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Instance of a Customer")
-            CustomerResponseDto customer) {
-        return customerService.save(customer);
-    }
-
     //GET -> http://localhost:8080/customers/all
     @GetMapping("/all")
     @Operation(description = "Shows all active customers")
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN'})")
+    @SecurityRequirement(name = "bearerAuth")
     public List<CustomerResponseDto> getAllActiveCustomers() {
         return customerService.getAllActiveCustomers();
     }
@@ -40,6 +33,8 @@ public class CustomerController {
     //GET -> http://localhost:8080/customers/{id}
     @GetMapping("/{id}")
     @Operation(description = "Finds customer by id")
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN'})")
+    @SecurityRequirement(name = "bearerAuth")
     public CustomerResponseDto getActiveCustomerById(@PathVariable Long id) {
         return customerService.getActiveCustomerById(id);
     }
@@ -47,6 +42,9 @@ public class CustomerController {
     //PUT -> http://localhost:8080/customers/{id}/update
     @PutMapping("/{id}/update")
     @Operation(description = "Update customer with new data")
+    @PreAuthorize("isAuthenticated()")
+    //todo обновление на основе авторизации. Пользователь не должен иметь возможность обновлять любого другого пользователя!
+    @SecurityRequirement(name = "bearerAuth")
     public CustomerResponseDto update(
             @RequestBody
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Instance of a Customer")
@@ -58,6 +56,8 @@ public class CustomerController {
     //  DELETE ->  http://localhost:8080/customers/1/delete
     @DeleteMapping("{id}/delete")
     @Operation(description = "Delete customer from the database")
+    @PreAuthorize("isAuthenticated()")
+    @SecurityRequirement(name = "bearerAuth")
     public void deleteById(@PathVariable Long id) {
         customerService.deleteById(id);
     }
@@ -65,6 +65,8 @@ public class CustomerController {
     //PUT -> http://localhost:8080/customers/1/restore
     @PutMapping("/{id}/restore")
     @Operation(description = "Restores customer by id")
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN'})")
+    @SecurityRequirement(name = "bearerAuth")
     public void restoreById(@PathVariable Long id) {
         customerService.restoreById(id);
     }
@@ -72,6 +74,8 @@ public class CustomerController {
     //GET -> http://localhost:8080/customers/1/all-bookings
     @GetMapping("{id}/all-bookings")
     @Operation(description = "Finds all bookings by customer id")
+    @PreAuthorize("isAuthenticated()")
+    @SecurityRequirement(name = "bearerAuth")
     public List<Booking> getAllBookingsByCustomerId(@PathVariable Long id) {
         return customerService.getAllBookingsByCustomerId(id);
     }
