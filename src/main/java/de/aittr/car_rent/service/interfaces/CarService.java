@@ -128,4 +128,6 @@ public interface CarService {
             String transmissionType,
             BigDecimal minPrice,
             BigDecimal maxPrice);
+
+    List<String> getAllAvailableBrands();
 }
