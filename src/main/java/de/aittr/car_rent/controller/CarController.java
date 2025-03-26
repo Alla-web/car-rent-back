@@ -192,4 +192,14 @@ public class CarController {
             BigDecimal maxPrice) {
         return carService.filterAvailableCars(startDateTime, endDateTime, brand, fuelType, transmissionType, minPrice, maxPrice);
     }
+
+//   GET -> localhost:8080/api/cars/brands
+    @GetMapping("/brands")
+    @Operation(
+            summary = "Get all available car brands",
+            description = "Get a list of all unique car brands that a currently active"
+    )
+    public List<String> getAllAvailableBrands() {
+        return carService.getAllAvailableBrands();
+    }
 }

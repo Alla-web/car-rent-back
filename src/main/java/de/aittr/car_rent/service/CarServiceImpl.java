@@ -199,5 +199,15 @@ public class CarServiceImpl implements CarService {
                 .filter(car -> maxPrice == null || car.dayRentalPrice().compareTo(maxPrice) <= 0)
                 .collect(Collectors.toList());
     }
+
+    @Override
+    public List<String> getAllAvailableBrands() {
+        return carRepository.findAll()
+                .stream()
+                .filter(Car::isActive)
+                .map(Car::getBrand)
+                .distinct()
+                .collect(Collectors.toList());
+    }
 }
 
