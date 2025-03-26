@@ -35,7 +35,7 @@ public class BookingController {
             @RequestBody
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Booking details")
             BookingDto bookingDto) {
-        return bookingService.createBooking(bookingDto, userEmail);
+        return bookingService.createBooking(bookingDto);
     }
 
     @GetMapping("/all")

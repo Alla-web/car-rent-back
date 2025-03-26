@@ -14,6 +14,7 @@ import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -37,8 +38,7 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     @Transactional
-    public BookingDto createBooking(BookingDto bookingDto, String userEmail) {
-        log.info("Creating booking for customer: {}", userEmail);
+    public BookingDto createBooking(BookingDto bookingDto) {
 
         if (bookingDto.rentalStartDate().toLocalDate().isBefore(LocalDate.now())) {
             throw new RestApiException("Rental start date must be in the future.");
@@ -51,9 +51,14 @@ public class BookingServiceImpl implements BookingService {
         Car car = carRepository.findById(bookingDto.carId())
                 .orElseThrow(() -> new EntityNotFoundException("Car not found"));
 
-        Customer customer = customerService.findByEmailOrThrow(userEmail);
+//        Customer customer = customerService.findByEmailOrThrow(userEmail);
+
+        String email = SecurityContextHolder.getContext().getAuthentication().getName(); //получили имейл текущего покупателя
+        Customer currentCustomer = customerRepository.findByEmail(email)
+                .orElseThrow(()-> new RestApiException("Customer with this email " + email + " not found"));
 
         long days = ChronoUnit.DAYS.between(bookingDto.rentalStartDate(), bookingDto.rentalEndDate());
+
         BigDecimal totalPrice = BigDecimal.valueOf(days + 1).multiply(car.getDayRentalPrice());
 
         car.setCarStatus(CarStatus.RENTED);
@@ -61,7 +66,7 @@ public class BookingServiceImpl implements BookingService {
 
         Booking booking = bookingMapper.mapDtoToEntity(bookingDto);
         booking.setCreateBookingDate(LocalDateTime.now());
-        booking.setCustomer(customer);
+        booking.setCustomer(currentCustomer);
         booking.setCar(car);
         booking.setTotalPrice(totalPrice);
         booking.setBookingStatus(BookingStatus.ACTIVE);
