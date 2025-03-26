@@ -1,4 +1,4 @@
-package de.aittr.car_rent.security.sec_service;
+package de.aittr.car_rent.security.service;
 
 import de.aittr.car_rent.domain.entity.Customer;
 import de.aittr.car_rent.domain.entity.Role;
@@ -30,7 +30,8 @@ public class TokenService {
 
     public TokenService(
             @Value("${key.access}") String accessPhrase,
-            @Value("${key.refresh}") String refreshPhrase, CustomerService customerService
+            @Value("${key.refresh}") String refreshPhrase,
+            CustomerService customerService
     ) {
         this.accessKey = Keys.hmacShaKeyFor(Decoders.BASE64.decode(accessPhrase));
         this.refreshKey = Keys.hmacShaKeyFor(Decoders.BASE64URL.decode(refreshPhrase));
@@ -102,13 +103,13 @@ public class TokenService {
 
     //метод, который переделывает объект Claims в объект AuthInfo
     public AuthInfo mapClaimsToAuthInfo(Claims claims) {
-       final String username = claims.getSubject();
+        final String username = claims.getSubject();
 
         if (StringUtils.isNoneBlank(username)) {
-            Role role = customerService.findByEmail(username)
+            Role customerRole = customerService.findByEmail(username)
                     .map(Customer::getRole)
                     .orElseThrow(() -> new RestApiException("User not authenticated!", HttpStatus.FORBIDDEN));
-            return new AuthInfo(username, role);
+            return new AuthInfo(username, customerRole);
         } else {
             throw new RestApiException("User not authenticated!", HttpStatus.FORBIDDEN);
         }

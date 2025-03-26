@@ -45,8 +45,17 @@ public class Customer implements UserDetails {
     private List<Booking> bookings = new ArrayList<>();
 
     @ManyToOne
-    @JoinColumn(name = "role_id")
+    @JoinColumn(name = "role_id", nullable = false)
     private Role role;
+
+    public Customer(String firstName, String lastName, String password, String email, Role role) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.password = password;
+        this.email = email;
+        this.role = role;
+        this.isActive = true;
+    }
 
     @Override
     public String toString() {
@@ -67,15 +76,17 @@ public class Customer implements UserDetails {
 
     /**
      * Метод получения списка ролей покупателя Spring Security
+     *
      * @return список ролей, которыми обладает покупатель
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role.getRole()));
+        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role.getName()));
     }
 
     /**
      * Метод получения полного имени (имя + фамилия) покупателя Spring Security
+     *
      * @return имя покупателя
      */
     @Override

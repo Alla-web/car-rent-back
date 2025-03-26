@@ -12,18 +12,12 @@ import java.util.Collections;
 public class AuthInfo implements Authentication {
 
     private boolean authenticated;
-    private String userEmail;
-    private Role role;
+    private final String userEmail;
+    private final Role role;
 
     public AuthInfo(String userEmail, Role role) {
         this.userEmail = userEmail;
         this.role = role;
-    }
-
-    @Override
-    public String toString() {
-        return String.format("Auth info: authorized - %s; email - %s; role - %s",
-                authenticated, userEmail, role);
     }
 
     @Override
@@ -59,5 +53,11 @@ public class AuthInfo implements Authentication {
     @Override
     public void setAuthenticated(boolean isAuthenticated) throws IllegalArgumentException {
         this.authenticated = isAuthenticated;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Auth info: authorized - %s; email - %s; role - %s",
+                authenticated, userEmail, role);
     }
 }

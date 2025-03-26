@@ -1,4 +1,4 @@
-package de.aittr.car_rent.security.sec_dto;
+package de.aittr.car_rent.security.dto;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;

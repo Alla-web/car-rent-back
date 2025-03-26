@@ -12,5 +12,9 @@ public interface CustomerRepository extends JpaRepository<Customer, Long> {
     @Query("select c from Customer c where c.isActive = true")
     List<Customer> findAllByActiveTrue();
 
+    @Query("select c from Customer c where upper(c.email) = upper(?1)")
     Optional<Customer> findByEmail(String email);
+
+    @Query("select (count(c) > 0) from Customer c where upper(c.email) = upper(?1)")
+    boolean existsByEmailIgnoreCase(String email);
 }
