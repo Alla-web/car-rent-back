@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -28,19 +29,23 @@ public class BookingController {
     @PreAuthorize("isAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
     public BookingDto createBooking(
+            @AuthenticationPrincipal
+            @Parameter(hidden = true)
+            String userEmail,
             @RequestBody
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Booking details")
             BookingDto bookingDto) {
-        return bookingService.createBooking(bookingDto, bookingDto.customerId());
+        return bookingService.createBooking(bookingDto, userEmail);
     }
 
     @GetMapping("/all")
     @Operation(summary = "Get all bookings", description = "Returns all bookings from the database")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
     public List<BookingDto> getAllBookings() {
         return bookingService.getAllBookings();
     }
+
 
     @GetMapping("/{id}")
     @Operation(summary = "Get a booking by ID", description = "Returns a booking by its unique identifier")

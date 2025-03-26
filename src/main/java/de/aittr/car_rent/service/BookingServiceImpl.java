@@ -8,6 +8,7 @@ import de.aittr.car_rent.repository.BookingRepository;
 import de.aittr.car_rent.repository.CarRepository;
 import de.aittr.car_rent.repository.CustomerRepository;
 import de.aittr.car_rent.service.interfaces.BookingService;
+import de.aittr.car_rent.service.interfaces.CustomerService;
 import de.aittr.car_rent.service.mapping.BookingMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -32,11 +33,12 @@ public class BookingServiceImpl implements BookingService {
     private final CarRepository carRepository;
     private final CustomerRepository customerRepository;
     private final BookingMapper bookingMapper;
+    private final CustomerService customerService;
 
     @Override
     @Transactional
-    public BookingDto createBooking(BookingDto bookingDto, Long customerId) {
-        log.info("Creating booking for customer: {}", customerId);
+    public BookingDto createBooking(BookingDto bookingDto, String userEmail) {
+        log.info("Creating booking for customer: {}", userEmail);
 
         if (bookingDto.rentalStartDate().toLocalDate().isBefore(LocalDate.now())) {
             throw new RestApiException("Rental start date must be in the future.");
@@ -49,8 +51,7 @@ public class BookingServiceImpl implements BookingService {
         Car car = carRepository.findById(bookingDto.carId())
                 .orElseThrow(() -> new EntityNotFoundException("Car not found"));
 
-        Customer customer = customerRepository.findById(customerId)
-                .orElseThrow(() -> new EntityNotFoundException("Customer not found"));
+        Customer customer = customerService.findByEmailOrThrow(userEmail);
 
         long days = ChronoUnit.DAYS.between(bookingDto.rentalStartDate(), bookingDto.rentalEndDate());
         BigDecimal totalPrice = BigDecimal.valueOf(days + 1).multiply(car.getDayRentalPrice());
