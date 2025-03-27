@@ -5,8 +5,8 @@ import de.aittr.car_rent.domain.entity.Car;
 import jakarta.transaction.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface CarService {
@@ -113,20 +113,26 @@ public interface CarService {
 
     //добавить ссылку на изображение авто по id авто
 
-//    /**
-//     * Метод добавления фото к машине.
-//     * @param id
-//     * @param imageUrl
-//     */
-//    void attachImageToCar(Long id, String imageUrl);
+    /**
+     * Метод добавления фото к машине.
+     * @param id
+     * @param imageUrl
+     */
+    void attachImageToCar(Long id, String imageUrl);
 
     @Transactional
-    String attachImageToCar(Long id, MultipartFile file) throws IOException;
+    String attachImageToCar(Long id, MultipartFile file);
 
-    @Transactional
-    String attachImageToCar(Long id, MultipartFile file) throws IOException;
+    List<CarResponseDto> getAllAvailableCarsByDates(LocalDateTime startDate, LocalDateTime endDate);
 
-//    List<Car> filterCars(LocalDateTime startDate, LocalDateTime endDate, String brand, String fuel);
-//
-//    List<Car> filterCars(String startDate, String endDate, String brand, String fuel);
+    List<CarResponseDto> filterAvailableCars(
+            LocalDateTime startDateTime,
+            LocalDateTime endDateTime,
+            String brand,
+            String fuelType,
+            String transmissionType,
+            BigDecimal minPrice,
+            BigDecimal maxPrice);
+
+    List<String> getAllAvailableBrands();
 }

@@ -9,7 +9,6 @@ import java.util.List;
 
 public interface CarRepository extends JpaRepository<Car, Long> {
 
-
     //методы, которых нет в спике CRUD-операций JpaRepository
 
     //найти авто по бренду
@@ -35,7 +34,4 @@ public interface CarRepository extends JpaRepository<Car, Long> {
 
     //найти авто по стоимости аренды в день
     List<CarResponseDto> getCarsByDayRentalPrice(BigDecimal dayRentalPrice);
-
-
 }
-

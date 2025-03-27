@@ -4,32 +4,35 @@ import de.aittr.car_rent.domain.dto.CarResponseDto;
 import de.aittr.car_rent.domain.entity.Car;
 import de.aittr.car_rent.domain.entity.CarStatus;
 import de.aittr.car_rent.exception_handling.exceptions.CarNotFoundException;
+import de.aittr.car_rent.repository.BookingRepository;
 import de.aittr.car_rent.repository.CarRepository;
 import de.aittr.car_rent.service.interfaces.CarService;
 import de.aittr.car_rent.service.mapping.CarMappingService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CarServiceImpl implements CarService {
 
     private final CarRepository carRepository;
     private final CarMappingService carMappingService;
-    private final Logger logger = LoggerFactory.getLogger(CarServiceImpl.class);
+    private final BookingRepository bookingRepository;
 
     @Override
     public CarResponseDto saveCar(CarResponseDto carDto) {
@@ -43,6 +46,7 @@ public class CarServiceImpl implements CarService {
         return carRepository.findAll()
                 .stream()
                 .filter(Car::isActive)
+                .filter((car -> car.getCarStatus() == CarStatus.RENTED || car.getCarStatus() == CarStatus.AVAILABLE))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -150,39 +154,88 @@ public class CarServiceImpl implements CarService {
         carRepository.save(existingCar);
     }
 
+    @Override
+    @Transactional
+    public void attachImageToCar(Long id, String imageUrl) {
+        carRepository.findById(id)
+                .orElseThrow(() -> new CarNotFoundException(id))
+                .setCarImage(imageUrl);
+    }
+
+    @Override
+    @Transactional
+    public List<CarResponseDto> getAllAvailableCarsByDates(
+            LocalDateTime startDateTime,
+            LocalDateTime endDateTime) {
+
+        return carRepository.findAll()
+                .stream()
+                .filter((car -> car.isActive() && car.getCarStatus() == CarStatus.AVAILABLE))
+                .filter(car -> bookingRepository.findAllByCarId(car.getId()).stream()
+                        .noneMatch(booking ->
+                                booking.getRentalStartDate().isBefore(endDateTime) &&
+                                        booking.getRentalEndDate().isAfter(startDateTime)
+                        )
+                )
+                .map(carMappingService::mapEntityToDto)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional
+    public List<CarResponseDto> filterAvailableCars(
+            LocalDateTime startDateTime,
+            LocalDateTime endDateTime,
+            String brand,
+            String fuelType,
+            String transmissionType,
+            BigDecimal minPrice,
+            BigDecimal maxPrice) {
+        return getAllAvailableCarsByDates(startDateTime, endDateTime)
+                .stream()
+                .filter(car -> brand == null || car.brand().equalsIgnoreCase(brand.trim()))
+                .filter(car -> fuelType == null || car.fuelType().name().equalsIgnoreCase(fuelType.trim()))
+                .filter(car -> transmissionType == null || car.transmissionType().name().equalsIgnoreCase(transmissionType.trim()))
+                .filter(car -> minPrice == null || car.dayRentalPrice().compareTo(minPrice) >= 0)
+                .filter(car -> maxPrice == null || car.dayRentalPrice().compareTo(maxPrice) <= 0)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getAllAvailableBrands() {
+        return carRepository.findAll()
+                .stream()
+                .filter(Car::isActive)
+                .map(Car::getBrand)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
     @Transactional
     @Override
-    public String attachImageToCar(Long id, MultipartFile file) throws IOException {
-
-        Logger logger = LoggerFactory.getLogger(CarServiceImpl.class);
-        logger.info("Start uploading image for car ID: {}", id);
-
+    @SneakyThrows
+    public String attachImageToCar(Long id, MultipartFile file) {
+        log.info("Start uploading image for car ID: {}", id);
 
         Car car = carRepository.findById(id)
                 .orElseThrow(() -> new CarNotFoundException(id));
-
 
         String fileExtension = getFileExtension(file.getOriginalFilename());
         if (!"jpg".equalsIgnoreCase(fileExtension) && !"png".equalsIgnoreCase(fileExtension) && !"jpeg".equalsIgnoreCase(fileExtension)) {
             throw new IllegalArgumentException("Only jpg, png, and jpeg images are allowed");
         }
 
-
         String fileName = id + "_" + file.getOriginalFilename();
         Path path = Paths.get("uploads/cars", fileName);
 
         Files.createDirectories(path.getParent());
-
-
         file.transferTo(path);
-
 
         String imageUrl = "/uploads/cars/" + fileName;
         car.setCarImage(imageUrl);
         carRepository.save(car);
 
-
-        logger.info("Image uploaded successfully for car ID: {}", id);
+        log.info("Image uploaded successfully for car ID: {}", id);
         return imageUrl;
     }
 
@@ -190,7 +243,5 @@ public class CarServiceImpl implements CarService {
         int dotIndex = fileName.lastIndexOf('.');
         return dotIndex == -1 ? "" : fileName.substring(dotIndex + 1);
     }
-
 }
-
 

@@ -1,19 +1,20 @@
 package de.aittr.car_rent.service.interfaces;
 
-import de.aittr.car_rent.domain.dto.BookingDto;
+import de.aittr.car_rent.domain.dto.BookingRequestDto;
+import de.aittr.car_rent.domain.dto.BookingResponseDto;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface BookingService {
 
-    BookingDto createBooking(BookingDto bookingDTO, Long customerId);
-    BookingDto getBookingById(Long id);
-    List<BookingDto> getAllBookings();
-    List<BookingDto> getBookingsByCarId(Long carId);
-    BookingDto extendBooking(Long id, LocalDateTime newEndDate);
-    BookingDto restoreBooking(Long id);
-    BookingDto cancelBooking(Long id);
+    BookingResponseDto createBooking(BookingRequestDto bookingRequestDto);
+    BookingResponseDto getBookingById(Long id);
+    List<BookingResponseDto> getAllBookings();
+    List<BookingResponseDto> getBookingsByCarId(Long carId);
+    BookingResponseDto extendBooking(Long id, LocalDateTime newEndDate);
+    BookingResponseDto restoreBooking(Long id);
+    BookingResponseDto cancelBooking(Long id);
 
 
 }

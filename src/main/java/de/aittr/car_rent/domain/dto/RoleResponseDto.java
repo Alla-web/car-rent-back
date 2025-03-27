@@ -1,6 +1,5 @@
 package de.aittr.car_rent.domain.dto;
 
-import de.aittr.car_rent.domain.entity.RoleTitle;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 public record RoleResponseDto(
@@ -16,6 +15,6 @@ public record RoleResponseDto(
                 description = "Customer role",
                 example = "Customer",
                 allowableValues = {"CUSTOMER", "ADMIN"})
-        RoleTitle title
+        String role
 ) {
 }
