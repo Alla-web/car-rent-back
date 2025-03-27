@@ -1,6 +1,6 @@
 package de.aittr.car_rent.service.interfaces;
 
-import de.aittr.car_rent.domain.dto.BookingDto;
+import de.aittr.car_rent.domain.dto.BookingResponseDto;
 import de.aittr.car_rent.domain.dto.CustomerResponseDto;
 import de.aittr.car_rent.domain.dto.CustomerUpdateRequestDto;
 import de.aittr.car_rent.domain.entity.Booking;
@@ -87,14 +87,14 @@ public interface CustomerService {
      * @return список объектов {@link Booking} клиента.
      * @throws CustomerNotFoundException если клиент не найден.
      */
-    List<BookingDto> getAllBookingsByCustomerId(Long customerId);
+    List<BookingResponseDto> getAllBookingsByCustomerId(Long customerId);
 
     /**
      * Находит все букинги клиента по email
      * @param email
      * @return List<BookingDto>
      */
-    List<BookingDto> getAllBookingsByCustomerEmail(String email);
+    List<BookingResponseDto> getAllBookingsByCustomerEmail(String email);
 
     /**
      * Возвращает объект клиента по его идентификатору или выбрасывает исключение,

@@ -1,9 +1,9 @@
 package de.aittr.car_rent.service;
 
-import de.aittr.car_rent.domain.dto.BookingDto;
+
+import de.aittr.car_rent.domain.dto.BookingResponseDto;
 import de.aittr.car_rent.domain.dto.CustomerResponseDto;
 import de.aittr.car_rent.domain.dto.CustomerUpdateRequestDto;
-import de.aittr.car_rent.domain.entity.Booking;
 import de.aittr.car_rent.domain.entity.Customer;
 import de.aittr.car_rent.exception_handling.exceptions.CustomerNotFoundException;
 import de.aittr.car_rent.repository.CustomerRepository;
@@ -74,7 +74,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<BookingDto> getAllBookingsByCustomerId(Long customerId) {
+    public List<BookingResponseDto> getAllBookingsByCustomerId(Long customerId) {
         return getOrThrow(customerId)
                 .getBookings()
                 .stream()
@@ -83,9 +83,8 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public List<BookingDto> getAllBookingsByCustomerEmail(String email) {
-        return repository
-                .findByEmail(email)
+    public List<BookingResponseDto> getAllBookingsByCustomerEmail(String email) {
+        return repository.findByEmail(email)
                 .orElseThrow(CustomerNotFoundException::new)
                 .getBookings()
                 .stream()

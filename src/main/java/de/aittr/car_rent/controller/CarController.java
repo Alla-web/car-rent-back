@@ -33,8 +33,8 @@ public class CarController {
         return carService.saveCar(carDto);
     }
 
-    // GET -> localhost:8080/cars/all
-    @GetMapping("/all")
+    // GET -> localhost:8080/cars
+    @GetMapping
     @Operation(
             summary = "Get all cars",
             description = "Getting all cars that exist in the database"
@@ -43,8 +43,8 @@ public class CarController {
         return carService.getAllCars();
     }
 
-    // GET -> localhost:8080/cars/id/5
-    @GetMapping("/id/{id}")
+    // GET -> localhost:8080/cars/5
+    @GetMapping("/{id}")
     public CarResponseDto getCarById(
             @PathVariable
             @Parameter(description = "Car unique identifier")
