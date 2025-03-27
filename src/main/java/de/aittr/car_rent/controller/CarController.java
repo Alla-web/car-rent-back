@@ -6,13 +6,15 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @RestController
-@RequestMapping("/cars")
+@RequestMapping("/api/cars")
 @RequiredArgsConstructor
 @Tag(name = "Car controller", description = "Controller for various operations with cars")
 public class CarController {
@@ -145,4 +147,27 @@ public class CarController {
         carService.deleteCarById(id);
     }
 
+    @PostMapping("/{carId}/uploadImage")
+    public ResponseEntity<String> uploadCarImage(@PathVariable Long carId, @RequestParam("file") MultipartFile file) {
+        try {
+            // Проверка, что файл не пустой
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body("The file must not be empty");
+            }
+
+            // Сохраняем файл
+            String imageUrl;
+            imageUrl = carService.attachImageToCar(carId, file);
+
+            return ResponseEntity.ok("Image uploaded successfully. URL: " + imageUrl);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error loading image");
+        }
+
+    }
+
 }
+
+
+
+

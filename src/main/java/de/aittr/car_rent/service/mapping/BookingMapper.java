@@ -14,6 +14,5 @@ public interface BookingMapper {
     BookingDto mapEntityToDto(Booking entity);
 
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "totalPrice", ignore = true)
     Booking mapDtoToEntity(BookingDto dto);
 }

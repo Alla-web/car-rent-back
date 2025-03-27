@@ -2,7 +2,10 @@ package de.aittr.car_rent.service.interfaces;
 
 import de.aittr.car_rent.domain.dto.CarResponseDto;
 import de.aittr.car_rent.domain.entity.Car;
+import jakarta.transaction.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -110,11 +113,20 @@ public interface CarService {
 
     //добавить ссылку на изображение авто по id авто
 
-    /**
-     * Метод добавления фото к машине.
-     * @param id
-     * @param imageUrl
-     */
-    void attachImageToCar(Long id, String imageUrl);
+//    /**
+//     * Метод добавления фото к машине.
+//     * @param id
+//     * @param imageUrl
+//     */
+//    void attachImageToCar(Long id, String imageUrl);
 
+    @Transactional
+    String attachImageToCar(Long id, MultipartFile file) throws IOException;
+
+    @Transactional
+    String attachImageToCar(Long id, MultipartFile file) throws IOException;
+
+//    List<Car> filterCars(LocalDateTime startDate, LocalDateTime endDate, String brand, String fuel);
+//
+//    List<Car> filterCars(String startDate, String endDate, String brand, String fuel);
 }

@@ -36,4 +36,6 @@ public interface CarRepository extends JpaRepository<Car, Long> {
     //найти авто по стоимости аренды в день
     List<CarResponseDto> getCarsByDayRentalPrice(BigDecimal dayRentalPrice);
 
+
 }
+
