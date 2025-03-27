@@ -39,7 +39,7 @@ public class BookingController {
         return bookingService.createBooking(bookingDto);
     }
 
-    @GetMapping("/all")
+    @GetMapping
     @Operation(summary = "Get all bookings", description = "Returns all bookings from the database")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
@@ -66,7 +66,7 @@ public class BookingController {
         return bookingService.getBookingsByCarId(carId);
     }
 
-    @PutMapping("/{id}/cancel")
+    @PutMapping("/cancel/{id}")
     @Operation(summary = "Cancel a booking", description = "Cancels a booking by its ID")
     @PreAuthorize("isAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
@@ -74,7 +74,7 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.cancelBooking(id));
     }
 
-    @PutMapping("/{id}/extend")
+    @PutMapping("/extend/{id}")
     @Operation(summary = "Extend a booking", description = "Extends the rental period of an existing booking")
     @PreAuthorize("isAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
@@ -85,7 +85,7 @@ public class BookingController {
         return bookingService.extendBooking(id, newEndDate);
     }
 
-    @PutMapping("/{id}/restore")
+    @PutMapping("/restore/{id}")
     @Operation(summary = "Restore a cancelled booking", description = "Restores a cancelled booking by its ID")
     @PreAuthorize("hasAnyRole({'ROLE_ADMIN'})")
     public BookingResponseDto restoreBooking(@PathVariable Long id) {

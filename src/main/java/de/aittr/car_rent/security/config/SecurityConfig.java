@@ -49,10 +49,10 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.GET, "/test/auth/not-secured").permitAll()
 
                         //cars Controller
-                        .requestMatchers(HttpMethod.GET, "/cars/filter/**", "/cars/id/{id}", "/cars/all").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/cars/filter/**", "/cars/{id}", "/cars").permitAll()
 
                         //Customer Controller
-                        .requestMatchers(HttpMethod.POST, "/customers/add/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/customers/all-bookings-id/{id}","/customers/all-bookings-email/{email}" ).permitAll()
 
                         // Auth Controller
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
