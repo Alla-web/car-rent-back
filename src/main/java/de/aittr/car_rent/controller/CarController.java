@@ -7,8 +7,10 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -156,7 +158,7 @@ public class CarController {
         carService.deleteCarById(id);
     }
 
-//    GET-> localhost:8080/api/cars/filter?startDateTime=2024-03-20T10:00:00&endDateTime=2024-03-25T10:00:00&minPrice=50&maxPrice=200
+    //    GET-> localhost:8080/api/cars/filter?startDateTime=2024-03-20T10:00:00&endDateTime=2024-03-25T10:00:00&minPrice=50&maxPrice=200
     @GetMapping("/filter")
     @Operation(
             summary = "Filter available cars",
@@ -193,7 +195,7 @@ public class CarController {
         return carService.filterAvailableCars(startDateTime, endDateTime, brand, fuelType, transmissionType, minPrice, maxPrice);
     }
 
-//   GET -> localhost:8080/api/cars/brands
+    //   GET -> localhost:8080/api/cars/brands
     @GetMapping("/brands")
     @Operation(
             summary = "Get all available car brands",
@@ -201,5 +203,25 @@ public class CarController {
     )
     public List<String> getAllAvailableBrands() {
         return carService.getAllAvailableBrands();
+    }
+
+
+    @PostMapping("/{carId}/uploadImage")
+    public ResponseEntity<String> uploadCarImage(@PathVariable Long carId, @RequestParam("file") MultipartFile file) {
+        try {
+            // Проверка, что файл не пустой
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body("The file must not be empty");
+            }
+
+            // Сохраняем файл
+            String imageUrl;
+            imageUrl = carService.attachImageToCar(carId, file);
+
+            return ResponseEntity.ok("Image uploaded successfully. URL: " + imageUrl);
+        } catch (Exception e) {
+            return ResponseEntity.status(500).body("Error loading image");
+        }
+
     }
 }

@@ -5,6 +5,7 @@ import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
@@ -38,7 +39,7 @@ public class Booking {
     private Car car;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "booking_status", nullable = false)
+    @Column(name = "booking_status",  length = 20, nullable = false)
     private BookingStatus bookingStatus;
 
     @Column(name = "create_booking_date", nullable = false, updatable = false)
@@ -52,15 +53,33 @@ public class Booking {
 
     @PrePersist
     @PreUpdate
-    private void calculateTotalPrice() {
-        long days = ChronoUnit.DAYS.between(rentalStartDate, rentalEndDate);
-        if (days < 0) {
-            throw new IllegalArgumentException("Rental end date must be after start date.");
+    private void calculateTotalPriceAndSetDates() {
+        if (rentalStartDate == null || rentalEndDate == null || car == null) {
+            return;
         }
-        this.totalPrice = BigDecimal.valueOf(days + 1).multiply(car.getDayRentalPrice());
 
+
+        long days = ChronoUnit.DAYS.between(rentalStartDate.toLocalDate(), rentalEndDate.toLocalDate());
+        if (days <= 0) {
+            throw new IllegalArgumentException("Rental end date must be at least one day after start date.");
         }
+
+        if (car.getDayRentalPrice() == null) {
+            throw new IllegalStateException("The price for renting a car has not been set.");
+        }
+
+        this.totalPrice = BigDecimal.valueOf(days).multiply(car.getDayRentalPrice());
+
+
+        if (this.createBookingDate == null) {
+            this.createBookingDate = LocalDateTime.now();
+        }
+        this.updateBookingDate = LocalDateTime.now();
     }
+        }
+
+
+
 
 
 

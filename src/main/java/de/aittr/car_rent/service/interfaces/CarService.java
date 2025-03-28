@@ -2,6 +2,8 @@ package de.aittr.car_rent.service.interfaces;
 
 import de.aittr.car_rent.domain.dto.CarResponseDto;
 import de.aittr.car_rent.domain.entity.Car;
+import jakarta.transaction.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -117,6 +119,9 @@ public interface CarService {
      * @param imageUrl
      */
     void attachImageToCar(Long id, String imageUrl);
+
+    @Transactional
+    String attachImageToCar(Long id, MultipartFile file);
 
     List<CarResponseDto> getAllAvailableCarsByDates(LocalDateTime startDate, LocalDateTime endDate);
 
