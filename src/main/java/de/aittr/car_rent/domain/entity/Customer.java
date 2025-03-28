@@ -40,7 +40,7 @@ public class Customer implements UserDetails {
     @Column(name = "active")
     boolean isActive;
 
-    @OneToMany(mappedBy = "customer")
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.PERSIST)
     @JsonIgnore
     private List<Booking> bookings = new ArrayList<>();
 
@@ -54,7 +54,7 @@ public class Customer implements UserDetails {
         this.password = password;
         this.email = email;
         this.role = role;
-        this.isActive = true;
+        this.isActive = false;
     }
 
     @Override
