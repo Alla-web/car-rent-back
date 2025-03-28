@@ -10,8 +10,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class FileController {
 
-
-
     // POST -> localhost:8080/files
     @PostMapping
     public void attachImageToCar(Long id, String imageUrl) {

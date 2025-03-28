@@ -9,7 +9,6 @@ import de.aittr.car_rent.repository.BookingRepository;
 import de.aittr.car_rent.repository.CarRepository;
 import de.aittr.car_rent.repository.CustomerRepository;
 import de.aittr.car_rent.service.interfaces.BookingService;
-import de.aittr.car_rent.service.interfaces.CustomerService;
 import de.aittr.car_rent.service.mapping.BookingMapper;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -35,7 +34,6 @@ public class BookingServiceImpl implements BookingService {
     private final CarRepository carRepository;
     private final CustomerRepository customerRepository;
     private final BookingMapper bookingMapper;
-    private final CustomerService customerService;
 
     @Override
     @Transactional
@@ -54,7 +52,7 @@ public class BookingServiceImpl implements BookingService {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName(); //получили имейл текущего покупателя
         Customer currentCustomer = customerRepository.findByEmail(email)
-                .orElseThrow(()-> new RestApiException("Customer with this email " + email + " not found"));
+                .orElseThrow(()-> new RestApiException("Customer not found"));
 
         long days = ChronoUnit.DAYS.between(bookingRequestDto.rentalStartDate(), bookingRequestDto.rentalEndDate());
 
@@ -73,8 +71,8 @@ public class BookingServiceImpl implements BookingService {
         booking.setCar(car);
         booking.setTotalPrice(totalPrice);
         booking.setBookingStatus(BookingStatus.ACTIVE);
-        booking = bookingRepository.save(booking);
         booking.setUpdateBookingDate(LocalDateTime.now());
+        booking = bookingRepository.save(booking);
         return bookingMapper.mapEntityToDto(booking);
     }
 
