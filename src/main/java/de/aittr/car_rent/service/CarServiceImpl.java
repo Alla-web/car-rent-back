@@ -10,10 +10,15 @@ import de.aittr.car_rent.service.interfaces.CarService;
 import de.aittr.car_rent.service.mapping.CarMappingService;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
@@ -41,7 +46,7 @@ public class CarServiceImpl implements CarService {
         return carRepository.findAll()
                 .stream()
                 .filter(Car::isActive)
-                .filter((car->car.getCarStatus() == CarStatus.RENTED || car.getCarStatus() == CarStatus.AVAILABLE))
+                .filter((car -> car.getCarStatus() == CarStatus.RENTED || car.getCarStatus() == CarStatus.AVAILABLE))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -155,7 +160,6 @@ public class CarServiceImpl implements CarService {
         carRepository.findById(id)
                 .orElseThrow(() -> new CarNotFoundException(id))
                 .setCarImage(imageUrl);
-
     }
 
     @Override
@@ -205,6 +209,39 @@ public class CarServiceImpl implements CarService {
                 .map(Car::getBrand)
                 .distinct()
                 .collect(Collectors.toList());
+    }
+
+    @Transactional
+    @Override
+    @SneakyThrows
+    public String attachImageToCar(Long id, MultipartFile file) {
+        log.info("Start uploading image for car ID: {}", id);
+
+        Car car = carRepository.findById(id)
+                .orElseThrow(() -> new CarNotFoundException(id));
+
+        String fileExtension = getFileExtension(file.getOriginalFilename());
+        if (!"jpg".equalsIgnoreCase(fileExtension) && !"png".equalsIgnoreCase(fileExtension) && !"jpeg".equalsIgnoreCase(fileExtension)) {
+            throw new IllegalArgumentException("Only jpg, png, and jpeg images are allowed");
+        }
+
+        String fileName = id + "_" + file.getOriginalFilename();
+        Path path = Paths.get("uploads/cars", fileName);
+
+        Files.createDirectories(path.getParent());
+        file.transferTo(path);
+
+        String imageUrl = "/uploads/cars/" + fileName;
+        car.setCarImage(imageUrl);
+        carRepository.save(car);
+
+        log.info("Image uploaded successfully for car ID: {}", id);
+        return imageUrl;
+    }
+
+    private String getFileExtension(String fileName) {
+        int dotIndex = fileName.lastIndexOf('.');
+        return dotIndex == -1 ? "" : fileName.substring(dotIndex + 1);
     }
 }
 

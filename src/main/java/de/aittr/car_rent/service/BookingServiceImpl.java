@@ -40,7 +40,7 @@ public class BookingServiceImpl implements BookingService {
     public BookingResponseDto createBooking(BookingRequestDto bookingRequestDto) {
 
         if (bookingRequestDto.rentalStartDate().toLocalDate().isBefore(LocalDate.now())) {
-            throw new RestApiException("Rental start date must be in the future.");
+            throw new RestApiException("Rental start date must be today or in the future.");
         }
 
         if (!bookingRequestDto.rentalEndDate().isAfter(bookingRequestDto.rentalStartDate())) {
@@ -50,15 +50,22 @@ public class BookingServiceImpl implements BookingService {
         Car car = carRepository.findById(bookingRequestDto.carId())
                 .orElseThrow(() -> new EntityNotFoundException("Car not found"));
 
+        log.info("Car with ID {} found. Proceeding to create booking.", bookingRequestDto.carId());
+
         String email = SecurityContextHolder.getContext().getAuthentication().getName(); //получили имейл текущего покупателя
         Customer currentCustomer = customerRepository.findByEmail(email)
+
                 .orElseThrow(()-> new RestApiException("Customer not found"));
+
+
+        log.info("Customer with email '{}' found. Proceeding to create booking.", email);
+
 
         long days = ChronoUnit.DAYS.between(bookingRequestDto.rentalStartDate(), bookingRequestDto.rentalEndDate());
 
         BigDecimal totalPrice = BigDecimal.valueOf(days + 1).multiply(car.getDayRentalPrice());
 
-        if(car.getCarStatus() == CarStatus.AVAILABLE) {
+        if (car.getCarStatus() == CarStatus.AVAILABLE) {
             car.setCarStatus(CarStatus.RENTED);
             carRepository.save(car);
         } else {
@@ -71,8 +78,14 @@ public class BookingServiceImpl implements BookingService {
         booking.setCar(car);
         booking.setTotalPrice(totalPrice);
         booking.setBookingStatus(BookingStatus.ACTIVE);
-        booking.setUpdateBookingDate(LocalDateTime.now());
+        booking.setUpdateBookingDate(LocalDateTime.now());   
+
+        log.info("Saving booking for customer {} with car ID {} and total price {}", email, bookingRequestDto.carId(), totalPrice);
+
         booking = bookingRepository.save(booking);
+
+        log.info("Booking successfully created for customer {} with car ID {}.", email, bookingRequestDto.carId());
+
         return bookingMapper.mapEntityToDto(booking);
     }
 
@@ -103,14 +116,19 @@ public class BookingServiceImpl implements BookingService {
         return bookings;
 
     }
+
     public BookingResponseDto cancelBooking(Long id) {
+        log.info("Attempting to cancel booking with ID: {}", id);
+
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("Booking not found"));
 
         if (booking.getBookingStatus() == BookingStatus.COMPLETED) {
+            log.warn("Cannot cancel a completed booking with ID: {}", id);
             throw new RestApiException("Cannot cancel a completed booking");
         }
 
+        log.info("Cancelling booking with ID: {}", id);
         booking.setBookingStatus(BookingStatus.CANCELLED_BY_USER);
         booking.setUpdateBookingDate(LocalDateTime.now());
 
@@ -125,7 +143,7 @@ public class BookingServiceImpl implements BookingService {
                 .orElseThrow(() -> new BookingNotFoundException(id));
 
         if (newEndDate.isBefore(booking.getRentalEndDate())) {
-             throw new RestApiException("New rental end date must be after the current rental end date.");
+            throw new RestApiException("New rental end date must be after the current rental end date.");
         }
 
         booking.setRentalEndDate(newEndDate);
