@@ -54,9 +54,12 @@ public class BookingServiceImpl implements BookingService {
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName(); //получили имейл текущего покупателя
         Customer currentCustomer = customerRepository.findByEmail(email)
-                .orElseThrow(() -> new RestApiException("Customer with this email " + email + " not found"));
+
+                .orElseThrow(()-> new RestApiException("Customer not found"));
+
 
         log.info("Customer with email '{}' found. Proceeding to create booking.", email);
+
 
         long days = ChronoUnit.DAYS.between(bookingRequestDto.rentalStartDate(), bookingRequestDto.rentalEndDate());
 
@@ -75,7 +78,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setCar(car);
         booking.setTotalPrice(totalPrice);
         booking.setBookingStatus(BookingStatus.ACTIVE);
-        booking.setUpdateBookingDate(LocalDateTime.now());
+        booking.setUpdateBookingDate(LocalDateTime.now());   
 
         log.info("Saving booking for customer {} with car ID {} and total price {}", email, bookingRequestDto.carId(), totalPrice);
 

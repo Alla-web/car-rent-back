@@ -144,6 +144,7 @@ public interface AuthController {
                             schema = @Schema(implementation = ErrorResponseDto.class)
                     )),
     })
+
     @PostMapping("/login")
     TokenResponseDto login(
             @RequestBody
