@@ -16,9 +16,8 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
 import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
 
@@ -144,6 +143,7 @@ public interface AuthController {
                             schema = @Schema(implementation = ErrorResponseDto.class)
                     )),
     })
+
     @PostMapping("/login")
     TokenResponseDto login(
             @RequestBody
@@ -202,4 +202,7 @@ public interface AuthController {
 
     TokenResponseDto getNewAccessToken(
             @RequestBody RefreshRequestDto refreshRequestDto);
+
+    @GetMapping("/confirm/{code}")
+    public ResponseEntity<String> confirmRegistration(@PathVariable String code);
 }

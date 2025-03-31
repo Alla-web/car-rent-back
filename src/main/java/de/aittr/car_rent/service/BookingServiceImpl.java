@@ -69,7 +69,6 @@ public class BookingServiceImpl implements BookingService {
         BigDecimal hourlyPrice = dailyPrice.divide(BigDecimal.valueOf(24), RoundingMode.HALF_UP);
         BigDecimal minutelyPrice = hourlyPrice.divide(BigDecimal.valueOf(60), RoundingMode.HALF_UP);
         BigDecimal secondlyPrice = minutelyPrice.divide(BigDecimal.valueOf(60), RoundingMode.HALF_UP);
-
         BigDecimal totalPrice = dailyPrice.multiply(BigDecimal.valueOf(days))
                 .add(hourlyPrice.multiply(BigDecimal.valueOf(hours)))
                 .add(minutelyPrice.multiply(BigDecimal.valueOf(minutes)))
@@ -88,7 +87,7 @@ public class BookingServiceImpl implements BookingService {
         booking.setCar(car);
         booking.setTotalPrice(totalPrice);
         booking.setBookingStatus(BookingStatus.ACTIVE);
-        booking.setUpdateBookingDate(LocalDateTime.now());
+        booking.setUpdateBookingDate(LocalDateTime.now());   
 
         log.info("Saving booking for customer {} with car ID {} and total price {}", email, bookingRequestDto.carId(), totalPrice);
 

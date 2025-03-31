@@ -9,6 +9,7 @@ import de.aittr.car_rent.security.dto.LoginRequestDto;
 import de.aittr.car_rent.security.dto.TokenResponseDto;
 import de.aittr.car_rent.service.CustomerRoleServiceImpl;
 import de.aittr.car_rent.service.interfaces.CustomerService;
+import de.aittr.car_rent.service.interfaces.EmailService;
 import de.aittr.car_rent.service.mapping.CustomerMapper;
 import io.jsonwebtoken.Claims;
 import lombok.RequiredArgsConstructor;
@@ -32,6 +33,7 @@ public class AuthService {
     private final TokenService tokenService;
     private final BCryptPasswordEncoder passwordEncoder;
     private final CustomerMapper customerMapper;
+    private final EmailService emailService;
 
     public CustomerResponseDto register(final CustomerRegisterDto registerDto) {
         final Role initCustomerRole = CustomerRoleServiceImpl.initCustomerRole;
@@ -45,7 +47,10 @@ public class AuthService {
         }
         final String encodedPassword = passwordEncoder.encode(registerDto.password());
         final Customer registredCustomer = new Customer(registerDto.firstName(), registerDto.lastName(), encodedPassword, normalizedEmail, role);
-        return customerMapper.toDto(customerService.save(registredCustomer));
+        customerService.save(registredCustomer);
+        emailService.sendConfirmationEmail(registredCustomer);
+
+        return customerMapper.toDto(registredCustomer);
     }
 
     //метод первичной проверки пароля и логина и отдачи ему access и refresh токенов
