@@ -154,13 +154,6 @@ public class CarServiceImpl implements CarService {
         carRepository.save(existingCar);
     }
 
-    @Override
-    @Transactional
-    public void attachImageToCar(Long id, String imageUrl) {
-        carRepository.findById(id)
-                .orElseThrow(() -> new CarNotFoundException(id))
-                .setCarImage(imageUrl);
-    }
 
     @Override
     @Transactional

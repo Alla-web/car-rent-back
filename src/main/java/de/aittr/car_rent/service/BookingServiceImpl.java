@@ -18,9 +18,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -38,6 +39,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingResponseDto createBooking(BookingRequestDto bookingRequestDto) {
+        log.info("Booking request received: {}", bookingRequestDto);
 
         if (bookingRequestDto.rentalStartDate().toLocalDate().isBefore(LocalDate.now())) {
             throw new RestApiException("Rental start date must be today or in the future.");
@@ -49,18 +51,29 @@ public class BookingServiceImpl implements BookingService {
 
         Car car = carRepository.findById(bookingRequestDto.carId())
                 .orElseThrow(() -> new EntityNotFoundException("Car not found"));
-
         log.info("Car with ID {} found. Proceeding to create booking.", bookingRequestDto.carId());
 
         String email = SecurityContextHolder.getContext().getAuthentication().getName(); //получили имейл текущего покупателя
         Customer currentCustomer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new RestApiException("Customer with this email " + email + " not found"));
-
         log.info("Customer with email '{}' found. Proceeding to create booking.", email);
 
-        long days = ChronoUnit.DAYS.between(bookingRequestDto.rentalStartDate(), bookingRequestDto.rentalEndDate());
+        Duration duration = Duration.between(bookingRequestDto.rentalStartDate(), bookingRequestDto.rentalEndDate());
 
-        BigDecimal totalPrice = BigDecimal.valueOf(days + 1).multiply(car.getDayRentalPrice());
+        long days = duration.toDays();
+        long hours = duration.toHoursPart();
+        long minutes = duration.toMinutesPart();
+        long seconds = duration.toSecondsPart();
+
+        BigDecimal dailyPrice = car.getDayRentalPrice();
+        BigDecimal hourlyPrice = dailyPrice.divide(BigDecimal.valueOf(24), RoundingMode.HALF_UP);
+        BigDecimal minutelyPrice = hourlyPrice.divide(BigDecimal.valueOf(60), RoundingMode.HALF_UP);
+        BigDecimal secondlyPrice = minutelyPrice.divide(BigDecimal.valueOf(60), RoundingMode.HALF_UP);
+
+        BigDecimal totalPrice = dailyPrice.multiply(BigDecimal.valueOf(days))
+                .add(hourlyPrice.multiply(BigDecimal.valueOf(hours)))
+                .add(minutelyPrice.multiply(BigDecimal.valueOf(minutes)))
+                .add(secondlyPrice.multiply(BigDecimal.valueOf(seconds)));
 
         if (car.getCarStatus() == CarStatus.AVAILABLE) {
             car.setCarStatus(CarStatus.RENTED);
