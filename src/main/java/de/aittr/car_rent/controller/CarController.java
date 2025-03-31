@@ -177,7 +177,7 @@ public class CarController {
             @Parameter(description = "Period end day", example = "2025-04-05T11:00")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime to) {
-        return carService.checkIfCarAvailableByDates(bookingId, carId, from, to);
+        return carService.checkIfCarAvailableByDates(carId, from, to);
     }
 
     @GetMapping("/filter/time")

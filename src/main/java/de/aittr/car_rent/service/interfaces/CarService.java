@@ -104,7 +104,6 @@ public interface CarService {
      * @return - true/false в зависимости от результата проверки
      */
     boolean checkIfCarAvailableByDates(
-            Long bookingId,
             Long carId,
             LocalDateTime from,
             LocalDateTime to);
