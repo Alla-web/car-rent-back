@@ -137,6 +137,22 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
+    public boolean checkIfCarAvailableByDates(
+            Long bookingId,
+            Long carId,
+            LocalDateTime from,
+            LocalDateTime to) {
+        return bookingRepository.findAllByCarId(carId)
+                .stream()
+                //.filter(b -> bookingId == null || !Objects.equals(b.getId(), bookingId))
+                .filter(b -> b.getBookingStatus() == BookingStatus.ACTIVE)
+                .noneMatch(booking ->
+                        booking.getRentalStartDate().isBefore(to) &&
+                                booking.getRentalEndDate().isAfter(from)
+                );
+    }
+
+    @Override
     @Transactional
     public void updateCar(CarResponseDto carDto) {
         Long id = carDto.id();
@@ -160,7 +176,6 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getAllAvailableCarsByDates(
             LocalDateTime startDateTime,
             LocalDateTime endDateTime) {
-
         return carRepository.findAll()
                 .stream()
                 .filter((car -> car.isActive() && car.getCarStatus() == CarStatus.AVAILABLE))
