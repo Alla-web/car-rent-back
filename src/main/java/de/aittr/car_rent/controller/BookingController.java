@@ -2,18 +2,19 @@ package de.aittr.car_rent.controller;
 
 import de.aittr.car_rent.domain.dto.BookingRequestDto;
 import de.aittr.car_rent.domain.dto.BookingResponseDto;
+import de.aittr.car_rent.domain.entity.BookingStatus;
 import de.aittr.car_rent.service.interfaces.BookingService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -33,14 +34,15 @@ public class BookingController {
             @AuthenticationPrincipal
             @Parameter(hidden = true)
             String userEmail,
+
             @RequestBody
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Booking details")
             BookingRequestDto bookingDto) {
-        return bookingService.createBooking(bookingDto);
+        return bookingService.createBooking(bookingDto, userEmail);
     }
 
     @GetMapping
-    @Operation(summary = "Get all bookings", description = "Returns all bookings from the database")
+    @Operation(summary = "Get all bookings existing in the database", description = "Returns all bookings from the database")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
     public List<BookingResponseDto> getAllBookings() {
@@ -52,44 +54,99 @@ public class BookingController {
     @Operation(summary = "Get a booking by ID", description = "Returns a booking by its unique identifier")
     @PreAuthorize("isAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
-    public BookingResponseDto getBookingById(
+    public BookingResponseDto getBookingByBookingId(
             @PathVariable
-            @Parameter(description = "Booking unique identifier") Long id) {
-        return bookingService.getBookingById(id);
+            @Parameter(description = "Booking unique identifier", example = "7") Long id) {
+        return bookingService.getBookingByBookingId(id);
     }
 
-    @GetMapping("/by-car/{carId}")
+    @GetMapping("/filter/by-car")
     @Operation(summary = "Get bookings by car ID", description = "Returns bookings associated with a specific car")
     @PreAuthorize("hasAnyRole({'ROLE_ADMIN'})")
     @SecurityRequirement(name = "bearerAuth")
-    public List<BookingResponseDto> getBookingsByCarId(@PathVariable Long carId) {
+    public List<BookingResponseDto> getBookingsByCarId(
+            @RequestParam("car-id")
+            @Parameter(description = "Car unique identifier", example = "12")
+            Long carId) {
         return bookingService.getBookingsByCarId(carId);
+    }
+
+    @GetMapping("/filter/by-rental-dates-or-by-bookings-status")
+    @Operation(
+            summary = "Get bookings by rental start or end date and by booking status or only by by booking status ",
+            description = "Filters bookings by rental start or end date and by booking status or only by booking status ")
+    @PreAuthorize("isAuthenticated()")
+    @SecurityRequirement(name = "bearerAuth")
+    public List<BookingResponseDto> getBookingsByRentalDaysOrByBookingStatus(
+            @RequestParam(value = "start-date", required = false)
+            @Parameter(
+                    description = "Rental start date",
+                    example = "2025-03-28")
+            LocalDate rentalStartDate,
+
+            @RequestParam(value = "end-date", required = false)
+            @Parameter(
+                    description = "Rental end date",
+                    example = "2025-03-28")
+            LocalDate rentalEndDate,
+
+            @RequestParam(value = "car-status", required = false)
+            @Parameter(description = "Car status in the data base", example = "ACTIVE")
+            BookingStatus bookingStatus) {
+        return bookingService.getBookingsByRentalDaysOrByBookingStatus(rentalStartDate, rentalEndDate, bookingStatus);
+    }
+
+
+    @PutMapping("/extend/{id}")
+    @Operation(summary = "Extend a booking", description = "Extends the rental period of an existing booking")
+    @PreAuthorize("isAuthenticated()")
+    @SecurityRequirement(name = "bearerAuth")
+    public BookingResponseDto extendBooking(
+            @PathVariable
+            @Parameter(description = "Booking unique identifier", example = "7")
+            Long id,
+
+            @AuthenticationPrincipal
+            @Parameter(hidden = true)
+            String email,
+
+            @RequestParam
+            @Parameter(
+                    description = "New rental end date",
+                    example = "2025-03-28T00:00")
+            LocalDateTime newEndDate) {
+        return bookingService.extendBooking(id, email, newEndDate);
     }
 
     @PutMapping("/cancel/{id}")
     @Operation(summary = "Cancel a booking", description = "Cancels a booking by its ID")
     @PreAuthorize("isAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
-    public ResponseEntity<BookingResponseDto> cancelBooking(@PathVariable Long id) {
-        return ResponseEntity.ok(bookingService.cancelBooking(id));
+    public ResponseEntity<BookingResponseDto> cancelBooking(
+            @PathVariable
+            @Parameter(description = "Booking unique identifier", example = "17")
+            Long id,
+
+            @AuthenticationPrincipal
+            @Parameter(hidden = true)
+            String email) {
+        return ResponseEntity.ok(bookingService.cancelBooking(id, email));
     }
 
-    @PutMapping("/extend/{id}")
-    @Operation(summary = "Extend a booking", description = "Extends the rental period of an existing booking")
+    //TODO дописать
+    @PutMapping("close/{id}")
+    @Operation(
+            summary = "Closes active booking",
+            description = "Changes bookings status from ACTIVE to CLOSED")
     @PreAuthorize("isAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
-    @SecurityRequirement(name = "bearerAuth")
-    public BookingResponseDto extendBooking(
-            @PathVariable Long id,
-            @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime newEndDate) {
-        return bookingService.extendBooking(id, newEndDate);
-    }
+    public void closeBooking(
+            @PathVariable
+            @Parameter(description = "Booking unique identifier", example = "17")
+            Long id,
 
-    @PutMapping("/restore/{id}")
-    @Operation(summary = "Restore a cancelled booking", description = "Restores a cancelled booking by its ID")
-    @PreAuthorize("hasAnyRole({'ROLE_ADMIN'})")
-    public BookingResponseDto restoreBooking(@PathVariable Long id) {
-        return bookingService.restoreBooking(id);
+            @AuthenticationPrincipal
+            String email) {
+        bookingService.closeBooking(id, email);
     }
-
 }

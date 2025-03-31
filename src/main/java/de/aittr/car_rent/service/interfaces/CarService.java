@@ -1,7 +1,7 @@
 package de.aittr.car_rent.service.interfaces;
 
 import de.aittr.car_rent.domain.dto.CarResponseDto;
-import de.aittr.car_rent.domain.entity.Car;
+import de.aittr.car_rent.domain.entity.*;
 import jakarta.transaction.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -65,28 +65,28 @@ public interface CarService {
      * @param type кузова авто
      * @return список CarResponseDto машин переданного в метод типа кузова
      */
-    List<CarResponseDto> getCarsByType(String type);
+    List<CarResponseDto> getCarsByType(CarType type);
 
     /**
      * Метод нахождения авто по типу топлива. Если машины не найдена, будет возвращён пустой список
      * @param fuelType авто
      * @return список CarResponseDto машин переданного в метод типа топлива
      */
-    List<CarResponseDto> getCarsByFuelType(String fuelType);
+    List<CarResponseDto> getCarsByFuelType(CarFuelType fuelType);
 
     /**
      * Метод нахождения авто по типу коробки передач. Если машины не найдена, будет возвращён пустой список
      * @param transmissionType авто
      * @return список CarResponseDto машин переданного в метод типа коробки передач
      */
-    List<CarResponseDto> getCarsByTransmissionType(String transmissionType);
+    List<CarResponseDto> getCarsByTransmissionType(CarTransmissionType transmissionType);
 
     /**
      * Метод нахождения авто по статусу авто (доступно, арендовано, в ремонте, снято с аренды). Если машины не найдена, будет возвращён пустой список
      * @param carStatus авто
      * @return список CarResponseDto машин c переданным в метод статусом
      */
-    List<CarResponseDto> getCarsByCarStatus(String carStatus);
+    List<CarResponseDto> getCarsByCarStatus(CarStatus carStatus);
 
     /**
      * Метод нахождения авто по стоимости их аренды в день. Если машины не найдена, будет возвращён пустой список

@@ -110,7 +110,12 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public Customer save(Customer customer) {
-        return repository.save(customer);
+    public CustomerResponseDto save(Customer customer) {
+        return customerMapper.toDto((repository.save(customer)));
+    }
+
+    @Override
+    public CustomerResponseDto findByToken(String email) {
+        return customerMapper.toDto(findByEmailOrThrow(email));
     }
 }

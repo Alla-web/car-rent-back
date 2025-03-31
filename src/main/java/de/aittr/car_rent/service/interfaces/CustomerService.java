@@ -91,7 +91,7 @@ public interface CustomerService {
 
     /**
      * Находит все букинги клиента по email
-     * @param email
+     * @param
      * @return List<BookingDto>
      */
     List<BookingResponseDto> getAllBookingsByCustomerEmail(String email);
@@ -126,5 +126,13 @@ public interface CustomerService {
      */
     Optional<Customer> findByEmail(String email);
 
-    Customer save(Customer customer);
+    /**
+     * Метод сохранения покупателя в базу данных
+     *
+     * @param customer
+     * @return CustomerResponseDto
+     */
+    CustomerResponseDto save(Customer customer);
+
+    CustomerResponseDto findByToken(String email);
 }

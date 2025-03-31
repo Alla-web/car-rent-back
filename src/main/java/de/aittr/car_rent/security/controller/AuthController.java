@@ -127,17 +127,17 @@ public interface AuthController {
 
 
     @Operation(
-            summary = "Аутентификация пользователя",
-            description = "Аутентифицирует пользователя по предоставленным учетным данным. " +
-                    "В Swagger UI можно выбрать один из предопределенных примеров."
+            summary = "Customer authentication",
+            description = "Authenticates the customer using the provided credentials" +
+                    "In Swagger UI you can choose one of the predefined examples"
     )
     @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Пользователь успешно аутентифицирован",
+            @ApiResponse(responseCode = "200", description = "Customer successfully authenticated",
                     content = @Content(
                             mediaType = APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = TokenResponseDto.class)
                     )),
-            @ApiResponse(responseCode = "401", description = "Неверные учетные данные",
+            @ApiResponse(responseCode = "401", description = "Incorrect credentials",
                     content = @Content(
                             mediaType = APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = ErrorResponseDto.class)
@@ -148,7 +148,7 @@ public interface AuthController {
     TokenResponseDto login(
             @RequestBody
             @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Данные для аутентификации. Выберите один из предопределенных пользователей или введите данные в ручную",
+                    description = "Authentication data. Select one of the predefined users or enter the data manually",
                     required = true,
                     content = @Content(
                             mediaType = APPLICATION_JSON_VALUE,
@@ -156,7 +156,7 @@ public interface AuthController {
                             examples = {
                                     @ExampleObject(
                                             name = "Customer 1",
-                                            summary = "Пользователь-клиент 1 (роль ROLE_CUSTOMER)",
+                                            summary = "Customer-user 1 (role ROLE_CUSTOMER)",
                                             value = """
                                                     {
                                                       "email": "customer_1@car-rent.de",
@@ -166,7 +166,7 @@ public interface AuthController {
                                     ),
                                     @ExampleObject(
                                             name = "Customer 2",
-                                            summary = "Пользователь-клиент 2 (роль ROLE_CUSTOMER)",
+                                            summary = "Customer-user 2 (role ROLE_CUSTOMER)",
                                             value = """
                                                     {
                                                       "email": "customer_2@cr.de",
@@ -176,7 +176,7 @@ public interface AuthController {
                                     ),
                                     @ExampleObject(
                                             name = "Customer 3",
-                                            summary = "Пользователь-клиент 3 (роль ROLE_CUSTOMER)",
+                                            summary = "Customer-user 3 (role ROLE_CUSTOMER)",
                                             value = """
                                                     {
                                                       "email": "customer_3@cr.de",
@@ -186,7 +186,7 @@ public interface AuthController {
                                     ),
                                     @ExampleObject(
                                             name = "Admin",
-                                            summary = "Пользователь-администратор (роль ROLE_ADMIN)",
+                                            summary = "Customer-admin (role ROLE_ADMIN)",
                                             value = """
                                                     {
                                                       "email": "admin_1@car-rent.de",

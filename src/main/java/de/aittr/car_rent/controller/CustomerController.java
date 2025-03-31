@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -72,22 +73,30 @@ public class CustomerController {
         customerService.restoreById(id);
     }
 
-    //GET -> http://localhost:8080/customers/all-bookings/1
-    @GetMapping("/all-bookings-id/{id}")
+    //GET -> http://localhost:8080/customers/all-customer-bookings/1
+    @GetMapping("/all-customer-bookings/{id}")
     @Operation(description = "Finds all bookings by customer id")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
     public List<BookingResponseDto> getAllBookingsByCustomerId(@PathVariable Long id) {
         return customerService.getAllBookingsByCustomerId(id);
     }
 
-    //TODO not working
-    //GET -> http://localhost:8080/customers/all-bookings/{email}
-    @GetMapping("/all-bookings-email/{email}")
-    @Operation(description = "Finds all bookings by customer email")
+    //GET -> http://localhost:8080/customers/all-my-bookings
+    @GetMapping("/all-my-bookings")
+    @Operation(description = "Finds all current customer bookings")
     @PreAuthorize("isAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
-    public List<BookingResponseDto> getAllBookingsByCustomerEmail(String email){
+    public List<BookingResponseDto> getAllBookingsByCustomerEmail(
+            @AuthenticationPrincipal String email){
         return customerService.getAllBookingsByCustomerEmail(email);
+    }
+
+    @GetMapping("/find-me")
+    @Operation(description = "Find current customer")
+    @PreAuthorize("isAuthenticated()")
+    @SecurityRequirement(name = "bearerAuth")
+    public CustomerResponseDto findByToken(@AuthenticationPrincipal String email) {
+        return customerService.findByToken(email);
     }
 }
