@@ -56,6 +56,7 @@ public class SecurityConfig {
 
                         // Auth Controller
                         .requestMatchers(HttpMethod.POST, "/auth/login", "/auth/register").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/auth/confirm/{code}").permitAll()
 
                         // Swagger
                         .requestMatchers("/v3/api-docs",

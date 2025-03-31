@@ -34,7 +34,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class CustomerInitService {
+public class  CustomerInitService {
 
     private static final String customerPassword = "user-pass#007";
     private static final String adminPassword = "admin-Pass#007";
