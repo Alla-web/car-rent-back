@@ -97,6 +97,18 @@ public interface CarService {
     List<CarResponseDto> getCarsByDayRentalPrice(BigDecimal minDayRentalPrice, BigDecimal maxDayRentalPrice);
 
     /**
+     * Метод проверяет, свободна ли машина в промежутке времени между указанными датами
+     * @param carId - id авто, доступность которого проверяется
+     * @param from - дата начала периода проверки доступности авто
+     * @param to - дата окончания периода проверки доступности авто
+     * @return - true/false в зависимости от результата проверки
+     */
+    boolean checkIfCarAvailableByDates(
+            Long bookingId,
+            Long carId,
+            LocalDateTime from,
+            LocalDateTime to);
+    /**
      * Метод изменения статуса и стоимости аренды в день авто. Если машина не найдена метод выбросит исключение
      * @param carDto
      *
@@ -134,4 +146,5 @@ public interface CarService {
             BigDecimal maxPrice);
 
     List<String> getAllAvailableBrands();
+
 }
