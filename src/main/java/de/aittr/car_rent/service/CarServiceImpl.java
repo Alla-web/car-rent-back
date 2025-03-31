@@ -138,13 +138,11 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public boolean checkIfCarAvailableByDates(
-            Long bookingId,
             Long carId,
             LocalDateTime from,
             LocalDateTime to) {
         return bookingRepository.findAllByCarId(carId)
                 .stream()
-                //.filter(b -> bookingId == null || !Objects.equals(b.getId(), bookingId))
                 .filter(b -> b.getBookingStatus() == BookingStatus.ACTIVE)
                 .noneMatch(booking ->
                         booking.getRentalStartDate().isBefore(to) &&
