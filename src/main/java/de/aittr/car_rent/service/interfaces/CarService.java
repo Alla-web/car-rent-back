@@ -114,12 +114,11 @@ public interface CarService {
     //добавить ссылку на изображение авто по id авто
 
     /**
-     * Метод добавления фото к машине.
+     * Метод прикрепления фото к авто
      * @param id
-     * @param imageUrl
+     * @param file
+     * @return
      */
-    void attachImageToCar(Long id, String imageUrl);
-
     @Transactional
     String attachImageToCar(Long id, MultipartFile file);
 
