@@ -1,12 +1,17 @@
 package de.aittr.car_rent.controller;
 
 import de.aittr.car_rent.domain.dto.CarResponseDto;
+import de.aittr.car_rent.domain.entity.CarFuelType;
+import de.aittr.car_rent.domain.entity.CarStatus;
+import de.aittr.car_rent.domain.entity.CarTransmissionType;
+import de.aittr.car_rent.domain.entity.CarType;
 import de.aittr.car_rent.service.interfaces.CarService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -24,7 +29,7 @@ public class CarController {
 
     private final CarService carService;
 
-    // POST -> localhost:8080/cars
+    // POST -> localhost:8080/api/cars
     @PostMapping
     @Operation(
             summary = "Save new car",
@@ -38,7 +43,7 @@ public class CarController {
         return carService.saveCar(carDto);
     }
 
-    // GET -> localhost:8080/cars
+    // GET -> localhost:8080/api/cars
     @GetMapping
     @Operation(
             summary = "Get all cars",
@@ -47,7 +52,7 @@ public class CarController {
         return carService.getAllCars();
     }
 
-    // GET -> localhost:8080/cars/5
+    // GET -> localhost:8080/api/cars/5
     @GetMapping("/{id}")
     @Operation(
             summary = "Get car by car id",
@@ -59,126 +64,127 @@ public class CarController {
         return carService.getCarById(id);
     }
 
-    // GET -> localhost:8080/cars/brand/toyota
-    @GetMapping("/filter/brand/{brand}")
+    // GET -> localhost:8080/api/cars/brand/toyota
+    @GetMapping("/filter/brand")
     @Operation(
             summary = "Get cars list by car brand",
             description = "Getting car that exist in the database by car brand")
     public List<CarResponseDto> getCarsByBrand(
-            @PathVariable
+            @RequestParam("brand")
             @Parameter(description = "Car brand title")
             String brand) {
         return carService.getCarsByBrand(brand);
     }
 
-    // GET -> localhost:8080/cars/model/corolla
-    @GetMapping("/filter/model/{model}")
+    // GET -> localhost:8080/api/cars/model/corolla
+    @GetMapping("/filter/model")
     @Operation(
             summary = "Get cars list by car model",
             description = "Getting car that exist in the database by car model")
     public List<CarResponseDto> getCarsByModel(
-            @PathVariable
-            @Parameter(description = "Car model title")
+            @RequestParam("model")
+            @Parameter(description = "Car model title", example = "Corolla")
             String model) {
         return carService.getCarsByModel(model);
     }
 
-    // GET -> localhost:8080/cars/year/2006
-    @GetMapping("/filter/year/{year}")
+    // GET -> localhost:8080/api/cars/year/2006
+    @GetMapping("/filter/year")
     @Operation(
             summary = "Get cars list by car year",
             description = "Getting car that exist in the database by car year")
     public List<CarResponseDto> getCarsByYear(
-            @PathVariable
-            @Parameter(description = "Car build year")
+            @RequestParam("year")
+            @Parameter(description = "Car build year", example = "2020")
             int year) {
         return carService.getCarsByYear(year);
     }
 
-    // GET -> localhost:8080/cars/type/sedan
-    @GetMapping("/filter/type/{type}")
+    // GET -> localhost:8080/api/cars/type/sedan
+    @GetMapping("/filter/type")
     @Operation(
             summary = "Get cars list y car type",
             description = "Getting car that exist in the database by car type")
     public List<CarResponseDto> getCarsByType(
-            @PathVariable
+            @RequestParam("type")
             @Parameter(description = "Car type title")
-            String type) {
+            CarType type) {
         return carService.getCarsByType(type);
     }
 
-    // GET -> localhost:8080/cars/fuel-type/petrol
-    @GetMapping("/filter/fuel-type/{fuelType}")
+    // GET -> localhost:8080/api/cars/fuel-type/petrol
+    @GetMapping("/filter/fuel-type")
     @Operation(
             summary = "Get cars list by car fuel type",
             description = "Getting car that exist in the database by car fuel type")
     public List<CarResponseDto> getCarsByFuelType(
-            @PathVariable
-            @Parameter(description = "Car fuel type title")
-            String fuelType) {
+            @RequestParam("fuel-type")
+            @Parameter(description = "Car fuel type title", example = "PETROL")
+            CarFuelType fuelType) {
         return carService.getCarsByFuelType(fuelType);
     }
 
-    // GET -> localhost:8080/cars/transmission-type/manual
-    @GetMapping("/filter/transmission-type/{transmissionType}")
+    // GET -> localhost:8080/api/cars/transmission-type/manual
+    @GetMapping("/filter/transmission-type")
     @Operation(
             summary = "Get cars list by car transmission type",
             description = "Getting car that exist in the database by car transmission type")
     public List<CarResponseDto> getCarsByTransmissionType(
-            @PathVariable
-            @Parameter(description = "Car transmission type title")
-            String transmissionType) {
+            @RequestParam("transmission-type")
+            @Parameter(description = "Car transmission type title", example = "SEDAN")
+            CarTransmissionType transmissionType) {
         return carService.getCarsByTransmissionType(transmissionType);
     }
 
-    // GET -> localhost:8080/cars/available
-    // GET -> localhost:8080/cars/car-status/under_repair
-    @GetMapping("/filter/car-status/{carStatus}")
+    // GET -> localhost:8080/api/cars/car-status/under_repair
+    @GetMapping("/filter/car-status")
     @Operation(
             summary = "Get cars list by car status",
             description = "Getting car that exist in the database by car status")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
     public List<CarResponseDto> getCarsByCarStatus(
-            @PathVariable
-            @Parameter(description = "Car status title")
-            String carStatus) {
+            @RequestParam("car-status")
+            @Parameter(description = "Car status", example = "AVAILABLE")
+            CarStatus carStatus) {
         return carService.getCarsByCarStatus(carStatus);
     }
 
-    // GET -> localhost:8080/cars/rental-price/150-200
-    @GetMapping("/filter/rental-price/{minDayRentalPrice}-{maxDayRentalPrice}")
+    // GET -> localhost:8080/api/cars/rental-price/150-200
+    @GetMapping("/filter/rental-price")
     @Operation(
             summary = "Get cars list by min und max car day rental price",
             description = "Getting car that exist in the database by min und max car day rental price")
     public List<CarResponseDto> getCarsByDayRentalPrice(
-            @PathVariable
-            @Parameter(description = "Minimal day rental car price")
+            @RequestParam("from")
+            @Parameter(description = "Minimal day rental car price", example = "50")
             BigDecimal minDayRentalPrice,
 
-            @PathVariable
-            @Parameter(description = "Maximal day rental car price")
+            @RequestParam("to")
+            @Parameter(description = "Maximal day rental car price", example = "150")
             BigDecimal maxDayRentalPrice) {
         return carService.getCarsByDayRentalPrice(minDayRentalPrice, maxDayRentalPrice);
     }
 
-    // GET -> localhost:8080/cars/time/2025-03-28T11:46-2025-03-31T08:58
-    @GetMapping("/filter/time/{startDateTime}-{endDateTime}")
+    // GET -> localhost:8080/api/cars/time/2025-03-28T11:46-2025-03-31T08:58
+    @GetMapping("/filter/time")
     @Operation(
             summary = "Get available cars list by start und end days",
             description = "Getting available cars list that exist in the database by start und end days")
     public List<CarResponseDto> getAllAvailableCarsByDates(
-            @PathVariable
-            @Parameter(description = "Start day")
+            @RequestParam("from")
+            @Parameter(description = "Start day", example = "2025-03-28T11:46")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime startDateTime,
 
-            @PathVariable
-            @Parameter(description = "End day")
+            @RequestParam(value = "to")
+            @Parameter(description = "End day", example = "2025-03-30T11:46")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime endDateTime) {
         return carService.getAllAvailableCarsByDates(startDateTime, endDateTime);
     }
 
-    // PUT -> localhost:8080/cars  (идентификатор отправляется в теле запроса)
+    // PUT -> localhost:8080/api/cars  (идентификатор отправляется в теле запроса)
     @PutMapping
     @Operation(
             summary = "Update car",
@@ -193,7 +199,7 @@ public class CarController {
         carService.updateCar(carDto);
     }
 
-    // DELETE -> localhost:8080/cars/3
+    // DELETE -> localhost:8080/api/cars/3
     @DeleteMapping("/delete/{id}")
     @Operation(
             summary = "Delete car by car id",
@@ -205,44 +211,42 @@ public class CarController {
     }
 
     //    GET-> localhost:8080/api/cars/filter?startDateTime=2024-03-20T10:00:00&endDateTime=2024-03-25T10:00:00&minPrice=50&maxPrice=200
-
     @GetMapping("/filter")
     @Operation(
             summary = "Filter available cars",
             description = "Filter available cars by various criteria including dates, brand, fuel type, transmission type and price range")
     public List<CarResponseDto> filterAvailableCars(
             @RequestParam(required = false)
-            @Parameter(description = "Start date and time of rental period")
+            @Parameter(description = "Start date and time of rental period", example = "2025-03-28T00:00")
             LocalDateTime startDateTime,
 
             @RequestParam(required = false)
-            @Parameter(description = "End date and time of rental period")
+            @Parameter(description = "End date and time of rental period", example = "2025-03-28T00:00")
             LocalDateTime endDateTime,
 
             @RequestParam(required = false)
-            @Parameter(description = "Car brand")
+            @Parameter(description = "Car brand", example = "Toyota")
             String brand,
 
             @RequestParam(required = false)
-            @Parameter(description = "Car fuel type")
+            @Parameter(description = "Car fuel type", example = "Corolla")
             String fuelType,
 
             @RequestParam(required = false)
-            @Parameter(description = "Car transmission type")
+            @Parameter(description = "Car transmission type", example = "MANUAL")
             String transmissionType,
 
             @RequestParam(required = false)
-            @Parameter(description = "Minimum rental price per day")
+            @Parameter(description = "Minimum rental price per day", example = "50")
             BigDecimal minPrice,
 
             @RequestParam(required = false)
-            @Parameter(description = "Maximum rental price per day")
+            @Parameter(description = "Maximum rental price per day", example = "150")
             BigDecimal maxPrice) {
         return carService.filterAvailableCars(startDateTime, endDateTime, brand, fuelType, transmissionType, minPrice, maxPrice);
     }
 
     // GET -> localhost:8080/api/cars/brands
-
     @GetMapping("/brands")
     @Operation(
             summary = "Get all available car brands",
@@ -252,16 +256,24 @@ public class CarController {
         return carService.getAllAvailableBrands();
     }
 
-
-    @PostMapping("/{carId}/uploadImage")
-    public ResponseEntity<String> uploadCarImage(@PathVariable Long carId, @RequestParam("file") MultipartFile file) {
+    @PostMapping("/upload-image")
+    @Operation(
+            summary = "Attach image to car",
+            description = "Attaches a link to a photo stored locally on the computer to the car in the database")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    public ResponseEntity<String> uploadCarImage(
+            @RequestParam("id")
+            @Parameter(description = "Car unique identifier", example = "15")
+            Long carId,
+            @RequestParam("file")
+            @Parameter(description = "Car image", example = "https://shop-bucket.fra1.digitaloceanspaces.com/coconut-caf872c7-2ebd-4ec0-bd28-ff198091392c.png")
+            MultipartFile file) {
         try {
-            // Проверка, что файл не пустой
+
             if (file.isEmpty()) {
                 return ResponseEntity.badRequest().body("The file must not be empty");
             }
 
-            // Сохраняем файл
             String imageUrl;
             imageUrl = carService.attachImageToCar(carId, file);
 
@@ -269,6 +281,5 @@ public class CarController {
         } catch (Exception e) {
             return ResponseEntity.status(500).body("Error loading image");
         }
-
     }
 }

@@ -45,7 +45,8 @@ public class AuthService {
         }
         final String encodedPassword = passwordEncoder.encode(registerDto.password());
         final Customer registredCustomer = new Customer(registerDto.firstName(), registerDto.lastName(), encodedPassword, normalizedEmail, role);
-        return customerMapper.toDto(customerService.save(registredCustomer));
+//        return customerMapper.toDto(customerService.save(registredCustomer));
+        return customerService.save(registredCustomer);
     }
 
     //метод первичной проверки пароля и логина и отдачи ему access и refresh токенов

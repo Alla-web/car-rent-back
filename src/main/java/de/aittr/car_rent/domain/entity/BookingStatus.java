@@ -2,12 +2,13 @@ package de.aittr.car_rent.domain.entity;
 
 public enum BookingStatus {
 
-        NEW,
-        PENDING,
         ACTIVE,
-        CANCELLED,
         COMPLETED,
         CANCELLED_BY_ADMIN,
-        CANCELLED_BY_USER
+        CANCELLED_BY_USER,
+        CLOSED,
+        CLOSED_BY_ADMIN
+//        NEW,
+//        PENDING,
 
 }

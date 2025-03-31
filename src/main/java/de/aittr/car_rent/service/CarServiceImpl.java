@@ -1,8 +1,7 @@
 package de.aittr.car_rent.service;
 
 import de.aittr.car_rent.domain.dto.CarResponseDto;
-import de.aittr.car_rent.domain.entity.Car;
-import de.aittr.car_rent.domain.entity.CarStatus;
+import de.aittr.car_rent.domain.entity.*;
 import de.aittr.car_rent.exception_handling.exceptions.CarNotFoundException;
 import de.aittr.car_rent.repository.BookingRepository;
 import de.aittr.car_rent.repository.CarRepository;
@@ -47,6 +46,7 @@ public class CarServiceImpl implements CarService {
                 .stream()
                 .filter(Car::isActive)
                 .filter((car -> car.getCarStatus() == CarStatus.RENTED || car.getCarStatus() == CarStatus.AVAILABLE))
+                .sorted(Comparator.comparing(Car::getType))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -90,37 +90,37 @@ public class CarServiceImpl implements CarService {
     }
 
     @Override
-    public List<CarResponseDto> getCarsByType(String type) {
+    public List<CarResponseDto> getCarsByType(CarType type) {
         return carRepository.findAll()
                 .stream()
-                .filter(car -> car.getType().name().equalsIgnoreCase(type.trim()))
+                .filter(car -> car.getType().equals(type))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
 
     @Override
-    public List<CarResponseDto> getCarsByFuelType(String fuelType) {
+    public List<CarResponseDto> getCarsByFuelType(CarFuelType fuelType) {
         return carRepository.findAll()
                 .stream()
-                .filter(car -> car.getFuelType().name().equalsIgnoreCase(fuelType.trim()))
+                .filter(car -> car.getFuelType().equals(fuelType))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
 
     @Override
-    public List<CarResponseDto> getCarsByTransmissionType(String transmissionType) {
+    public List<CarResponseDto> getCarsByTransmissionType(CarTransmissionType transmissionType) {
         return carRepository.findAll()
                 .stream()
-                .filter(car -> car.getTransmissionType().name().equalsIgnoreCase(transmissionType.trim()))
+                .filter(car -> car.getTransmissionType().equals(transmissionType))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
 
     @Override
-    public List<CarResponseDto> getCarsByCarStatus(String carStatus) {
+    public List<CarResponseDto> getCarsByCarStatus(CarStatus carStatus) {
         return carRepository.findAll()
                 .stream()
-                .filter(car -> Objects.nonNull(car.getCarStatus()) && car.getCarStatus().name().equalsIgnoreCase(carStatus.trim()))
+                .filter(car -> Objects.nonNull(car.getCarStatus()) && car.getCarStatus().equals(carStatus))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }

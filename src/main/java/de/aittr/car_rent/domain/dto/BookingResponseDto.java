@@ -1,5 +1,6 @@
 package de.aittr.car_rent.domain.dto;
 
+import de.aittr.car_rent.domain.entity.BookingStatus;
 import de.aittr.car_rent.domain.entity.CarStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -42,6 +43,9 @@ public record BookingResponseDto(
 
         @Schema(description = "Car", example = "AVAILABLE")
         CarStatus carStatus,
+
+        @Schema(description = "Booking status", example = "ACTIVE")
+        BookingStatus bookingStatus,
 
         @Schema(
                 description = "Booking creating day and time",
