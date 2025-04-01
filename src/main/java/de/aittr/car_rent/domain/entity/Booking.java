@@ -1,5 +1,6 @@
 package de.aittr.car_rent.domain.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -8,7 +9,7 @@ import lombok.Setter;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+
 
 
 @Getter
@@ -23,6 +24,7 @@ public class Booking {
     @Setter(AccessLevel.NONE)
     @Column(name = "id")
     private Long id;
+
 
     @Column(name = "rental_start_date", nullable = false)
     private LocalDateTime rentalStartDate;
@@ -42,35 +44,20 @@ public class Booking {
     @Column(name = "booking_status",  length = 20, nullable = false)
     private BookingStatus bookingStatus;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     @Column(name = "create_booking_date", nullable = false, updatable = false)
     private LocalDateTime createBookingDate;
 
     @Column(name = "update_booking_date")
     private LocalDateTime updateBookingDate;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     @Column(name = "total_price", nullable = false)
     private BigDecimal totalPrice;
 
     @PrePersist
     @PreUpdate
-    private void calculateTotalPriceAndSetDates() {
-        if (rentalStartDate == null || rentalEndDate == null || car == null) {
-            return;
-        }
-
-
-        long days = ChronoUnit.DAYS.between(rentalStartDate.toLocalDate(), rentalEndDate.toLocalDate());
-        if (days <= 0) {
-            throw new IllegalArgumentException("Rental end date must be at least one day after start date.");
-        }
-
-        if (car.getDayRentalPrice() == null) {
-            throw new IllegalStateException("The price for renting a car has not been set.");
-        }
-
-        this.totalPrice = BigDecimal.valueOf(days).multiply(car.getDayRentalPrice());
-
-
+    private void setDates() {
         if (this.createBookingDate == null) {
             this.createBookingDate = LocalDateTime.now();
         }

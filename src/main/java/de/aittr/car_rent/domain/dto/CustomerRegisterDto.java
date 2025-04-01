@@ -2,6 +2,8 @@ package de.aittr.car_rent.domain.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 
 @Schema(description = "DTO representing a customer registration request.")
 public record CustomerRegisterDto(
@@ -18,6 +20,9 @@ public record CustomerRegisterDto(
         String email,
 
         @NotBlank(message = "{customer.password.notBlank}")
-        @Schema(description = "Customer's password", example = "mypassword123")
+        @Size(min = 8, message = "{customer.password.invalidSize}")
+        @Pattern(regexp = "^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[#?!@$ %^&*-]).{8,}$",
+                message = "{customer.password.invalidFormat}")
+        @Schema(description = "Customer's password", example = "Password123!@#")
         String password
 ) {}
