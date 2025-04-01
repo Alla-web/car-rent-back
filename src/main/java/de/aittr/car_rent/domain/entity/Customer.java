@@ -2,6 +2,10 @@ package de.aittr.car_rent.domain.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -25,15 +29,19 @@ public class Customer implements UserDetails {
     @Column(name = "id")
     private Long id;
 
+    @NotNull(message = "{customer.firstName.notBlank}")
     @Column(name = "first_name", nullable = false)
     private String firstName;
 
+    @NotNull(message = "customer.lastName.notBlank")
     @Column(name = "last_name", nullable = false)
     private String lastName;
 
+    @NotBlank(message = "{customer.password.notBlank}")
     @Column(name = "password", nullable = false)
     private String password;
 
+    @NotNull(message = "{customer.email.notBlank}")
     @Column(name = "email", nullable = false, unique = true)
     private String email;
 
