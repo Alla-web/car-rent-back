@@ -146,4 +146,6 @@ public interface CarService {
 
     List<String> getAllAvailableBrands();
 
+    public List<String> getAllCarTypes();
+
 }

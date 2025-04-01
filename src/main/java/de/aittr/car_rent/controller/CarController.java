@@ -267,6 +267,15 @@ public class CarController {
         return carService.getAllAvailableBrands();
     }
 
+    @GetMapping("/types")
+    @Operation(
+            summary = "Get all car types",
+            description = "Retrieve a list of all car body types"
+    )
+    public List<String> getAllCarTypes() {
+        return carService.getAllCarTypes();
+    }
+
     @PostMapping("/upload-image")
     @Operation(
             summary = "Attach image to car",

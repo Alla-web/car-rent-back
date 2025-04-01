@@ -19,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
@@ -213,6 +214,14 @@ public class CarServiceImpl implements CarService {
                 .stream()
                 .filter(Car::isActive)
                 .map(Car::getBrand)
+                .distinct()
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public List<String> getAllCarTypes() {
+        return Arrays.stream(CarType.values())
+                .map(Enum::name)
                 .distinct()
                 .collect(Collectors.toList());
     }

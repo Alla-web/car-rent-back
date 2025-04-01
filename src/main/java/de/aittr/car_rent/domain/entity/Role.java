@@ -21,15 +21,15 @@ public class Role implements GrantedAuthority {
     private Long id;
 
     @Column(name = "title", unique = true)
-    private String name;
+    private String title;
 
     public Role(String name) {
-        this.name = name;
+        this.title = name;
     }
 
     @Override
     public String toString() {
-        return String.format("Role: id - %d; title - %s", id, name);
+        return String.format("Role: id - %d; title - %s", id, title);
     }
 
     @Override
@@ -51,6 +51,6 @@ public class Role implements GrantedAuthority {
      */
     @Override
     public String getAuthority() {
-        return name;
+        return title;
     }
 }

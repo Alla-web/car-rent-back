@@ -20,5 +20,4 @@ public record CustomerRegisterDto(
         @NotBlank(message = "{customer.password.notBlank}")
         @Schema(description = "Customer's password", example = "mypassword123")
         String password
-) {
-}
+) {}

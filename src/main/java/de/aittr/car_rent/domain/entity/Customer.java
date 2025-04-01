@@ -81,7 +81,7 @@ public class Customer implements UserDetails {
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role.getName()));
+        return Collections.singleton(new SimpleGrantedAuthority("ROLE_" + role.getTitle()));
     }
 
     /**
@@ -94,8 +94,8 @@ public class Customer implements UserDetails {
         return email;
     }
 
-//    // временный метод для создания тестового зашифрованного пароля
+    // временный метод для создания тестового зашифрованного пароля
 //     public static void main(String[] args) {
-//     System.out.println(new BCryptPasswordEncoder().encode("111"));
+//     System.out.println(new BCryptPasswordEncoder().encode("Yyyyyyy12345!#"));
 //     }
 }
