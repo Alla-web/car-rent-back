@@ -4,5 +4,4 @@ public record CustomerUpdateRequestDto(String firstName,
                                        String lastName,
                                        String email
 
-) {
-}
+) {}

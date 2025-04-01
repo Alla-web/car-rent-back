@@ -7,11 +7,11 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
 
-@Mapper(componentModel = "spring")
+@Mapper(componentModel = "spring",uses = {CustomerMapper.class, CarMappingService.class})
 public interface BookingMapper {
 
-    @Mapping(target = "carId", source = "car.id")
-    @Mapping(target = "customerId", source = "customer.id")
+    @Mapping(target = "carDto", source = "car")
+    @Mapping(target = "customerDto", source = "customer")
     @Mapping(target = "carStatus", source = "car.carStatus")
     @Mapping(target = "updateBookingDate", source = "updateBookingDate")
     @Mapping(target = "bookingStatus", source = "bookingStatus")

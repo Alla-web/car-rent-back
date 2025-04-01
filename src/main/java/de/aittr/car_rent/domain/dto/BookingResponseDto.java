@@ -33,13 +33,13 @@ public record BookingResponseDto(
         @FutureOrPresent
         LocalDateTime rentalEndDate,
 
-        @Schema(description = "Customer unique identifier", example = "5")
+        @Schema(description = "Customer info DTO")
         @NotNull
-        Long customerId,
+        CustomerResponseDto customerDto,
 
-        @Schema(description = "Car unique identifier", example = "3")
+        @Schema(description = "Car info DTO")
         @NotNull
-        Long carId,
+        CarResponseDto carDto,
 
         @Schema(description = "Car", example = "AVAILABLE")
         CarStatus carStatus,

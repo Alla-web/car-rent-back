@@ -25,5 +25,4 @@ public record CustomerRegisterDto(
                 message = "{customer.password.invalidFormat}")
         @Schema(description = "Customer's password", example = "Password123!@#")
         String password
-) {
-}
+) {}

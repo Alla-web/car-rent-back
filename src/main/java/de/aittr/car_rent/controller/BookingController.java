@@ -96,6 +96,22 @@ public class BookingController {
         return bookingService.getBookingsByRentalDaysOrByBookingStatus(rentalStartDate, rentalEndDate, bookingStatus);
     }
 
+    @PutMapping("activate/{id}")
+    @Operation(
+            summary = "Activates booking at the moment of car delivery to customer",
+            description = "Changes booking status to ACTIVE and car status to RENTED")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
+    public BookingResponseDto activateBooking(
+            @PathVariable("id")
+            @Parameter(description = "Booking unique identifier", example = "7")
+            Long bookingId,
+
+            @AuthenticationPrincipal
+            @Parameter(hidden = true)
+            String email) {
+        return bookingService.activateBooking(bookingId, email);
+    }
 
     @PutMapping("/extend/{id}")
     @Operation(summary = "Extend a booking", description = "Extends the rental period of an existing booking")
@@ -113,7 +129,7 @@ public class BookingController {
             @RequestParam
             @Parameter(
                     description = "New rental end date",
-                    example = "2025-03-28T00:00")
+                    example = "2025-04-01T00:00")
             LocalDateTime newEndDate) {
         return bookingService.extendBooking(id, email, newEndDate);
     }
@@ -133,20 +149,19 @@ public class BookingController {
         return ResponseEntity.ok(bookingService.cancelBooking(id, email));
     }
 
-    //TODO дописать
     @PutMapping("close/{id}")
     @Operation(
             summary = "Closes active booking",
             description = "Changes bookings status from ACTIVE to CLOSED")
     @PreAuthorize("isAuthenticated()")
     @SecurityRequirement(name = "bearerAuth")
-    public void closeBooking(
+    public BookingResponseDto closeBooking(
             @PathVariable
             @Parameter(description = "Booking unique identifier", example = "17")
             Long id,
 
             @AuthenticationPrincipal
             String email) {
-        bookingService.closeBooking(id, email);
+        return bookingService.closeBooking(id, email);
     }
 }
