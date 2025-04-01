@@ -9,6 +9,7 @@ import de.aittr.car_rent.repository.BookingRepository;
 import de.aittr.car_rent.repository.CarRepository;
 import de.aittr.car_rent.repository.CustomerRepository;
 import de.aittr.car_rent.service.interfaces.BookingService;
+import de.aittr.car_rent.service.interfaces.CarService;
 import de.aittr.car_rent.service.mapping.BookingMapper;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
@@ -36,10 +37,12 @@ public class BookingServiceImpl implements BookingService {
     private final CarRepository carRepository;
     private final CustomerRepository customerRepository;
     private final BookingMapper bookingMapper;
+    private final CarService carService;
 
     @Override
     @Transactional
     public BookingResponseDto createBooking(@Valid BookingRequestDto bookingRequestDto, String email) {
+
 
         log.info("Booking request received: {}", bookingRequestDto);
 
@@ -69,8 +72,6 @@ public class BookingServiceImpl implements BookingService {
 
         Car car = carRepository.findById(bookingRequestDto.carId())
                 .orElseThrow(() -> new RestApiException("Car not found"));
-
-
         log.info("Car with ID {} found. Proceeding to create booking.", bookingRequestDto.carId());
 
         Customer currentCustomer = customerRepository.findByEmail(email)
@@ -80,21 +81,21 @@ public class BookingServiceImpl implements BookingService {
         Duration duration = Duration.between(bookingRequestDto.rentalStartDate(), bookingRequestDto.rentalEndDate());
         BigDecimal totalPrice = calculateTotalPrice(car.getDayRentalPrice(), duration);
 
-        if (car.getCarStatus() == CarStatus.AVAILABLE) {
-            car.setCarStatus(CarStatus.RENTED);
-            carRepository.save(car);
-        } else {
-            throw new RestApiException("Car is not available");
+        boolean isAvailableCar = carService.checkIfCarAvailableByDates(car.getId(), bookingRequestDto.rentalStartDate(), bookingRequestDto.rentalEndDate());
+
+        if (!isAvailableCar) {
+           throw new RestApiException("Car with id " + car.getId() + " is not available during the period from " + bookingRequestDto.rentalStartDate() + " to " + bookingRequestDto.rentalEndDate());
         }
 
-        Booking booking = bookingMapper.mapDtoToEntity(bookingRequestDto);
+        Booking booking = new Booking();
         booking.setCreateBookingDate(LocalDateTime.now());
+        booking.setUpdateBookingDate(LocalDateTime.now());
+        booking.setRentalStartDate(bookingRequestDto.rentalStartDate());
+        booking.setRentalEndDate(bookingRequestDto.rentalEndDate());
         booking.setCustomer(currentCustomer);
         booking.setCar(car);
         booking.setTotalPrice(totalPrice);
-        booking.setBookingStatus(BookingStatus.ACTIVE);
-        booking.setUpdateBookingDate(LocalDateTime.now());
-
+        booking.setBookingStatus(BookingStatus.PENDING);
         log.info("Saving booking for customer {} with car ID {} and total price {}", email, bookingRequestDto.carId(), totalPrice);
         booking = bookingRepository.save(booking);
         log.info("Booking successfully created for customer {} with car ID {}.", email, bookingRequestDto.carId());
@@ -230,13 +231,16 @@ public class BookingServiceImpl implements BookingService {
             currentBbooking.setUpdateBookingDate(LocalDateTime.now());
             bookingRepository.save(currentBbooking);
         } else {
-            if(!currentBbooking.getCustomer().getId().equals(currentCustomer.getId())) {
-                log.warn("Customer with email {} is trying to extend currentBbooking ID: {} which belongs to customer ID: {}",
+            if (!currentBbooking.getCustomer().equals(currentCustomer)) {
+                log.warn("Customer with email {} is trying to extend currentBooking ID: {} which belongs to customer ID: {}",
                         email, id, currentBbooking.getCustomer().getId());
                 throw new RestApiException("You can only extend your own bookings");
             }
-            if (checkIfCarAvailable(currentBbooking.getId(), currentBbooking.getCar().getId(), currentBbooking.getRentalEndDate(), newEndDate)) {
-                throw new RestApiException("Car is already booked during the extension period from " + currentBbooking.getRentalEndDate() + " to" + newEndDate);
+
+            boolean isCarAvailable = carService.checkIfCarAvailableByDates(currentBbooking.getCar().getId(), currentBbooking.getRentalEndDate(), newEndDate);
+
+            if (!isCarAvailable) {
+                throw new RestApiException("Car with id " + currentBbooking.getCar().getId() + " is already booked during the period from " + currentBbooking.getRentalEndDate() + " to" + newEndDate);
             }
             rentedCar.setCarStatus(CarStatus.RENTED);
             carRepository.save(rentedCar);
@@ -249,6 +253,7 @@ public class BookingServiceImpl implements BookingService {
         log.info("Successfully extended booking ID: {} to new end date: {}", id, newEndDate);
         return bookingMapper.mapEntityToDto(currentBbooking);
     }
+
 
     private boolean checkIfCarAvailable(Long currentBookingId, Long carId, LocalDateTime from, LocalDateTime to) {
         List<Booking> conflictBookings = bookingRepository.findAllByCarId(carId)
@@ -276,7 +281,7 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() ->  new RestApiException("Booking with ID " + id + " not found"));
 
-        if (booking.getBookingStatus() == BookingStatus.COMPLETED) {
+        if (booking.getBookingStatus() == BookingStatus.CLOSED_BY_ADMIN) {
             log.warn("Cannot cancel a completed booking with ID: {}", id);
             throw new RestApiException("Cannot cancel a completed booking");
         }

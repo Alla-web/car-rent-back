@@ -19,7 +19,7 @@ public interface BookingMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "customer", ignore = true)
-   @Mapping(target = "bookingStatus", ignore = true)
+    @Mapping(target = "bookingStatus", ignore = true)
     @Mapping(target = "createBookingDate", ignore = true)
     @Mapping(target = "updateBookingDate", ignore = true)
     @Mapping(target = "totalPrice", ignore = true)

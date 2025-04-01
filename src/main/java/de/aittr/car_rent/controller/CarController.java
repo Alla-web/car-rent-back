@@ -29,7 +29,6 @@ public class CarController {
 
     private final CarService carService;
 
-    // POST -> localhost:8080/api/cars
     @PostMapping
     @Operation(
             summary = "Save new car",
@@ -43,7 +42,6 @@ public class CarController {
         return carService.saveCar(carDto);
     }
 
-    // GET -> localhost:8080/api/cars
     @GetMapping
     @Operation(
             summary = "Get all cars",
@@ -52,19 +50,17 @@ public class CarController {
         return carService.getAllCars();
     }
 
-    // GET -> localhost:8080/api/cars/5
     @GetMapping("/{id}")
     @Operation(
             summary = "Get car by car id",
             description = "Getting car that exist in the database by car id")
     public CarResponseDto getCarById(
             @PathVariable
-            @Parameter(description = "Car unique identifier")
+            @Parameter(description = "Car unique identifier", example = "7")
             Long id) {
         return carService.getCarById(id);
     }
 
-    // GET -> localhost:8080/api/cars/brand/toyota
     @GetMapping("/filter/brand")
     @Operation(
             summary = "Get cars list by car brand",
@@ -76,7 +72,6 @@ public class CarController {
         return carService.getCarsByBrand(brand);
     }
 
-    // GET -> localhost:8080/api/cars/model/corolla
     @GetMapping("/filter/model")
     @Operation(
             summary = "Get cars list by car model",
@@ -88,7 +83,6 @@ public class CarController {
         return carService.getCarsByModel(model);
     }
 
-    // GET -> localhost:8080/api/cars/year/2006
     @GetMapping("/filter/year")
     @Operation(
             summary = "Get cars list by car year",
@@ -100,7 +94,6 @@ public class CarController {
         return carService.getCarsByYear(year);
     }
 
-    // GET -> localhost:8080/api/cars/type/sedan
     @GetMapping("/filter/type")
     @Operation(
             summary = "Get cars list y car type",
@@ -112,7 +105,6 @@ public class CarController {
         return carService.getCarsByType(type);
     }
 
-    // GET -> localhost:8080/api/cars/fuel-type/petrol
     @GetMapping("/filter/fuel-type")
     @Operation(
             summary = "Get cars list by car fuel type",
@@ -124,7 +116,6 @@ public class CarController {
         return carService.getCarsByFuelType(fuelType);
     }
 
-    // GET -> localhost:8080/api/cars/transmission-type/manual
     @GetMapping("/filter/transmission-type")
     @Operation(
             summary = "Get cars list by car transmission type",
@@ -136,7 +127,6 @@ public class CarController {
         return carService.getCarsByTransmissionType(transmissionType);
     }
 
-    // GET -> localhost:8080/api/cars/car-status/under_repair
     @GetMapping("/filter/car-status")
     @Operation(
             summary = "Get cars list by car status",
@@ -150,7 +140,6 @@ public class CarController {
         return carService.getCarsByCarStatus(carStatus);
     }
 
-    // GET -> localhost:8080/api/cars/rental-price/150-200
     @GetMapping("/filter/rental-price")
     @Operation(
             summary = "Get cars list by min und max car day rental price",
@@ -166,13 +155,37 @@ public class CarController {
         return carService.getCarsByDayRentalPrice(minDayRentalPrice, maxDayRentalPrice);
     }
 
-    // GET -> localhost:8080/api/cars/time/2025-03-28T11:46-2025-03-31T08:58
+    @GetMapping("/available-car")
+    @Operation(
+            summary = "Checks if the car is available during the period",
+            description = "Checks whether the car is available during the period for extending a specific booking or not")
+    public boolean checkIfCarAvailableByDates(
+            @RequestParam(value = "booking-id", required = false)
+            @Parameter(description = "Booking unique identifier", example = "7")
+            Long bookingId,
+
+            @RequestParam("car-id")
+            @Parameter(description = "Car unique identifier", example = "7")
+            Long carId,
+
+            @RequestParam("from")
+            @Parameter(description = "Period start day", example = "2025-04-01T10:00")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime from,
+
+            @RequestParam("to")
+            @Parameter(description = "Period end day", example = "2025-04-05T11:00")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime to) {
+        return carService.checkIfCarAvailableByDates(carId, from, to);
+    }
+
     @GetMapping("/filter/time")
     @Operation(
             summary = "Get available cars list by start und end days",
             description = "Getting available cars list that exist in the database by start und end days")
     public List<CarResponseDto> getAllAvailableCarsByDates(
-            @RequestParam("from")
+            @RequestParam(value = "from")
             @Parameter(description = "Start day", example = "2025-03-28T11:46")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime startDateTime,
@@ -184,7 +197,6 @@ public class CarController {
         return carService.getAllAvailableCarsByDates(startDateTime, endDateTime);
     }
 
-    // PUT -> localhost:8080/api/cars  (идентификатор отправляется в теле запроса)
     @PutMapping
     @Operation(
             summary = "Update car",
@@ -199,7 +211,6 @@ public class CarController {
         carService.updateCar(carDto);
     }
 
-    // DELETE -> localhost:8080/api/cars/3
     @DeleteMapping("/delete/{id}")
     @Operation(
             summary = "Delete car by car id",
