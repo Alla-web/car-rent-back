@@ -42,12 +42,10 @@ public class BookingServiceImpl implements BookingService {
     @Override
     @Transactional
     public BookingResponseDto createBooking(@Valid BookingRequestDto bookingRequestDto, String email) {
-
-
         log.info("Booking request received: {}", bookingRequestDto);
 
         if (bookingRequestDto == null) {
-            throw new RestApiException("Booking request cannot be null.");
+            throw new RestApiException("Booking request cannot be null");
         }
 
         if (bookingRequestDto.carId() == null) {
@@ -55,7 +53,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (bookingRequestDto.rentalStartDate() == null || bookingRequestDto.rentalEndDate() == null) {
-            throw new RestApiException("Rental start and end dates cannot be null.");
+            throw new RestApiException("Rental start and end dates cannot be null");
         }
 
         if (email == null || email.isEmpty()) {
@@ -63,15 +61,16 @@ public class BookingServiceImpl implements BookingService {
         }
 
         if (bookingRequestDto.rentalStartDate().toLocalDate().isBefore(LocalDate.now())) {
-            throw new RestApiException("Rental start date must be today or in the future.");
+            throw new RestApiException("Rental start date must be today or in the future");
         }
 
         if (!bookingRequestDto.rentalEndDate().isAfter(bookingRequestDto.rentalStartDate())) {
-            throw new RestApiException("Rental end date must be at least one full day after the start date.");
+            throw new RestApiException("Rental end date must be at least one full day after the start date");
         }
 
         Car car = carRepository.findById(bookingRequestDto.carId())
                 .orElseThrow(() -> new RestApiException("Car not found"));
+
         log.info("Car with ID {} found. Proceeding to create booking.", bookingRequestDto.carId());
 
         Customer currentCustomer = customerRepository.findByEmail(email)
@@ -87,7 +86,7 @@ public class BookingServiceImpl implements BookingService {
                     + bookingRequestDto.rentalStartDate() + " to " + bookingRequestDto.rentalEndDate());
         }
 
-        BigDecimal totalPrice = countBookingTotalPrice(car.getDayRentalPrice(),
+        BigDecimal totalPrice = this.calculateBookingTotalPrice(car.getDayRentalPrice(),
                 bookingRequestDto.rentalStartDate(), bookingRequestDto.rentalEndDate());
 
         Booking booking = new Booking();
@@ -104,27 +103,6 @@ public class BookingServiceImpl implements BookingService {
         log.info("Booking successfully created for customer {} with car ID {}.", email, bookingRequestDto.carId());
         return bookingMapper.mapEntityToDto(booking);
     }
-
-    private BigDecimal calculateTotalPrice(BigDecimal dailyPrice, Duration duration) {
-        if (dailyPrice == null || dailyPrice.compareTo(BigDecimal.ZERO) <= 0) {
-            throw new RestApiException("Daily price must be greater than zero.");
-        }
-
-        long days = duration.toDays();
-        long hours = duration.toHoursPart();
-        long minutes = duration.toMinutesPart();
-        long seconds = duration.toSecondsPart();
-
-        BigDecimal hourlyPrice = dailyPrice.divide(BigDecimal.valueOf(24), RoundingMode.HALF_UP);
-        BigDecimal minutelyPrice = hourlyPrice.divide(BigDecimal.valueOf(60), RoundingMode.HALF_UP);
-        BigDecimal secondlyPrice = minutelyPrice.divide(BigDecimal.valueOf(60), RoundingMode.HALF_UP);
-
-        return dailyPrice.multiply(BigDecimal.valueOf(days))
-                .add(hourlyPrice.multiply(BigDecimal.valueOf(hours)))
-                .add(minutelyPrice.multiply(BigDecimal.valueOf(minutes)))
-                .add(secondlyPrice.multiply(BigDecimal.valueOf(seconds)));
-    }
-
 
     @Override
     public BookingResponseDto getBookingByBookingId(Long id) {
@@ -234,7 +212,6 @@ public class BookingServiceImpl implements BookingService {
         Booking currentBooking = bookingRepository.findById(id)
                 .orElseThrow(() -> new BookingNotFoundException(id));
 
-
         if (newEndDate.isBefore(currentBooking.getRentalEndDate())) {
             throw new RestApiException("New rental end date must be after the current rental end date.");
         }
@@ -245,11 +222,10 @@ public class BookingServiceImpl implements BookingService {
             throw new RestApiException("Car with id " + currentBooking.getCar().getId() + " is already booked during the period from " + currentBooking.getRentalEndDate() + " to" + newEndDate);
         }
 
-        BigDecimal extraPrice = countBookingTotalPrice(currentBooking.getCar().getDayRentalPrice(),
+        BigDecimal extraPrice = this.calculateBookingTotalPrice(currentBooking.getCar().getDayRentalPrice(),
                 currentBooking.getRentalEndDate(), newEndDate);
 
         if (isAdmin(email)) {
-
             currentBooking.setTotalPrice(currentBooking.getTotalPrice().add(extraPrice));
             currentBooking.setRentalEndDate(newEndDate);
             currentBooking.setUpdateBookingDate(LocalDateTime.now());
@@ -268,17 +244,6 @@ public class BookingServiceImpl implements BookingService {
         }
         log.info("Successfully extended booking ID: {} to new end date: {}", id, newEndDate);
         return bookingMapper.mapEntityToDto(currentBooking);
-    }
-
-
-    private boolean checkIfCarAvailable(Long currentBookingId, Long carId, LocalDateTime from, LocalDateTime to) {
-        List<Booking> conflictBookings = bookingRepository.findAllByCarId(carId)
-                .stream()
-                .filter(b -> !b.getId().equals(currentBookingId))
-                .filter(b -> b.getBookingStatus() == BookingStatus.ACTIVE)
-                .filter(b -> b.getRentalStartDate().isBefore(to) && b.getRentalEndDate().isAfter(from))
-                .toList();
-        return conflictBookings.isEmpty();
     }
 
     @Transactional
@@ -330,6 +295,7 @@ public class BookingServiceImpl implements BookingService {
         log.info("Changing car status booked car to AVAILABLE");
         Car bookedCar = carRepository.findById(booking.getCar().getId())
                 .orElseThrow(() -> new RestApiException("Car from the booking not found"));
+
         bookedCar.setCarStatus(CarStatus.AVAILABLE);
         carRepository.save(bookedCar);
 
@@ -342,7 +308,6 @@ public class BookingServiceImpl implements BookingService {
 
     @Transactional
     @Override
-
     public BookingResponseDto closeBooking(Long id, String email) {
 
         log.info("Attempting to close booking with ID: {}", id);
@@ -379,7 +344,7 @@ public class BookingServiceImpl implements BookingService {
     }
 
     @Override
-    public BigDecimal countBookingTotalPrice(BigDecimal rentalDayPrice, LocalDateTime fromDate, LocalDateTime toDate) {
+    public BigDecimal calculateBookingTotalPrice(BigDecimal rentalDayPrice, LocalDateTime fromDate, LocalDateTime toDate) {
         long totalSeconds = Duration.between(fromDate, toDate).getSeconds();
         BigDecimal pricePerSecond = rentalDayPrice.divide(BigDecimal.valueOf(86400), 10, RoundingMode.HALF_UP);
         return pricePerSecond.multiply(BigDecimal.valueOf(totalSeconds)).setScale(2, RoundingMode.HALF_UP);
