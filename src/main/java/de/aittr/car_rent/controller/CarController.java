@@ -8,10 +8,12 @@ import de.aittr.car_rent.domain.entity.CarType;
 import de.aittr.car_rent.service.interfaces.CarService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -284,29 +286,40 @@ public class CarController {
         return carService.getAllCarTypes();
     }
 
-    @PostMapping("/upload-image")
+    @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
-            summary = "Attach image to car",
-            description = "Attaches a link to a photo stored locally on the computer to the car in the database")
+            description = "Uploads an image and attaches it to the specified car",
+            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+                    description = "Car ID and image file",
+                    required = true,
+                    content = @Content(
+                            mediaType = "multipart/form-data"
+
+                            )
+                    )
+            )
+
     @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<String> uploadCarImage(
             @RequestParam("id")
             @Parameter(description = "Car unique identifier", example = "15")
             Long carId,
             @RequestParam("file")
-            @Parameter(description = "Car image", example = "https://shop-bucket.fra1.digitaloceanspaces.com/coconut-caf872c7-2ebd-4ec0-bd28-ff198091392c.png")
+            @Parameter(description = "Car image file", required = true)
             MultipartFile file) {
-        try {
 
             if (file.isEmpty()) {
                 return ResponseEntity.badRequest().body("The file must not be empty");
-            }
 
-            String imageUrl;
-            imageUrl = carService.attachImageToCar(carId, file);
+            } try {
+            String imageUrl = carService.attachImageToCar(carId, file);
+            return ResponseEntity.ok("Image uploaded successfully. URL: \" + imageUrl " );
 
-            return ResponseEntity.ok("Image uploaded successfully. URL: " + imageUrl);
-        } catch (Exception e) {
+            } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+
+            } catch (Exception e) {
             return ResponseEntity.status(500).body("Error loading image");
         }
     }
