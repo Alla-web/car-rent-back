@@ -19,10 +19,16 @@ public interface CarService {
     CarResponseDto saveCar(CarResponseDto carDto);
 
     /**
-     * Метод получения всех авто (активные), имеющихся в БД
+     * Метод получения всех активных (существующих физически) авто, имеющихся в БД
      * @return список активных авто
      */
     List<CarResponseDto> getAllCars();
+
+    /**
+     * Метод получения всех существующих в БД авто
+     * @return список всех авто, существующих в БД
+     */
+    List<CarResponseDto> getAllCarsToAdmin();
 
     /**
      * Метод нахождения авто по его id

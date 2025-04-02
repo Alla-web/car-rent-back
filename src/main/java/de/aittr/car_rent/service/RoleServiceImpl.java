@@ -14,11 +14,11 @@ public class RoleServiceImpl implements RoleService {
 
     @Override
     public Role getRoleUser() {
-        return roleRepository.findByName("ROLE_CUSTOMER").orElseThrow(() -> new RuntimeException("Role not found"));
+        return roleRepository.findByTitle("ROLE_CUSTOMER").orElseThrow(() -> new RuntimeException("Role not found"));
     }
 
     @Override
     public Role getRoleAdmin() {
-        return roleRepository.findByName("ROLE_ADMIN").orElseThrow(() -> new RuntimeException("Role not found"));
+        return roleRepository.findByTitle("ROLE_ADMIN").orElseThrow(() -> new RuntimeException("Role not found"));
     }
 }

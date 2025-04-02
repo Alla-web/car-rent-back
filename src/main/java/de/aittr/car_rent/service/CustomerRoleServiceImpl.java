@@ -2,6 +2,7 @@ package de.aittr.car_rent.service;
 
 import de.aittr.car_rent.domain.entity.Role;
 import de.aittr.car_rent.repository.RoleRepository;
+import de.aittr.car_rent.service.interfaces.RoleService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -11,7 +12,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-public class CustomerRoleServiceImpl implements CustomerRoleService {
+public class CustomerRoleServiceImpl implements RoleService.CustomerRoleService {
 
     /**
      * Название роли по умолчанию для клиентов.
@@ -48,6 +49,6 @@ public class CustomerRoleServiceImpl implements CustomerRoleService {
 
     @Override
     public Optional<Role> findByName(String roleName) {
-        return roleRepository.findByName(roleName);
+        return roleRepository.findByTitle(roleName);
     }
 }
