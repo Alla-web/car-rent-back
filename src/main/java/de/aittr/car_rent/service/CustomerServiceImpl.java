@@ -27,9 +27,9 @@ public class CustomerServiceImpl implements CustomerService {
     private final BookingMapper bookingMapper;
 
     @Override
-    public List<CustomerResponseDto> getAllActiveCustomers() {
+    public List<CustomerResponseDto> getAllCustomers() {
         return repository
-                .findAllByActiveTrue()
+                .findAll()
                 .stream()
                 .map(customerMapper::toDto)
                 .toList();

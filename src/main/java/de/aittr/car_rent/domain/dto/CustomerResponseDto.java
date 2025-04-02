@@ -24,6 +24,9 @@ public record CustomerResponseDto(
                 description = "Customer role",
                 example = "Customer",
                 allowableValues = {"CUSTOMER", "ADMIN"})
-        String role
+        String role,
+
+        @Schema(description = "Active status", example = "true")
+        boolean isActive
 ) {
 }
