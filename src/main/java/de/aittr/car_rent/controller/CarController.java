@@ -302,12 +302,7 @@ public class CarController {
             requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
                     description = "Car ID and image file",
                     required = true,
-                    content = @Content(
-                            mediaType = "multipart/form-data"
-
-                            )
-                    )
-            )
+                    content = @Content(mediaType = "multipart/form-data")))
 
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
@@ -324,7 +319,7 @@ public class CarController {
 
             } try {
             String imageUrl = carService.attachImageToCar(carId, file);
-            return ResponseEntity.ok("Image uploaded successfully. URL: \" + imageUrl " );
+            return ResponseEntity.ok("Image uploaded successfully. URL: " + imageUrl);
 
             } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
