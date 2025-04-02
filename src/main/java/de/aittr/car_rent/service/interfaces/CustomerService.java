@@ -31,7 +31,7 @@ public interface CustomerService {
      *
      * @return список {@link CustomerResponseDto} активных клиентов.
      */
-    List<CustomerResponseDto> getAllActiveCustomers();
+    List<CustomerResponseDto> getAllCustomers();
 
     /**
      * Возвращает активного клиента по идентификатору.

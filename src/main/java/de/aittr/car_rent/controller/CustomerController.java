@@ -29,7 +29,7 @@ public class CustomerController {
     @PreAuthorize("hasAnyRole({'ROLE_ADMIN'})")
     @SecurityRequirement(name = "bearerAuth")
     public List<CustomerResponseDto> getAllActiveCustomers() {
-        return customerService.getAllActiveCustomers();
+        return customerService.getAllCustomers();
     }
 
     //GET -> http://localhost:8080/customers/3
