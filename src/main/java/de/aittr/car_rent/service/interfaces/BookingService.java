@@ -29,6 +29,6 @@ public interface BookingService {
 
     BookingResponseDto closeBooking(Long id, String email);
 
-    BigDecimal countBookingTotalPrice(BigDecimal rentalDayPrice, LocalDateTime fromDate, LocalDateTime toDate);
+    BigDecimal calculateBookingTotalPrice(BigDecimal rentalDayPrice, LocalDateTime fromDate, LocalDateTime toDate);
 
 }
