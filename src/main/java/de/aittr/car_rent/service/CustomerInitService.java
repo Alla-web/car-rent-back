@@ -5,6 +5,7 @@ import de.aittr.car_rent.domain.dto.CustomerResponseDto;
 import de.aittr.car_rent.domain.entity.Role;
 import de.aittr.car_rent.repository.CustomerRepository;
 import de.aittr.car_rent.security.service.AuthService;
+import de.aittr.car_rent.service.interfaces.RoleService;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -19,7 +20,7 @@ import java.util.List;
  * <p>
  * Данный сервис создает набор тестовых пользователей при старте приложения, если они отсутствуют в базе данных.
  * Для клиентов используется роль, определенная в {@code CustomerRoleService.initCustomerRole},
- * а для администраторов – роль "ROLE_ADMIN", полученная через {@link de.aittr.car_rent.service.CustomerRoleService#saveOrGet(String)}.
+ * а для администраторов – роль "ROLE_ADMIN", полученная через {@link RoleService.CustomerRoleService#saveOrGet(String)}.
  * </p>
  * <p>
  * Тестовые данные пользователей задаются через статические поля:

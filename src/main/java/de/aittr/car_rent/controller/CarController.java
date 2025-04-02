@@ -44,10 +44,18 @@ public class CarController {
 
     @GetMapping
     @Operation(
-            summary = "Get all cars",
-            description = "Getting all cars that exist in the database")
+            summary = "Get all active cars (that exist physically in the rental salon)",
+            description = "Getting all active cars that exist in the database with statuses ACTIVE")
     public List<CarResponseDto> getAllCars() {
         return carService.getAllCars();
+    }
+
+    @GetMapping("/all")
+    @Operation(
+            summary = "Get all cars that exist in the database)",
+            description = "Getting all cars that exist in the database with all statuses and ACTIVE ot NOT_ACTIVE")
+    public List<CarResponseDto> getAllCarsToAdmin() {
+        return carService.getAllCarsToAdmin();
     }
 
     @GetMapping("/{id}")

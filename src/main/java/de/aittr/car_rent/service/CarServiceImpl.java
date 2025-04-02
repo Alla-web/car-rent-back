@@ -46,8 +46,19 @@ public class CarServiceImpl implements CarService {
         return carRepository.findAll()
                 .stream()
                 .filter(Car::isActive)
-                .filter((car -> car.getCarStatus() == CarStatus.RENTED || car.getCarStatus() == CarStatus.AVAILABLE))
+                .filter((car -> car.getCarStatus() == CarStatus.RENTED ||
+                        car.getCarStatus() == CarStatus.AVAILABLE ||
+                        car.getCarStatus() == CarStatus.UNDER_INSPECTION))
                 .sorted(Comparator.comparing(Car::getType))
+                .map(carMappingService::mapEntityToDto)
+                .toList();
+    }
+
+    @Override
+    public List<CarResponseDto> getAllCarsToAdmin() {
+        return carRepository.findAll()
+                .stream()
+                .sorted(Comparator.comparing(Car::isActive).thenComparing(Car::getCarStatus).thenComparing(Car::getBrand))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
