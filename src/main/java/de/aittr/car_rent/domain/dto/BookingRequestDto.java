@@ -23,5 +23,5 @@ public record BookingRequestDto(
 
         @NotNull(message = "Car ID cannot be null.")
         @Schema(description = "Car unique identifier", example = "3")
-        Long carI0
+        Long carId
 ) {}
