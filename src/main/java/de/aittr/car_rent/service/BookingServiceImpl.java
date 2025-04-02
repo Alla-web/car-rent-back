@@ -58,7 +58,7 @@ public class BookingServiceImpl implements BookingService {
             throw new RestApiException("Rental start and end dates cannot be null.");
         }
 
-        if (email == null || email.isEmpty())  {
+        if (email == null || email.isEmpty()) {
             throw new RestApiException("Email cannot be null or empty.");
         }
 
@@ -180,9 +180,9 @@ public class BookingServiceImpl implements BookingService {
             throw new RestApiException("Enter rental start date, rental end date, or booking status");
 
         }
-            if (rentalStartDate != null && rentalEndDate != null) {
-                throw new RestApiException("Enter only one date - rental start date or rental end date.");
-            }
+        if (rentalStartDate != null && rentalEndDate != null) {
+            throw new RestApiException("Enter only one date - rental start date or rental end date.");
+        }
 
         return bookingRepository.findAll()
                 .stream()
@@ -267,7 +267,7 @@ public class BookingServiceImpl implements BookingService {
             bookingRepository.save(currentBooking);
         }
         log.info("Successfully extended booking ID: {} to new end date: {}", id, newEndDate);
-        return bookingMapper.mapEntityToDto(currentBooking);       
+        return bookingMapper.mapEntityToDto(currentBooking);
     }
 
 
@@ -295,7 +295,7 @@ public class BookingServiceImpl implements BookingService {
         }
 
         Booking booking = bookingRepository.findById(id)
-                .orElseThrow(() ->  new RestApiException("Booking with ID " + id + " not found"));
+                .orElseThrow(() -> new RestApiException("Booking with ID " + id + " not found"));
 
         if (booking.getBookingStatus() == BookingStatus.CLOSED_BY_ADMIN ||
                 booking.getBookingStatus() == BookingStatus.ACTIVE) {
@@ -344,7 +344,7 @@ public class BookingServiceImpl implements BookingService {
     @Override
 
     public BookingResponseDto closeBooking(Long id, String email) {
- 
+
         log.info("Attempting to close booking with ID: {}", id);
 
         Booking existingBooking = bookingRepository.findById(id)
@@ -352,7 +352,7 @@ public class BookingServiceImpl implements BookingService {
         Car bookedCar = carRepository.findById(existingBooking.getCar().getId())
                 .orElseThrow(() -> new RestApiException("Car from the booking not found"));
 
-       if (existingBooking.getBookingStatus() == BookingStatus.CLOSED_BY_ADMIN) {
+        if (existingBooking.getBookingStatus() == BookingStatus.CLOSED_BY_ADMIN) {
             throw new RestApiException("Booking is already closed");
         }
 
@@ -364,10 +364,10 @@ public class BookingServiceImpl implements BookingService {
         if (existingBooking.getBookingStatus() == BookingStatus.ACTIVE) {
             throw new RestApiException("Cannot close an active booking. Mark it as completed first.");
         }
-  
+
         if (!isAdmin(email)) {
             throw new RestApiException("Close booking can only administrator");
-        } else {  
+        } else {
             existingBooking.setBookingStatus(BookingStatus.CLOSED_BY_ADMIN);
             existingBooking.setUpdateBookingDate(LocalDateTime.now());
             bookingRepository.save(existingBooking);
