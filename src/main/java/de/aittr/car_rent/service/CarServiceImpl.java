@@ -3,6 +3,7 @@ package de.aittr.car_rent.service;
 import de.aittr.car_rent.domain.dto.CarResponseDto;
 import de.aittr.car_rent.domain.entity.*;
 import de.aittr.car_rent.exception_handling.exceptions.CarNotFoundException;
+import de.aittr.car_rent.exception_handling.exceptions.RestApiException;
 import de.aittr.car_rent.repository.BookingRepository;
 import de.aittr.car_rent.repository.CarRepository;
 import de.aittr.car_rent.service.interfaces.CarService;
@@ -58,7 +59,12 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> getAllCarsToAdmin() {
         return carRepository.findAll()
                 .stream()
-                .sorted(Comparator.comparing(Car::isActive).thenComparing(Car::getCarStatus).thenComparing(Car::getBrand))
+                .sorted(Comparator.comparing(Car::isActive)
+                        .thenComparing(Car::getCarStatus)
+                        .thenComparing(Car::getType)
+                        .thenComparing(Car::getTransmissionType)
+                        .thenComparing(Car::getBrand)
+                        .thenComparing(Car::getYear))
                 .map(carMappingService::mapEntityToDto)
                 .toList();
     }
@@ -174,10 +180,23 @@ public class CarServiceImpl implements CarService {
 
     @Override
     @Transactional
-    public void deleteCarById(Long id) {
+    public CarResponseDto deleteCarById(Long id) {
         Car existingCar = getOrThrow(id);
         existingCar.setActive(false);
         carRepository.save(existingCar);
+        return carMappingService.mapEntityToDto(existingCar);
+    }
+
+    @Transactional
+    @Override
+    public CarResponseDto restoreCar(Long id) {
+        Car restoredCar = carRepository.findById(id).orElseThrow(() -> new RuntimeException("Car with id " + id + " not found"));
+        if(restoredCar.isActive()) {
+            throw new RestApiException("Car with id " + id + " is already active");
+        }
+        restoredCar.setActive(true);
+        carRepository.save(restoredCar);
+        return carMappingService.mapEntityToDto(restoredCar);
     }
 
 

@@ -124,11 +124,14 @@ public interface CarService {
      * Метод удаления авто из спискка доступных пользователю. Если машина не найдена метод выбросит исключение
      * @param id
      */
-    void deleteCarById(Long id);
+    CarResponseDto deleteCarById(Long id);
 
-    //восстановить авто по его id
-
-    //добавить ссылку на изображение авто по id авто
+    /**
+     * Метод восстанавливает ранее удалённое авто в БД
+     * @param carId
+     * @return car info DTO
+     */
+    CarResponseDto restoreCar(Long carId);
 
     /**
      * Метод прикрепления фото к авто
