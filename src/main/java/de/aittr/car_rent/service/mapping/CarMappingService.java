@@ -8,6 +8,7 @@ import org.mapstruct.Mapping;
 @Mapper(componentModel = "spring")
 public interface CarMappingService {
 
+    @Mapping(target = "isActive", source = "active")
     CarResponseDto mapEntityToDto(Car carEntity);
 
     @Mapping(target = "id", ignore = true)

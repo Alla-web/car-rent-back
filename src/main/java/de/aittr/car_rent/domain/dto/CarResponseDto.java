@@ -13,8 +13,7 @@ public record CarResponseDto(
         @Schema(
                 description = "Car unique identifier",
                 example = "123",
-                accessMode = Schema.AccessMode.READ_ONLY
-        )
+                accessMode = Schema.AccessMode.READ_ONLY)
         Long id,
 
         @Schema(description = "Car brand", example = "VW")
@@ -28,20 +27,23 @@ public record CarResponseDto(
 
         @Schema(
                 description = "Сar body type",
-                example = "SEDAN"
-              )
+                example = "SEDAN")
         CarType type,
 
         @Schema(
                 description = "Car fuel type",
-                example = "PETROL"
-                )
+                example = "PETROL")
         CarFuelType fuelType,
 
         @Schema(
                 description = "Car transmission type",
                 example = "AUTOMATIC")
         CarTransmissionType transmissionType,
+
+        @Schema(
+                description = "Car state (used / deleted)",
+                example = "true")
+        boolean isActive,
 
         @Schema(
                 description = "Car status",
@@ -51,7 +53,9 @@ public record CarResponseDto(
         @Schema(description = "Car day rental price", example = "150.00")
         BigDecimal dayRentalPrice,
 
-        @Schema(description = "Car image", example = "https://shop-bucket.fra1.digitaloceanspaces.com/coconut-caf872c7-2ebd-4ec0-bd28-ff198091392c.png")
+        @Schema(
+                description = "Car image",
+                example = "https://shop-bucket.fra1.digitaloceanspaces.com/coconut-caf872c7-2ebd-4ec0-bd28-ff198091392c.png")
         String carImage) {
 
 }

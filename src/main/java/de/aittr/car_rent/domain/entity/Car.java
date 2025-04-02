@@ -56,7 +56,7 @@ public class Car {
 
     @NotNull(message = "{car.active.notBlank}")
     @Column(name = "active", nullable = false)
-    private boolean active;
+    private boolean isActive;
 
     @NotNull(message = "{car.car_status.notBlank}")
     @Column(name = "car_status")
@@ -85,13 +85,13 @@ public class Car {
         this.transmissionType = transmissionType;
         this.dayRentalPrice = dayRentalPrice;
         this.carStatus=CarStatus.AVAILABLE;
-        this.active = true;
+        this.isActive = true;
     }
 
     @Override
     public String toString() {
         return String.format("Car: id - %d; brand - %s; model - %s; year - %d; type - %s; fuel type - %s, transmission type - %s; car status - %s; day rental price - %.2f; active - %s",
-                id, brand, model, year, type, fuelType, transmissionType, carStatus, dayRentalPrice, active ? "yes" : "no");
+                id, brand, model, year, type, fuelType, transmissionType, carStatus, dayRentalPrice, isActive ? "yes" : "no");
     }
 
     @Override

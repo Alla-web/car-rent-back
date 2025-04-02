@@ -225,8 +225,18 @@ public class CarController {
             description = "Change car property active in the database on false")
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
-    public void deleteCarById(@PathVariable Long id) {
-        carService.deleteCarById(id);
+    public CarResponseDto deleteCarById(@PathVariable Long id) {
+        return carService.deleteCarById(id);
+    }
+
+    @PutMapping("restore/{id}")
+    @Operation(
+            summary = "Restore a previously deleted car",
+            description = "Changes property isActive to TRUE")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
+    @SecurityRequirement(name = "bearerAuth")
+    public CarResponseDto restoreCar(@PathVariable Long id) {
+        return carService.restoreCar(id);
     }
 
     //    GET-> localhost:8080/api/cars/filter?startDateTime=2024-03-20T10:00:00&endDateTime=2024-03-25T10:00:00&minPrice=50&maxPrice=200
