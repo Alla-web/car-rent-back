@@ -12,6 +12,7 @@ import org.springframework.context.annotation.Configuration;
         info = @Info(title = "Car Rent API", version = "1.0", description = "API для аренды автомобилей"),
         servers = {
                 @Server(url = "http://localhost:8080/api", description = "Локальный сервер"),
+                @Server(url = "https://car-rental-cymg8.ondigitalocean.app/api", description = "Деплой сервер"),
         }
 )
 @SecurityScheme(

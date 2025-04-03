@@ -160,7 +160,7 @@ public interface AuthController {
                                             value = """
                                                     {
                                                       "email": "customer_1@car-rent.de",
-                                                      "password": "user-pass#007"
+                                                      "password": "User-pass#007"
                                                     }
                                                     """
                                     ),
@@ -170,7 +170,7 @@ public interface AuthController {
                                             value = """
                                                     {
                                                       "email": "customer_2@cr.de",
-                                                      "password": "user-pass#007"
+                                                      "password": "User-pass#007"
                                                     }
                                                     """
                                     ),
@@ -180,7 +180,7 @@ public interface AuthController {
                                             value = """
                                                     {
                                                       "email": "customer_3@cr.de",
-                                                      "password": "user-pass#007"
+                                                      "password": "User-pass#007"
                                                     }
                                                     """
                                     ),
@@ -190,7 +190,7 @@ public interface AuthController {
                                             value = """
                                                     {
                                                       "email": "admin_1@car-rent.de",
-                                                      "password": "admin-Pass#007"
+                                                      "password": "Admin-Pass#007"
                                                     }
                                                     """
                                     )
