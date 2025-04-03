@@ -204,5 +204,5 @@ public interface AuthController {
             @RequestBody RefreshRequestDto refreshRequestDto);
 
     @GetMapping("/confirm/{code}")
-    public ResponseEntity<String> confirmRegistration(@PathVariable String code);
+    ResponseEntity<String> confirmRegistration(@PathVariable String code);
 }
