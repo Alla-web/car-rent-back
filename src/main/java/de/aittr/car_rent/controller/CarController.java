@@ -190,23 +190,6 @@ public class CarController {
         return carService.checkIfCarAvailableByDates(carId, from, to);
     }
 
-    @GetMapping("/filter/time")
-    @Operation(
-            summary = "Get available cars list by start und end days",
-            description = "Getting available cars list that exist in the database by start und end days")
-    public List<CarResponseDto> getAllAvailableCarsByDates(
-            @RequestParam(value = "from")
-            @Parameter(description = "Start day", example = "2025-03-28T11:46")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime startDateTime,
-
-            @RequestParam(value = "to")
-            @Parameter(description = "End day", example = "2025-03-30T11:46")
-            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
-            LocalDateTime endDateTime) {
-        return carService.getAllAvailableCarsByDates(startDateTime, endDateTime);
-    }
-
     @PutMapping
     @Operation(
             summary = "Update car",
@@ -241,6 +224,23 @@ public class CarController {
         return carService.restoreCar(id);
     }
 
+    @GetMapping("/filter/time")
+    @Operation(
+            summary = "Get available cars list by start und end days",
+            description = "Getting available cars list that exist in the database by start und end days")
+    public List<CarResponseDto> getAllAvailableCarsByDates(
+            @RequestParam(value = "from")
+            @Parameter(description = "Start day", example = "2025-03-28T11:46")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime startDateTime,
+
+            @RequestParam(value = "to")
+            @Parameter(description = "End day", example = "2025-03-30T11:46")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
+            LocalDateTime endDateTime) {
+        return carService.getAllAvailableCarsByDates(startDateTime, endDateTime);
+    }
+
     //    GET-> localhost:8080/api/cars/filter?startDateTime=2024-03-20T10:00:00&endDateTime=2024-03-25T10:00:00&minPrice=50&maxPrice=200
     @GetMapping("/filter")
     @Operation(
@@ -248,24 +248,26 @@ public class CarController {
             description = "Filter available cars by various criteria including dates, brand, fuel type, transmission type and price range")
     public List<CarResponseDto> filterAvailableCars(
             @RequestParam(required = false)
-            @Parameter(description = "Start date and time of rental period", example = "2025-03-28T00:00")
+            @Parameter(description = "Start date and time of rental period", example = "2025-04-01T00:00")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime startDateTime,
 
             @RequestParam(required = false)
-            @Parameter(description = "End date and time of rental period", example = "2025-03-28T00:00")
+            @Parameter(description = "End date and time of rental period", example = "2025-04-02T00:00")
+            @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime endDateTime,
 
             @RequestParam(required = false)
-            @Parameter(description = "Car brand", example = "Toyota")
-            String brand,
+            @Parameter(description = "Car brands", example = "Toyota, BMW, VW")
+            List<String> brands,
 
             @RequestParam(required = false)
-            @Parameter(description = "Car fuel type", example = "Corolla")
-            String fuelType,
+            @Parameter(description = "Car fuel type", example = "Corolla, X5, Golf")
+            List<String> fuelTypes,
 
             @RequestParam(required = false)
-            @Parameter(description = "Car transmission type", example = "MANUAL")
-            String transmissionType,
+            @Parameter(description = "Car transmission types", example = "MANUAL, AUTOMATIC")
+            List<String> transmissionTypes,
 
             @RequestParam(required = false)
             @Parameter(description = "Minimum rental price per day", example = "50")
@@ -274,7 +276,7 @@ public class CarController {
             @RequestParam(required = false)
             @Parameter(description = "Maximum rental price per day", example = "150")
             BigDecimal maxPrice) {
-        return carService.filterAvailableCars(startDateTime, endDateTime, brand, fuelType, transmissionType, minPrice, maxPrice);
+        return carService.filterAvailableCars(startDateTime, endDateTime, brands, fuelTypes, transmissionTypes, minPrice, maxPrice);
     }
 
     // GET -> localhost:8080/api/cars/brands
