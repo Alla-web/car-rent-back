@@ -7,19 +7,20 @@ import freemarker.cache.ClassTemplateLoader;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import jakarta.mail.internet.MimeMessage;
-import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.freemarker.FreeMarkerTemplateUtils;
 
-import javax.management.ConstructorParameters;
 import java.util.HashMap;
 import java.util.Map;
 
 @Service
 public class EmailServiceImpl implements EmailService {
 
+    @Value("${host.url}")
+    private String hostUrl;
     private final JavaMailSender sender;
     private final Configuration mailConfig;
     private final ConfirmationService confirmationService;
@@ -58,7 +59,7 @@ public class EmailServiceImpl implements EmailService {
 
             Map<String, Object> params = new HashMap<>();
             params.put("name", customer.getFirstName());
-            params.put("link", "http://localhost:8080/api/auth/confirm/" + code);
+            params.put("link", hostUrl + "/api/auth/confirm/" + code);
 
             return FreeMarkerTemplateUtils.processTemplateIntoString(template, params);
         } catch (Exception e) {
