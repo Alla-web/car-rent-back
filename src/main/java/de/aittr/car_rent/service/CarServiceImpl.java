@@ -16,9 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -34,6 +31,7 @@ public class CarServiceImpl implements CarService {
     private final CarRepository carRepository;
     private final CarMappingService carMappingService;
     private final BookingRepository bookingRepository;
+    private final CarImageService carImageService;
 
     @Override
     public CarResponseDto saveCar(CarResponseDto carDto) {
@@ -191,7 +189,7 @@ public class CarServiceImpl implements CarService {
     @Override
     public CarResponseDto restoreCar(Long id) {
         Car restoredCar = carRepository.findById(id).orElseThrow(() -> new RuntimeException("Car with id " + id + " not found"));
-        if(restoredCar.isActive()) {
+        if (restoredCar.isActive()) {
             throw new RestApiException("Car with id " + id + " is already active");
         }
         restoredCar.setActive(true);
@@ -270,13 +268,10 @@ public class CarServiceImpl implements CarService {
             throw new IllegalArgumentException("Only jpg, png, and jpeg images are allowed");
         }
 
-        String fileName = id + "_" + file.getOriginalFilename();
-        Path path = Paths.get("uploads/cars", fileName);
+        String fileName = "cars/" + id + "_" + System.currentTimeMillis() + "." + fileExtension;
 
-        Files.createDirectories(path.getParent());
-        file.transferTo(path);
+        String imageUrl = carImageService.uploadToSpaces(fileName, file);
 
-        String imageUrl = "/uploads/cars/" + fileName;
         car.setCarImage(imageUrl);
         carRepository.save(car);
 
@@ -285,8 +280,10 @@ public class CarServiceImpl implements CarService {
     }
 
     private String getFileExtension(String fileName) {
-        int dotIndex = fileName.lastIndexOf('.');
-        return dotIndex == -1 ? "" : fileName.substring(dotIndex + 1);
+        if (fileName == null || !fileName.contains(".")) {
+            throw new IllegalArgumentException("Invalid file format. File must have an extension.");
+        }
+        return fileName.substring(fileName.lastIndexOf('.') + 1);
     }
 }
 

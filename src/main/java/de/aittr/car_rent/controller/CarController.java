@@ -5,14 +5,19 @@ import de.aittr.car_rent.domain.entity.CarFuelType;
 import de.aittr.car_rent.domain.entity.CarStatus;
 import de.aittr.car_rent.domain.entity.CarTransmissionType;
 import de.aittr.car_rent.domain.entity.CarType;
+import de.aittr.car_rent.exception_handling.exceptions.CarNotFoundException;
 import de.aittr.car_rent.service.interfaces.CarService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -298,34 +303,41 @@ public class CarController {
 
     @PostMapping(value = "/upload-image", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @Operation(
-            description = "Uploads an image and attaches it to the specified car",
-            requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
-                    description = "Car ID and image file",
-                    required = true,
-                    content = @Content(mediaType = "multipart/form-data")))
-
+            summary = "Upload car image to DigitalOcean Spaces",
+            description = "Uploads an image file and attaches it to the specified car in DigitalOcean Spaces."
+    )
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Image uploaded successfully",
+                    content = @Content(mediaType = "text/plain",
+                            schema = @Schema(example = "Image uploaded successfully. URL: https://car-rental-ait.fra1.digitaloceanspaces.com/cars/15_1712331231231.jpg"))),
+            @ApiResponse(responseCode = "400", description = "Invalid request"),
+            @ApiResponse(responseCode = "500", description = "Error uploading image")
+    })
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
     public ResponseEntity<String> uploadCarImage(
             @RequestParam("id")
             @Parameter(description = "Car unique identifier", example = "15")
             Long carId,
+
             @RequestParam("file")
             @Parameter(description = "Car image file", required = true)
             MultipartFile file) {
 
-            if (file.isEmpty()) {
-                return ResponseEntity.badRequest().body("The file must not be empty");
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("The file must not be empty");
+        }
 
-            } try {
+        try {
             String imageUrl = carService.attachImageToCar(carId, file);
             return ResponseEntity.ok("Image uploaded successfully. URL: " + imageUrl);
-
-            } catch (IllegalArgumentException e) {
+        } catch (CarNotFoundException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Car with id " + carId + " not found");
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
-
-            } catch (Exception e) {
-            return ResponseEntity.status(500).body("Error loading image");
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error uploading image");
         }
     }
+
 }
