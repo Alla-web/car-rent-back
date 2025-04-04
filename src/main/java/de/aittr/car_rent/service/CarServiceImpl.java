@@ -37,6 +37,9 @@ public class CarServiceImpl implements CarService {
 
     @Override
     public CarResponseDto saveCar(CarResponseDto carDto) {
+        if (carDto == null) {
+            throw new RestApiException("Received no information about car");
+        }
         Car entity = carMappingService.mapDtoToEntity(carDto);
         entity = carRepository.save(entity);
         return carMappingService.mapEntityToDto(entity);
@@ -217,17 +220,13 @@ public class CarServiceImpl implements CarService {
             throw new RestApiException("Start and end dates cannot be null");
         }
         if (startDateTime.isBefore(LocalDateTime.now())) {
-            throw new RestApiException("Start date must be today or in the future");
+            throw new RestApiException("Start date and time must be today or in the future");
         }
         if (endDateTime.isBefore(LocalDateTime.now())) {
-            throw new RestApiException("Start date must be today or in the future");
-        }
-        if (endDateTime.isBefore(startDateTime.plusDays(1))) {
-            throw new RestApiException("End date must be at least one full day after the start date");
+            throw new RestApiException("End date and time must be after the start day and time");
         }
         return carRepository.findAll()
                 .stream()
-                //.filter(car -> car.isActive() && car.getCarStatus() == CarStatus.AVAILABLE)
                 .filter(car -> {
                     List<Booking> bookings = bookingRepository.findAllByCarId(car.getId());
                     if (bookings == null || bookings.isEmpty()) {
@@ -260,9 +259,6 @@ public class CarServiceImpl implements CarService {
         }
         if (endDateTime.isBefore(LocalDateTime.now())) {
             throw new RestApiException("Start date must be today or in the future");
-        }
-        if (endDateTime.isBefore(startDateTime.plusDays(1))) {
-            throw new RestApiException("End date must be at least one full day after the start date");
         }
         return getAllAvailableCarsByDates(startDateTime, endDateTime)
                 .stream()

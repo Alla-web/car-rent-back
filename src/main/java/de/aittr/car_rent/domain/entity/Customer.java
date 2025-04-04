@@ -11,6 +11,7 @@ import lombok.Setter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.*;
 
@@ -101,7 +102,7 @@ public class Customer implements UserDetails {
     }
 
     // временный метод для создания тестового зашифрованного пароля
-//     public static void main(String[] args) {
-//     System.out.println(new BCryptPasswordEncoder().encode("Yyyyyyy12345!#"));
-//     }
+     public static void main(String[] args) {
+     System.out.println(new BCryptPasswordEncoder().encode("User-pass#007"));
+     }
 }

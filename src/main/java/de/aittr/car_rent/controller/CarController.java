@@ -11,6 +11,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.MediaType;
@@ -40,6 +41,7 @@ public class CarController {
     public CarResponseDto saveCar(
             @RequestBody
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Instance of a Car")
+            @Valid
             CarResponseDto carDto) {
         return carService.saveCar(carDto);
     }
@@ -230,12 +232,12 @@ public class CarController {
             description = "Getting available cars list that exist in the database by start und end days")
     public List<CarResponseDto> getAllAvailableCarsByDates(
             @RequestParam(value = "from")
-            @Parameter(description = "Start day", example = "2025-03-28T11:46")
+            @Parameter(description = "Start day", example = "2025-04-04T11:31")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime startDateTime,
 
             @RequestParam(value = "to")
-            @Parameter(description = "End day", example = "2025-03-30T11:46")
+            @Parameter(description = "End day", example = "2025-04-04T11:32")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime endDateTime) {
         return carService.getAllAvailableCarsByDates(startDateTime, endDateTime);
@@ -316,17 +318,18 @@ public class CarController {
             @Parameter(description = "Car image file", required = true)
             MultipartFile file) {
 
-            if (file.isEmpty()) {
-                return ResponseEntity.badRequest().body("The file must not be empty");
+        if (file.isEmpty()) {
+            return ResponseEntity.badRequest().body("The file must not be empty");
 
-            } try {
+        }
+        try {
             String imageUrl = carService.attachImageToCar(carId, file);
             return ResponseEntity.ok("Image uploaded successfully. URL: " + imageUrl);
 
-            } catch (IllegalArgumentException e) {
+        } catch (IllegalArgumentException e) {
             return ResponseEntity.badRequest().body(e.getMessage());
 
-            } catch (Exception e) {
+        } catch (Exception e) {
             return ResponseEntity.status(500).body("Error loading image");
         }
     }

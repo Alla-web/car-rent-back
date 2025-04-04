@@ -4,6 +4,8 @@ import de.aittr.car_rent.domain.entity.CarFuelType;
 import de.aittr.car_rent.domain.entity.CarTransmissionType;
 import de.aittr.car_rent.domain.entity.CarType;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 
@@ -17,9 +19,19 @@ public record CarResponseDto(
         Long id,
 
         @Schema(description = "Car brand", example = "VW")
+        @Pattern(
+                // 1-я буква должна быть заглавная, далее идут буквы маленькие и поле может
+                // далее минимум 1 символ и может состоять из нескольких слов
+                regexp = "[A-Za-z ]{1,}",
+                message = "Car brand should be at list two characters length and start with capital letter")
         String brand,
 
         @Schema(description = "Car model", example = "Golf")
+        @Pattern(
+                // 1-я буква — любая латинская буква (заглавная или строчная)
+                // далее минимум один символ: буквы или цифры
+                regexp = "[A-Za-z][A-Za-z0-9]{1,}",
+                message = "Product title should be at list thee characters length and start with capital letter")
         String model,
 
         @Schema(description = "Car build year", example = "2025")
@@ -51,6 +63,7 @@ public record CarResponseDto(
         String carStatus,
 
         @Schema(description = "Car day rental price", example = "150.00")
+        @Positive(message = "Car rental price must be positive (more than zero)")
         BigDecimal dayRentalPrice,
 
         @Schema(
