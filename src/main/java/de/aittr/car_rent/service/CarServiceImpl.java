@@ -19,6 +19,7 @@ import java.math.BigDecimal;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -254,7 +255,7 @@ public class CarServiceImpl implements CarService {
         if (startDateTime == null || endDateTime == null) {
             throw new RestApiException("Start and end dates cannot be null");
         }
-        if (startDateTime.isBefore(LocalDateTime.now())) {
+        if (startDateTime.toLocalDate().isBefore(LocalDate.now())) {
             throw new RestApiException("Start date must be today or in the future");
         }
         if (endDateTime.isBefore(LocalDateTime.now())) {

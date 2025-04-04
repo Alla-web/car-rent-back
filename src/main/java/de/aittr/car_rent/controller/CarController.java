@@ -260,15 +260,15 @@ public class CarController {
             LocalDateTime endDateTime,
 
             @RequestParam(required = false)
-            @Parameter(description = "Car brands", example = "Toyota, BMW, VW")
+            @Parameter(description = "Car brands")
             List<String> brands,
 
             @RequestParam(required = false)
-            @Parameter(description = "Car fuel type", example = "Corolla, X5, Golf")
+            @Parameter(description = "Car fuel type")
             List<String> fuelTypes,
 
             @RequestParam(required = false)
-            @Parameter(description = "Car transmission types", example = "MANUAL, AUTOMATIC")
+            @Parameter(description = "Car transmission types")
             List<String> transmissionTypes,
 
             @RequestParam(required = false)
