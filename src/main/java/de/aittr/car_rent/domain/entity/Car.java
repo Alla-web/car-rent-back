@@ -1,9 +1,7 @@
 package de.aittr.car_rent.domain.entity;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.Max;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,10 +25,20 @@ public class Car {
 
     @NotNull(message = "{car.brand.notBlank}")
     @Column(name = "brand", nullable = false)
+    @Pattern(
+            // 1-я буква должна быть заглавная, далее идут буквы маленькие и поле может
+            // далее минимум 1 символ и может состоять из нескольких слов
+            regexp = "[A-Za-z ]{1,}",
+            message = "Car brand should be at list two characters length and start with capital letter")
     private String brand;
 
     @NotNull(message = "{car.model.notBlank}")
     @Column(name = "model", nullable = false)
+    @Pattern(
+            // 1-я буква — любая латинская буква (заглавная или строчная)
+            // далее минимум один символ: буквы или цифры
+            regexp = "[A-Za-z][A-Za-z0-9]{1,}",
+            message = "Product title should be at list thee characters length and start with capital letter")
     private String model;
 
     @NotNull(message = "{car.year.notBlank}")
@@ -65,6 +73,7 @@ public class Car {
 
     @NotNull(message = "{car.day_rental_price.notBlank}")
     @Column(name = "day_rental_price", nullable = false)
+    @Positive(message = "Car rental price must be positive (more than zero)")
     private BigDecimal dayRentalPrice;
 
     @Column(name = "car_image")
