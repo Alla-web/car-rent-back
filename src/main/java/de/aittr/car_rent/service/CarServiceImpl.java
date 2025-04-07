@@ -372,6 +372,7 @@ public class CarServiceImpl implements CarService {
                 .filter(car ->
                         (minPrice == null || car.dayRentalPrice().compareTo(minPrice) >= 0) &&
                                 (maxPrice == null || car.dayRentalPrice().compareTo(maxPrice) <= 0))
+                .sorted(Comparator.comparing(CarResponseDto::dayRentalPrice))
                 .toList();
     }
 
