@@ -33,6 +33,7 @@ public class CarServiceImpl implements CarService {
     private final CarRepository carRepository;
     private final CarMappingService carMappingService;
     private final BookingRepository bookingRepository;
+    private final CarImageService carImageService;
 
     @Override
     public CarResponseDto saveCar(CarResponseDto carDto) {
@@ -403,13 +404,10 @@ public class CarServiceImpl implements CarService {
             throw new IllegalArgumentException("Only jpg, png, and jpeg images are allowed");
         }
 
-        String fileName = id + "_" + file.getOriginalFilename();
-        Path path = Paths.get("uploads/cars", fileName);
+        String fileName = "cars/" + id + "_" + System.currentTimeMillis() + "." + fileExtension;
 
-        Files.createDirectories(path.getParent());
-        file.transferTo(path);
+        String imageUrl = carImageService.uploadToSpaces(fileName, file);
 
-        String imageUrl = "/uploads/cars/" + fileName;
         car.setCarImage(imageUrl);
         carRepository.save(car);
 
@@ -418,8 +416,10 @@ public class CarServiceImpl implements CarService {
     }
 
     private String getFileExtension(String fileName) {
-        int dotIndex = fileName.lastIndexOf('.');
-        return dotIndex == -1 ? "" : fileName.substring(dotIndex + 1);
+        if (fileName == null || !fileName.contains(".")) {
+            throw new IllegalArgumentException("Invalid file format. File must have an extension.");
+        }
+        return fileName.substring(fileName.lastIndexOf('.') + 1);
     }
 }
 
