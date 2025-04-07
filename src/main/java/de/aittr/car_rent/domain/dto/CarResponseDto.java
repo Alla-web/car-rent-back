@@ -1,9 +1,13 @@
 package de.aittr.car_rent.domain.dto;
 
 import de.aittr.car_rent.domain.entity.CarFuelType;
+import de.aittr.car_rent.domain.entity.CarStatus;
 import de.aittr.car_rent.domain.entity.CarTransmissionType;
 import de.aittr.car_rent.domain.entity.CarType;
+import de.aittr.car_rent.validation.ValidEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 
@@ -17,9 +21,19 @@ public record CarResponseDto(
         Long id,
 
         @Schema(description = "Car brand", example = "VW")
+        @Pattern(
+                // 1-я буква должна быть заглавная, далее идут буквы маленькие и поле может
+                // далее минимум 1 символ и может состоять из нескольких слов
+                regexp = "[A-Za-z ]{1,}",
+                message = "Car brand should be at list two characters length and start with capital letter")
         String brand,
 
         @Schema(description = "Car model", example = "Golf")
+        @Pattern(
+                // 1-я буква — любая латинская буква (заглавная или строчная)
+                // далее минимум один символ: буквы или цифры
+                regexp = "[A-Za-z][A-Za-z0-9]{1,}",
+                message = "Product title should be at list thee characters length and start with capital letter")
         String model,
 
         @Schema(description = "Car build year", example = "2025")
@@ -28,17 +42,20 @@ public record CarResponseDto(
         @Schema(
                 description = "Сar body type",
                 example = "SEDAN")
-        CarType type,
+        @ValidEnum(enumClass = CarType.class, message = "Invalid car type")
+        String type,
 
         @Schema(
                 description = "Car fuel type",
                 example = "PETROL")
-        CarFuelType fuelType,
+        @ValidEnum(enumClass = CarFuelType.class, message = "Invalid car fuel type")
+        String fuelType,
 
         @Schema(
                 description = "Car transmission type",
                 example = "AUTOMATIC")
-        CarTransmissionType transmissionType,
+        @ValidEnum(enumClass = CarTransmissionType.class, message = "Invalid car transmission type")
+        String transmissionType,
 
         @Schema(
                 description = "Car state (used / deleted)",
@@ -48,9 +65,11 @@ public record CarResponseDto(
         @Schema(
                 description = "Car status",
                 example = "RENTED")
+        @ValidEnum(enumClass = CarStatus.class, message = "Invalid car status")
         String carStatus,
 
         @Schema(description = "Car day rental price", example = "150.00")
+        @Positive(message = "Car rental price must be positive (more than zero)")
         BigDecimal dayRentalPrice,
 
         @Schema(

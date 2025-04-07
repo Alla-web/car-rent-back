@@ -8,7 +8,6 @@ import de.aittr.car_rent.security.dto.TokenResponseDto;
 import de.aittr.car_rent.security.service.AuthService;
 import de.aittr.car_rent.service.interfaces.ConfirmationService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,11 +38,7 @@ public class AuthControllerImpl implements AuthController {
 
     @Override
     public ResponseEntity<String> confirmRegistration(@PathVariable String code) {
-        try {
-            confirmationService.confirmRegistration(code);
-            return ResponseEntity.ok("User successfully activated!");
-        } catch (RuntimeException e) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
-        }
+        confirmationService.confirmRegistration(code);
+        return ResponseEntity.ok("User successfully activated!");
     }
 }

@@ -2,15 +2,16 @@ package de.aittr.car_rent.service;
 
 import de.aittr.car_rent.domain.entity.ConfirmationCode;
 import de.aittr.car_rent.domain.entity.Customer;
-import de.aittr.car_rent.exception_handling.Response;
+import de.aittr.car_rent.exception_handling.exceptions.RestApiException;
 import de.aittr.car_rent.repository.ConfirmationCodeRepository;
 import de.aittr.car_rent.service.interfaces.ConfirmationService;
+import de.aittr.car_rent.service.interfaces.CustomerService;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.management.ConstructorParameters;
 import java.time.LocalDateTime;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,6 +19,7 @@ import java.util.UUID;
 @AllArgsConstructor
 public class ConfirmationServiceImpl implements ConfirmationService {
     private final ConfirmationCodeRepository repository;
+    private final CustomerService customerService;
 
 
     @Override
@@ -34,19 +36,23 @@ public class ConfirmationServiceImpl implements ConfirmationService {
     public boolean confirmRegistration(String code) {
         Optional<ConfirmationCode> optionalCode = repository.findByCode(code);
 
-        if(optionalCode.isEmpty()){
-            throw new RuntimeException("Invalid confirmation code");
+        if (optionalCode.isEmpty()) {
+            throw new RestApiException("Invalid confirmation code");
         }
 
         ConfirmationCode confirmationCode = optionalCode.get();
-
-        if (confirmationCode.getExpired().isBefore(LocalDateTime.now())){
-            repository.delete(confirmationCode);
+        if (confirmationCode.getExpired().isBefore(LocalDateTime.now())) {
+            throw new RestApiException("Invalid confirmation code");
         }
 
         Customer customer = confirmationCode.getCustomer();
-        customer.setActive(true);
+        if (Objects.isNull(customer)) {
+            throw new RestApiException("Invalid confirmation code");
+        }
 
+        customer.setActive(true);
+        customerService.save(customer);
+        repository.delete(confirmationCode);
         return true;
     }
 }
