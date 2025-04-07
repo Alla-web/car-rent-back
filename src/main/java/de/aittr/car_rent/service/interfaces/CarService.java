@@ -1,6 +1,7 @@
 package de.aittr.car_rent.service.interfaces;
 
 import de.aittr.car_rent.domain.dto.CarResponseDto;
+import de.aittr.car_rent.domain.dto.CarUpdateRequestDto;
 import de.aittr.car_rent.domain.entity.*;
 import jakarta.transaction.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -132,7 +133,7 @@ public interface CarService {
      *
      * @param carDto
      */
-    void updateCar(CarResponseDto carDto);
+    CarResponseDto updateCar(CarUpdateRequestDto carDto);
 
     /**
      * Метод удаления авто из спискка доступных пользователю. Если машина не найдена метод выбросит исключение
