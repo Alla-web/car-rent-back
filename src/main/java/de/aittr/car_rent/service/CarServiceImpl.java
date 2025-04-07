@@ -250,7 +250,6 @@ public class CarServiceImpl implements CarService {
             LocalDateTime to) {
         return bookingRepository.findAllByCarId(carId)
                 .stream()
-                //.filter(b -> b.getBookingStatus() == BookingStatus.ACTIVE)
                 .noneMatch(booking ->
                         booking.getRentalStartDate().isBefore(to) &&
                                 booking.getRentalEndDate().isAfter(from)
