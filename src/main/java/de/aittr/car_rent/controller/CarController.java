@@ -1,6 +1,7 @@
 package de.aittr.car_rent.controller;
 
 import de.aittr.car_rent.domain.dto.CarResponseDto;
+import de.aittr.car_rent.domain.dto.CarUpdateRequestDto;
 import de.aittr.car_rent.domain.entity.CarFuelType;
 import de.aittr.car_rent.domain.entity.CarStatus;
 import de.aittr.car_rent.domain.entity.CarTransmissionType;
@@ -204,11 +205,11 @@ public class CarController {
     )
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
-    public void updateCar(
+    public CarResponseDto updateCar(
             @RequestBody
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Instance of a Car")
-            CarResponseDto carDto) {
-        carService.updateCar(carDto);
+            CarUpdateRequestDto carDto) {
+        return carService.updateCar(carDto);
     }
 
     @DeleteMapping("/delete/{id}")

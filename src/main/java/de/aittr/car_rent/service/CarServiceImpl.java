@@ -1,6 +1,7 @@
 package de.aittr.car_rent.service;
 
 import de.aittr.car_rent.domain.dto.CarResponseDto;
+import de.aittr.car_rent.domain.dto.CarUpdateRequestDto;
 import de.aittr.car_rent.domain.entity.*;
 import de.aittr.car_rent.exception_handling.exceptions.CarNotFoundException;
 import de.aittr.car_rent.exception_handling.exceptions.RestApiException;
@@ -258,7 +259,7 @@ public class CarServiceImpl implements CarService {
 
     @Override
     @Transactional
-    public void updateCar(CarResponseDto carDto) {
+    public CarResponseDto updateCar(CarUpdateRequestDto carDto) {
         if (carDto.id() == null) {
             throw new RestApiException("Enter car id");
         }
@@ -267,6 +268,7 @@ public class CarServiceImpl implements CarService {
         //TODO нужно ли ещё что-то обновлять?
         existCar.setDayRentalPrice(carDto.dayRentalPrice());
         existCar.setCarStatus(CarStatus.valueOf(carDto.carStatus()));
+        return carMappingService.mapEntityToDto(existCar);
     }
 
     @Override

@@ -11,7 +11,7 @@ import jakarta.validation.constraints.Positive;
 
 import java.math.BigDecimal;
 
-@Schema(description = "Car entity with id, brand, model, year, type, fuelType, transmissionType, status, dayRentalPrice and carImage")
+@Schema(description = "Car response DTO with id, brand, model, year, type, fuelType, transmissionType, car status, dayRentalPrice and carImage")
 public record CarResponseDto(
 
         @Schema(
