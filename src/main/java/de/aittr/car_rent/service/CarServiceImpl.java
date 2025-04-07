@@ -16,9 +16,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
@@ -338,9 +335,10 @@ public class CarServiceImpl implements CarService {
     public List<CarResponseDto> filterAvailableCars(
             LocalDateTime startDateTime,
             LocalDateTime endDateTime,
-            List<String> brands,
-            List<String> fuelTypes,
-            List<String> transmissionTypes,
+            List<String> brand,
+            List<String> type,
+            List<String> fuel,
+            List<String> transmissionType,
             BigDecimal minPrice,
             BigDecimal maxPrice) {
         if (startDateTime == null || endDateTime == null) {
@@ -355,17 +353,21 @@ public class CarServiceImpl implements CarService {
         return getAllAvailableCarsByDates(startDateTime, endDateTime)
                 .stream()
                 .filter(car ->
-                        brands == null || brands.isEmpty() ||
-                                brands.stream().anyMatch(brand ->
-                                        brand.equalsIgnoreCase(car.brand())))
+                        brand == null || brand.isEmpty() ||
+                                brand.stream().anyMatch(item ->
+                                        item.equalsIgnoreCase(car.brand())))
+                .filter(car->
+                        type == null || type.isEmpty() ||
+                            type.stream().anyMatch(item ->
+                                    item.equalsIgnoreCase(car.type())))
                 .filter(car ->
-                        fuelTypes == null || fuelTypes.isEmpty() ||
-                                fuelTypes.stream().anyMatch(fuelType ->
-                                        fuelType.equalsIgnoreCase(car.fuelType())))
+                        fuel == null || fuel.isEmpty() ||
+                                fuel.stream().anyMatch(item ->
+                                        item.equalsIgnoreCase(car.fuelType())))
                 .filter(car ->
-                        transmissionTypes == null || transmissionTypes.isEmpty() ||
-                                transmissionTypes.stream().anyMatch(transmissionType ->
-                                        transmissionType.equalsIgnoreCase(car.transmissionType())))
+                        transmissionType == null || transmissionType.isEmpty() ||
+                                transmissionType.stream().anyMatch(item ->
+                                        item.equalsIgnoreCase(car.transmissionType())))
                 .filter(car ->
                         (minPrice == null || car.dayRentalPrice().compareTo(minPrice) >= 0) &&
                                 (maxPrice == null || car.dayRentalPrice().compareTo(maxPrice) <= 0))

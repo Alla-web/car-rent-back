@@ -37,8 +37,8 @@ public class Car {
     @Pattern(
             // 1-я буква — любая латинская буква (заглавная или строчная)
             // далее минимум один символ: буквы или цифры
-            regexp = "[A-Za-z][A-Za-z0-9]{1,}",
-            message = "Product title should be at list thee characters length and start with capital letter")
+            regexp = "([A-Z][a-zA-Z0-9]{2,})(\\s+([A-Z][a-zA-Z0-9]{2,}))*",
+            message = "Product title should be at least three characters long and start with capital letter")
     private String model;
 
     @NotNull(message = "{car.year.notBlank}")
