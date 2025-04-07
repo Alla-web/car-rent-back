@@ -43,27 +43,21 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingResponseDto createBooking(@Valid BookingRequestDto bookingRequestDto, String email) {
         log.info("Booking request received: {}", bookingRequestDto);
-
         if (bookingRequestDto == null) {
             throw new RestApiException("Booking request cannot be null");
         }
-
         if (bookingRequestDto.carId() == null) {
-            throw new RestApiException("Car ID cannot be null.");
+            throw new RestApiException("Car ID cannot be null");
         }
-
         if (bookingRequestDto.rentalStartDate() == null || bookingRequestDto.rentalEndDate() == null) {
             throw new RestApiException("Rental start and end dates cannot be null");
         }
-
         if (email == null || email.isEmpty()) {
-            throw new RestApiException("Email cannot be null or empty.");
+            throw new RestApiException("Email cannot be null or empty");
         }
-
         if (bookingRequestDto.rentalStartDate().toLocalDate().isBefore(LocalDate.now())) {
             throw new RestApiException("Rental start date must be today or in the future");
         }
-
         if (!bookingRequestDto.rentalEndDate().isAfter(bookingRequestDto.rentalStartDate())) {
             throw new RestApiException("Rental end date must be at least one full day after the start date");
         }
@@ -71,7 +65,7 @@ public class BookingServiceImpl implements BookingService {
         Car car = carRepository.findById(bookingRequestDto.carId())
                 .orElseThrow(() -> new RestApiException("Car not found"));
 
-        log.info("Car with ID {} found. Proceeding to create booking.", bookingRequestDto.carId());
+        log.info("Car with ID {} found. Proceeding to create booking", bookingRequestDto.carId());
 
         Customer currentCustomer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new RestApiException("Customer with this email " + email + " not found"));

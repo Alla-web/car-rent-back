@@ -76,6 +76,7 @@ public class CarServiceImpl implements CarService {
         );
         return carList.stream()
                 .filter(Car::isActive)
+                .filter(car -> car.getCarStatus() != null)
                 .filter((car -> allowedCarStatuses.contains(car.getCarStatus())))
                 .sorted(Comparator.comparing(Car::getType))
                 .map(carMappingService::mapEntityToDto)
@@ -159,7 +160,7 @@ public class CarServiceImpl implements CarService {
             throw new RestApiException("No cars found");
         }
         int currentYear = Year.now().getValue();
-        if(year > currentYear) {
+        if (year > currentYear) {
             throw new RestApiException("Year must be in the past");
         }
         return carRepository.findAll()
@@ -249,7 +250,7 @@ public class CarServiceImpl implements CarService {
             LocalDateTime to) {
         return bookingRepository.findAllByCarId(carId)
                 .stream()
-                .filter(b -> b.getBookingStatus() == BookingStatus.ACTIVE)
+                //.filter(b -> b.getBookingStatus() == BookingStatus.ACTIVE)
                 .noneMatch(booking ->
                         booking.getRentalStartDate().isBefore(to) &&
                                 booking.getRentalEndDate().isAfter(from)
@@ -356,10 +357,10 @@ public class CarServiceImpl implements CarService {
                         brand == null || brand.isEmpty() ||
                                 brand.stream().anyMatch(item ->
                                         item.equalsIgnoreCase(car.brand())))
-                .filter(car->
+                .filter(car ->
                         type == null || type.isEmpty() ||
-                            type.stream().anyMatch(item ->
-                                    item.equalsIgnoreCase(car.type())))
+                                type.stream().anyMatch(item ->
+                                        item.equalsIgnoreCase(car.type())))
                 .filter(car ->
                         fuel == null || fuel.isEmpty() ||
                                 fuel.stream().anyMatch(item ->
