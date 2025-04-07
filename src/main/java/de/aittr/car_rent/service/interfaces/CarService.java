@@ -164,9 +164,10 @@ public interface CarService {
     List<CarResponseDto> filterAvailableCars(
             LocalDateTime startDateTime,
             LocalDateTime endDateTime,
-            List<String> brands,
-            List<String> fuelTypes,
-            List<String> transmissionTypes,
+            List<String> brand,
+            List<String> type,
+            List<String> fuel,
+            List<String> transmissionType,
             BigDecimal minPrice,
             BigDecimal maxPrice);
 
