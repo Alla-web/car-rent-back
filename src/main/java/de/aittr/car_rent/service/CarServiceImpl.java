@@ -277,7 +277,16 @@ public class CarServiceImpl implements CarService {
             throw new RestApiException("Enter car id");
         }
         Car existingCar = getOrThrow(id);
+        List<Booking> carBookingdList = bookingRepository.findAllByCarId(id)
+                .stream()
+                .filter(booking -> List.of(BookingStatus.ACTIVE, BookingStatus.PENDING)
+                        .contains(booking.getBookingStatus()))
+                .toList();
+        if(!carBookingdList.isEmpty()) {
+            throw new RestApiException("Car id " + id + " has opened bookings");
+        }
         existingCar.setActive(false);
+        existingCar.setCarStatus(CarStatus.DELETED);
         carRepository.save(existingCar);
         return carMappingService.mapEntityToDto(existingCar);
     }
@@ -293,6 +302,7 @@ public class CarServiceImpl implements CarService {
             throw new RestApiException("Car with id " + id + " is already active");
         }
         restoredCar.setActive(true);
+        restoredCar.setCarStatus(CarStatus.AVAILABLE);
         carRepository.save(restoredCar);
         return carMappingService.mapEntityToDto(restoredCar);
     }
