@@ -267,7 +267,7 @@ public class CarController {
 
             @RequestParam(required = false)
             @Parameter(description = "Car brands")
-            List<String> brands,
+            List<String> brand,
 
             @RequestParam(required = false)
             @Parameter(description = "Car type")
@@ -275,11 +275,11 @@ public class CarController {
 
             @RequestParam(required = false)
             @Parameter(description = "Car fuel type")
-            List<String> fuelTypes,
+            List<String> fuel,
 
             @RequestParam(required = false)
             @Parameter(description = "Car transmission types")
-            List<String> transmissionTypes,
+            List<String> transmissionType,
 
             @RequestParam(required = false)
             @Parameter(description = "Minimum rental price per day", example = "50")
@@ -288,7 +288,7 @@ public class CarController {
             @RequestParam(required = false)
             @Parameter(description = "Maximum rental price per day", example = "150")
             BigDecimal maxPrice) {
-        return carService.filterAvailableCars(startDateTime, endDateTime, brands, type, fuelTypes, transmissionTypes, minPrice, maxPrice);
+        return carService.filterAvailableCars(startDateTime, endDateTime, brand, type, fuel, transmissionType, minPrice, maxPrice);
     }
 
     // GET -> localhost:8080/api/cars/brands
