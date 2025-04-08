@@ -164,11 +164,11 @@ public class CarController {
             description = "Getting car that exist in the database by min und max car day rental price")
     public List<CarResponseDto> getCarsByDayRentalPrice(
             @RequestParam("from")
-            @Parameter(description = "Minimal day rental car price", example = "50")
+            @Parameter(description = "Minimal day rental car price", example = "50.00")
             BigDecimal minDayRentalPrice,
 
             @RequestParam("to")
-            @Parameter(description = "Maximal day rental car price", example = "150")
+            @Parameter(description = "Maximal day rental car price", example = "150.00")
             BigDecimal maxDayRentalPrice) {
         return carService.getCarsByDayRentalPrice(minDayRentalPrice, maxDayRentalPrice);
     }
@@ -198,7 +198,7 @@ public class CarController {
         return carService.checkIfCarAvailableByDates(carId, from, to);
     }
 
-    @PutMapping
+    @PutMapping("/update/{id}")
     @Operation(
             summary = "Update car",
             description = "Update car day rental price and car status in the database based on the passed CarResponseDto object"
@@ -206,10 +206,14 @@ public class CarController {
     @PreAuthorize("hasRole('ROLE_ADMIN')")
     @SecurityRequirement(name = "bearerAuth")
     public CarResponseDto updateCar(
+            @PathVariable("id")
+            @Parameter(description = "Car unique identifier", example = "7")
+            Long carId,
+
             @RequestBody
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Instance of a Car")
             CarUpdateRequestDto carDto) {
-        return carService.updateCar(carDto);
+        return carService.updateCar(carDto, carId);
     }
 
     @DeleteMapping("/delete/{id}")
@@ -256,12 +260,12 @@ public class CarController {
             description = "Filter available cars by various criteria including dates, brand, fuel type, transmission type and price range")
     public List<CarResponseDto> filterAvailableCars(
             @RequestParam(required = false)
-            @Parameter(description = "Start date and time of rental period", example = "2025-04-01T00:00")
+            @Parameter(description = "Start date and time of rental period", example = "2025-04-08T00:00")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime startDateTime,
 
             @RequestParam(required = false)
-            @Parameter(description = "End date and time of rental period", example = "2025-04-02T00:00")
+            @Parameter(description = "End date and time of rental period", example = "2025-04-12T00:00")
             @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
             LocalDateTime endDateTime,
 
@@ -282,11 +286,11 @@ public class CarController {
             List<String> transmissionType,
 
             @RequestParam(required = false)
-            @Parameter(description = "Minimum rental price per day", example = "50")
+            @Parameter(description = "Minimum rental price per day", example = "50.00")
             BigDecimal minPrice,
 
             @RequestParam(required = false)
-            @Parameter(description = "Maximum rental price per day", example = "150")
+            @Parameter(description = "Maximum rental price per day", example = "150.00")
             BigDecimal maxPrice) {
         return carService.filterAvailableCars(startDateTime, endDateTime, brand, type, fuel, transmissionType, minPrice, maxPrice);
     }
