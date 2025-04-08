@@ -1,7 +1,5 @@
 package de.aittr.car_rent.domain.dto;
 
-import de.aittr.car_rent.domain.entity.CarStatus;
-import de.aittr.car_rent.validation.ValidEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Positive;
 
@@ -19,7 +17,7 @@ public record CarUpdateRequestDto(
         @Schema(
                 description = "Car status",
                 example = "RENTED")
-        @ValidEnum(enumClass = CarStatus.class, message = "Invalid car status")
+        //@ValidEnum(enumClass = CarStatus.class, message = "Invalid car status")
         String carStatus,
 
         @Schema(description = "Car day rental price", example = "150.00")

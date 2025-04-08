@@ -1,10 +1,5 @@
 package de.aittr.car_rent.domain.dto;
 
-import de.aittr.car_rent.domain.entity.CarFuelType;
-import de.aittr.car_rent.domain.entity.CarStatus;
-import de.aittr.car_rent.domain.entity.CarTransmissionType;
-import de.aittr.car_rent.domain.entity.CarType;
-import de.aittr.car_rent.validation.ValidEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Positive;
@@ -38,19 +33,19 @@ public record CarResponseDto(
         @Schema(
                 description = "Сar body type",
                 example = "SEDAN")
-        @ValidEnum(enumClass = CarType.class, message = "Invalid car type")
+        //@ValidEnum(enumClass = CarType.class, message = "Invalid car type")
         String type,
 
         @Schema(
                 description = "Car fuel type",
                 example = "PETROL")
-        @ValidEnum(enumClass = CarFuelType.class, message = "Invalid car fuel type")
+        //@ValidEnum(enumClass = CarFuelType.class, message = "Invalid car fuel type")
         String fuelType,
 
         @Schema(
                 description = "Car transmission type",
                 example = "AUTOMATIC")
-        @ValidEnum(enumClass = CarTransmissionType.class, message = "Invalid car transmission type")
+        //@ValidEnum(enumClass = CarTransmissionType.class, message = "Invalid car transmission type")
         String transmissionType,
 
         @Schema(
@@ -61,7 +56,7 @@ public record CarResponseDto(
         @Schema(
                 description = "Car status",
                 example = "RENTED")
-        @ValidEnum(enumClass = CarStatus.class, message = "Invalid car status")
+        //@ValidEnum(enumClass = CarStatus.class, message = "Invalid car status")
         String carStatus,
 
         @Schema(description = "Car day rental price", example = "150.00")
