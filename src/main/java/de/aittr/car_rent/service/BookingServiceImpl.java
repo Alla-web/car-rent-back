@@ -84,8 +84,14 @@ public class BookingServiceImpl implements BookingService {
                 bookingRequestDto.rentalStartDate(), bookingRequestDto.rentalEndDate());
 
         Booking booking = new Booking();
-        booking.setCreateBookingDate(LocalDateTime.now());
-        booking.setUpdateBookingDate(LocalDateTime.now());
+        booking.setCreateBookingDate(LocalDateTime.now()
+                .withSecond(0)
+                .withNano(0)
+                .plusMinutes(1));
+        booking.setUpdateBookingDate(LocalDateTime.now()
+                .withSecond(0)
+                .withNano(0)
+                .plusMinutes(1));
         booking.setRentalStartDate(bookingRequestDto.rentalStartDate());
         booking.setRentalEndDate(bookingRequestDto.rentalEndDate());
         booking.setCustomer(currentCustomer);
