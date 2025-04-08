@@ -43,7 +43,7 @@ public class CarServiceImpl implements CarService {
         if (carDto.model() == null || carDto.model().isBlank()) {
             throw new RestApiException("Car model must not be not blank");
         }
-        if (carDto.year() < 1600 || carDto.year() > 3000 || carDto.model().isBlank()) {
+        if (carDto.year() < 1600 || carDto.year() > 3000) {
             throw new RestApiException("Car year must not be not blank and more than 1600 and less than 3000");
         }
         if (carDto.type() == null) {
