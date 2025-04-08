@@ -310,11 +310,17 @@ public class CarServiceImpl implements CarService {
         if (startDateTime == null || endDateTime == null) {
             throw new RestApiException("Start and end dates cannot be null");
         }
-        if (startDateTime.isBefore(LocalDateTime.now())) {
-            throw new RestApiException("Start date and time must be today or in the future");
+        // Округляем время начала до следующей целой минуты
+        LocalDateTime roundedStartDateTime = startDateTime
+                .withSecond(0)
+                .withNano(0)
+                .plusMinutes(1);
+
+        if (roundedStartDateTime.isBefore(LocalDateTime.now())) {
+            throw new RestApiException("Start date and time must be in the future");
         }
-        if (endDateTime.isBefore(LocalDateTime.now())) {
-            throw new RestApiException("End date and time must be after the start day and time");
+        if (endDateTime.isBefore(roundedStartDateTime)) {
+            throw new RestApiException("End date and time must be after the start date and time");
         }
         return carRepository.findAll()
                 .stream()
@@ -326,7 +332,7 @@ public class CarServiceImpl implements CarService {
                     return bookings.stream()
                             .noneMatch(booking ->
                                     booking.getRentalStartDate().isBefore(endDateTime) &&
-                                            booking.getRentalEndDate().isAfter(startDateTime)
+                                            booking.getRentalEndDate().isAfter(roundedStartDateTime)
                             );
                 })
                 .map(carMappingService::mapEntityToDto)
