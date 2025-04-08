@@ -11,7 +11,6 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 
-
 @Getter
 @Setter
 @NoArgsConstructor
@@ -25,10 +24,11 @@ public class Booking {
     @Column(name = "id")
     private Long id;
 
-
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(name = "rental_start_date", nullable = false)
     private LocalDateTime rentalStartDate;
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(name = "rental_end_date")
     private LocalDateTime rentalEndDate;
 
@@ -41,17 +41,17 @@ public class Booking {
     private Car car;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "booking_status",  length = 20, nullable = false)
+    @Column(name = "booking_status", length = 20, nullable = false)
     private BookingStatus bookingStatus;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(name = "create_booking_date", nullable = false, updatable = false)
     private LocalDateTime createBookingDate;
 
     @Column(name = "update_booking_date")
     private LocalDateTime updateBookingDate;
 
-    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
     @Column(name = "total_price", nullable = false)
     private BigDecimal totalPrice;
 
@@ -61,9 +61,9 @@ public class Booking {
         if (this.createBookingDate == null) {
             this.createBookingDate = LocalDateTime.now();
         }
-        this.updateBookingDate = LocalDateTime.now();
+        this.updateBookingDate = LocalDateTime.now().withSecond(0).withNano(0).plusMinutes(1);
     }
-        }
+}
 
 
 

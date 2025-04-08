@@ -12,13 +12,13 @@ public record BookingRequestDto(
 
         @NotNull(message = "Rental start date cannot be null.")
         @FutureOrPresent(message = "Rental start date must be today or in the future.")
-        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
-        @Schema(description = "Booking rental start day", example = "2025-04-01T00:00:00.000")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+        @Schema(description = "Booking rental start day", example = "2025-04-09T00:00")
         LocalDateTime rentalStartDate,
 
         @NotNull(message = "Rental end date cannot be null.")
-        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
-        @Schema(description = "Booking rental end day", example = "2025-04-02T10:00:00.000")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
+        @Schema(description = "Booking rental end day", example = "2025-04-20T10:00")
         LocalDateTime rentalEndDate,
 
         @NotNull(message = "Car ID cannot be null.")
