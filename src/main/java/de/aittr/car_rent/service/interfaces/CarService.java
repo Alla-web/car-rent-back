@@ -133,7 +133,7 @@ public interface CarService {
      *
      * @param carDto
      */
-    CarResponseDto updateCar(CarUpdateRequestDto carDto);
+    CarResponseDto updateCar(CarUpdateRequestDto carDto, Long carId);
 
     /**
      * Метод удаления авто из спискка доступных пользователю. Если машина не найдена метод выбросит исключение

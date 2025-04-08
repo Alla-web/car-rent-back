@@ -12,9 +12,8 @@ import java.math.BigDecimal;
 public record CarUpdateRequestDto(
         @Schema(
                 description = "Car unique identifier",
-                example = "123"
-                //accessMode = Schema.AccessMode.READ_ONLY
-                )
+                example = "123",
+                accessMode = Schema.AccessMode.READ_ONLY)
         Long id,
 
         @Schema(

@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.Year;
 import java.util.*;
@@ -44,7 +43,7 @@ public class CarServiceImpl implements CarService {
         if (carDto.model() == null || carDto.model().isBlank()) {
             throw new RestApiException("Car model must not be not blank");
         }
-        if (carDto.year() < 1600 || carDto.year() > 3000 || carDto.model().isBlank()) {
+        if (carDto.year() < 1600 || carDto.year() > 3000) {
             throw new RestApiException("Car year must not be not blank and more than 1600 and less than 3000");
         }
         if (carDto.type() == null) {
@@ -259,15 +258,15 @@ public class CarServiceImpl implements CarService {
 
     @Override
     @Transactional
-    public CarResponseDto updateCar(CarUpdateRequestDto carDto) {
-        if (carDto.id() == null) {
+    public CarResponseDto updateCar(CarUpdateRequestDto carDto, Long carId) {
+        if (carId == null) {
             throw new RestApiException("Enter car id");
         }
-        Long id = carDto.id();
-        Car existCar = getOrThrow(id);
+        Car existCar = getOrThrow(carId);
         //TODO нужно ли ещё что-то обновлять?
         existCar.setDayRentalPrice(carDto.dayRentalPrice());
         existCar.setCarStatus(CarStatus.valueOf(carDto.carStatus()));
+        carRepository.save(existCar);
         return carMappingService.mapEntityToDto(existCar);
     }
 
@@ -349,38 +348,51 @@ public class CarServiceImpl implements CarService {
             List<String> transmissionType,
             BigDecimal minPrice,
             BigDecimal maxPrice) {
+        //log.info("Start filtering available cars from [{}] to [{}]", startDateTime, endDateTime);
         if (startDateTime == null || endDateTime == null) {
+            //log.warn("❗️ Start or end date is null");
             throw new RestApiException("Start and end dates cannot be null");
         }
-        if (startDateTime.toLocalDate().isBefore(LocalDate.now())) {
-            throw new RestApiException("Start date must be today or in the future");
+        // Округляем время начала до следующей целой минуты
+        LocalDateTime roundedStartDateTime = startDateTime
+                .withSecond(0)
+                .withNano(0)
+                .plusMinutes(1);
+        //log.info("Rounded start time to [{}]", roundedStartDateTime);
+        if (roundedStartDateTime.isBefore(LocalDateTime.now())) {
+            //log.warn("❗️ Rounded start time [{}] is in the past", roundedStartDateTime);
+            throw new RestApiException("Start date and time must be in the future");
         }
-        if (endDateTime.isBefore(LocalDateTime.now())) {
-            throw new RestApiException("Start date must be today or in the future");
+        if (endDateTime.isBefore(roundedStartDateTime)) {
+            //log.warn("❗️ End time [{}] is before rounded start time [{}]", endDateTime, roundedStartDateTime);
+            throw new RestApiException("End date and time must be after the start date and time");
         }
-        return getAllAvailableCarsByDates(startDateTime, endDateTime)
-                .stream()
+        List<CarResponseDto> availableCars = getAllAvailableCarsByDates(roundedStartDateTime, endDateTime);
+        //log.info("✅ Total available cars by date: {}", availableCars.size());
+
+        List<CarResponseDto> filteredCars = availableCars.stream()
+                .peek(car -> log.debug("🔍 Checking car: id={}, brand={}, type={}, fuel={}, transmission={}, price={}",
+                        car.id(), car.brand(), car.type(), car.fuelType(), car.transmissionType(), car.dayRentalPrice()))
                 .filter(car ->
                         brand == null || brand.isEmpty() ||
-                                brand.stream().anyMatch(item ->
-                                        item.equalsIgnoreCase(car.brand())))
+                                brand.stream().anyMatch(item -> item.equalsIgnoreCase(car.brand())))
                 .filter(car ->
                         type == null || type.isEmpty() ||
-                                type.stream().anyMatch(item ->
-                                        item.equalsIgnoreCase(car.type())))
+                                type.stream().anyMatch(item -> item.equalsIgnoreCase(car.type())))
                 .filter(car ->
                         fuel == null || fuel.isEmpty() ||
-                                fuel.stream().anyMatch(item ->
-                                        item.equalsIgnoreCase(car.fuelType())))
+                                fuel.stream().anyMatch(item -> item.equalsIgnoreCase(car.fuelType())))
                 .filter(car ->
                         transmissionType == null || transmissionType.isEmpty() ||
-                                transmissionType.stream().anyMatch(item ->
-                                        item.equalsIgnoreCase(car.transmissionType())))
+                                transmissionType.stream().anyMatch(item -> item.equalsIgnoreCase(car.transmissionType())))
                 .filter(car ->
                         (minPrice == null || car.dayRentalPrice().compareTo(minPrice) >= 0) &&
                                 (maxPrice == null || car.dayRentalPrice().compareTo(maxPrice) <= 0))
                 .sorted(Comparator.comparing(CarResponseDto::dayRentalPrice))
                 .toList();
+
+        //log.info("✅ Cars after full filtering: {}", filteredCars.size());
+        return filteredCars;
     }
 
     @Override
