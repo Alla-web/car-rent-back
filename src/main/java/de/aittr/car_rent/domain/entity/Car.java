@@ -26,8 +26,6 @@ public class Car {
     @NotNull(message = "{car.brand.notBlank}")
     @Column(name = "brand", nullable = false)
     @Pattern(
-            // 1-я буква должна быть заглавная, далее идут буквы маленькие и поле может
-            // далее минимум 1 символ и может состоять из нескольких слов
             regexp = "[A-Za-z ]{1,}",
             message = "Car brand should be at list two characters length and start with capital letter")
     @Size(max = 29, message = "Car brand must not exceed 19 characters")
@@ -36,10 +34,8 @@ public class Car {
     @NotNull(message = "{car.model.notBlank}")
     @Column(name = "model", nullable = false)
     @Pattern(
-            // 1-я буква — любая латинская буква (заглавная или строчная)
-            // далее минимум один символ: буквы или цифры
-            regexp = "([A-Z][a-zA-Z0-9]{1,})(\\s+([A-Z][a-zA-Z0-9]{1,}))*",
-            message = "Product title should be at least three characters long and start with capital letter")
+            regexp = "([A-Z0-9]{1,}[a-zA-Z0-9]*)(\\s+([A-Z0-9]{1,}[a-zA-Z0-9]*))*",
+            message = "Car model title must start with a letter or digit and may contain letters, digits, and spaces. Each word must start with a letter or digit")
     @Size(max = 14, message = "Car model must not exceed 14 characters")
     private String model;
 
