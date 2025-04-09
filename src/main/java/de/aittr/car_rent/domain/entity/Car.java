@@ -72,6 +72,7 @@ public class Car {
     @NotNull(message = "{car.day_rental_price.notBlank}")
     @Column(name = "day_rental_price", nullable = false)
     @Positive(message = "Car rental price must be positive (more than zero)")
+    @DecimalMax(value = "5000.00", message = "Car rental day price must not exceed 5000")
     private BigDecimal dayRentalPrice;
 
     @Column(name = "car_image")
