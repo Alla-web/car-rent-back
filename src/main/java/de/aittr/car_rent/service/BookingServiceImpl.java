@@ -61,28 +61,20 @@ public class BookingServiceImpl implements BookingService {
         if (!bookingRequestDto.rentalEndDate().isAfter(bookingRequestDto.rentalStartDate())) {
             throw new RestApiException("Rental end date must be at least one full day after the start date");
         }
-
         Car car = carRepository.findById(bookingRequestDto.carId())
                 .orElseThrow(() -> new RestApiException("Car not found"));
-
         log.info("Car with ID {} found. Proceeding to create booking", bookingRequestDto.carId());
-
         Customer currentCustomer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new RestApiException("Customer with this email " + email + " not found"));
         log.info("Customer with email '{}' found. Proceeding to create booking.", email);
-
-
         boolean isAvailableCar = carService.checkIfCarAvailableByDates(
                 car.getId(), bookingRequestDto.rentalStartDate(), bookingRequestDto.rentalEndDate());
-
         if (!isAvailableCar) {
             throw new RestApiException("Car with id " + car.getId() + " is not available during the period from "
                     + bookingRequestDto.rentalStartDate() + " to " + bookingRequestDto.rentalEndDate());
         }
-
         BigDecimal totalPrice = this.calculateBookingTotalPrice(car.getDayRentalPrice(),
                 bookingRequestDto.rentalStartDate(), bookingRequestDto.rentalEndDate());
-
         Booking booking = new Booking();
         booking.setCreateBookingDate(LocalDateTime.now()
                 .withSecond(0)
@@ -106,11 +98,9 @@ public class BookingServiceImpl implements BookingService {
 
     @Override
     public BookingResponseDto getBookingByBookingId(Long id) {
-
         if (id == null) {
             throw new RestApiException("Booking ID cannot be null.");
         }
-
         return bookingRepository.findById(id)
                 .map(bookingMapper::mapEntityToDto)
                 .orElseThrow(() -> new BookingNotFoundException(id));
@@ -121,26 +111,20 @@ public class BookingServiceImpl implements BookingService {
         return bookingRepository.findAll().stream()
                 .map(bookingMapper::mapEntityToDto)
                 .collect(Collectors.toList());
-
     }
 
     @Override
     public List<BookingResponseDto> getBookingsByCarId(Long carId) {
-
         if (carId == null) {
             throw new RestApiException("Car ID cannot be null.");
         }
-
         log.info("Request to receive reservations for a vehicle with ID: {}", carId);
-
         List<BookingResponseDto> bookings = bookingRepository.findAllByCarId(carId)
                 .stream()
                 .map(bookingMapper::mapEntityToDto)
                 .collect(Collectors.toList());
-
         log.info("Found {} bookings for car {}", bookings.size(), carId);
         return bookings;
-
     }
 
     //TODO как правильно работает эта аннотация  и нужна ли она здесь?
@@ -204,32 +188,23 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingResponseDto extendBooking(Long id, String email, LocalDateTime newEndDate) {
-
         log.info("Attempting to extend booking with ID: {} by user: {}", id, email);
-
         if (newEndDate == null) {
             throw new RestApiException("New rental end date must not be null.");
         }
-
         Customer currentCustomer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Customer not found with email: " + email));
-
         Booking currentBooking = bookingRepository.findById(id)
                 .orElseThrow(() -> new BookingNotFoundException(id));
-
         if (newEndDate.isBefore(currentBooking.getRentalEndDate())) {
             throw new RestApiException("New rental end date must be after the current rental end date.");
         }
-
         boolean isCarAvailable = carService.checkIfCarAvailableByDates(currentBooking.getCar().getId(), currentBooking.getRentalEndDate(), newEndDate);
-
         if (!isCarAvailable) {
             throw new RestApiException("Car with id " + currentBooking.getCar().getId() + " is already booked during the period from " + currentBooking.getRentalEndDate() + " to" + newEndDate);
         }
-
         BigDecimal extraPrice = this.calculateBookingTotalPrice(currentBooking.getCar().getDayRentalPrice(),
                 currentBooking.getRentalEndDate(), newEndDate);
-
         if (isAdmin(email)) {
             currentBooking.setTotalPrice(currentBooking.getTotalPrice().add(extraPrice));
             currentBooking.setRentalEndDate(newEndDate);
@@ -241,7 +216,6 @@ public class BookingServiceImpl implements BookingService {
                         email, id, currentBooking.getCustomer().getId());
                 throw new RestApiException("You can only extend your own bookings");
             }
-
             currentBooking.setTotalPrice(currentBooking.getTotalPrice().add(extraPrice));
             currentBooking.setRentalEndDate(newEndDate);
             currentBooking.setUpdateBookingDate(LocalDateTime.now()
@@ -257,38 +231,30 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     public BookingResponseDto cancelBooking(Long id, String email) {
         log.info("Attempting to cancel booking with ID: {}", id);
-
         if (id == null) {
             throw new RestApiException("Booking ID cannot be null");
         }
-
         if (email == null || email.isEmpty()) {
             log.warn("Email is null or empty");
             throw new RestApiException("Email cannot be null or empty");
         }
-
         Booking booking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RestApiException("Booking with ID " + id + " not found"));
-
         if (booking.getBookingStatus() == BookingStatus.CLOSED_BY_ADMIN ||
                 booking.getBookingStatus() == BookingStatus.ACTIVE) {
             log.warn("Cannot cancel a completed booking with ID: {}", id);
             throw new RestApiException("Cannot cancel a booking with status " + booking.getBookingStatus());
         }
-
         if (booking.getBookingStatus() == BookingStatus.CANCELLED_BY_ADMIN ||
                 booking.getBookingStatus() == BookingStatus.CANCELLED_BY_USER) {
             log.warn("Booking with ID: {} is already cancelled", id);
             throw new RestApiException("Booking is already cancelled");
         }
-
         if (booking.getRentalEndDate().isBefore(LocalDateTime.now())) {
             throw new RestApiException("Cannot cancel a booking that has already ended.");
         }
-
         Customer currentCustomer = customerRepository.findByEmail(email)
                 .orElseThrow(() -> new RestApiException("Customer with email " + email + " not found"));
-
         if (isAdmin(email)) {
             booking.setBookingStatus(BookingStatus.CANCELLED_BY_ADMIN);
         } else {
@@ -299,20 +265,16 @@ public class BookingServiceImpl implements BookingService {
             }
             booking.setBookingStatus(BookingStatus.CANCELLED_BY_USER);
         }
-
         log.info("Changing car status booked car to AVAILABLE");
         Car bookedCar = carRepository.findById(booking.getCar().getId())
                 .orElseThrow(() -> new RestApiException("Car from the booking not found"));
-
         bookedCar.setCarStatus(CarStatus.AVAILABLE);
         carRepository.save(bookedCar);
-
         booking.setUpdateBookingDate(LocalDateTime.now()
                 .withSecond(0)
                 .withNano(0)
                 .plusMinutes(1));
         bookingRepository.save(booking);
-
         log.info("Successfully cancelled booking with ID: {}", id);
         return bookingMapper.mapEntityToDto(booking);
     }
