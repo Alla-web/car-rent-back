@@ -161,7 +161,6 @@ public class BookingServiceImpl implements BookingService {
         if (rentalStartDate != null && rentalEndDate != null) {
             throw new RestApiException("Enter only one date - rental start date or rental end date.");
         }
-
         return bookingRepository.findAll()
                 .stream()
                 .filter(booking -> {
@@ -183,13 +182,19 @@ public class BookingServiceImpl implements BookingService {
         if (!isAdmin(email)) {
             throw new RestApiException("Activate bookings can only admin");
         }
-        //TODO нужна ли проверка на ранее/позднее текущая дата даты начала букинга
         Booking pendingBooking = bookingRepository.findById(bookingId).orElseThrow(() -> new RestApiException("Booking not found"));
         if (pendingBooking.getBookingStatus() != BookingStatus.PENDING) {
             throw new RestApiException("Booking status is not PENDING, but " + pendingBooking.getBookingStatus());
         }
+        if(!pendingBooking.getRentalStartDate().isBefore(LocalDateTime.now())){
+            throw new RestApiException("You can't activate booking before it starts");
+        }
         Car rentedCar = pendingBooking.getCar();
         pendingBooking.setBookingStatus(BookingStatus.ACTIVE);
+        pendingBooking.setUpdateBookingDate(LocalDateTime.now()
+                .withSecond(0)
+                .withNano(0)
+                .plusMinutes(1));
         bookingRepository.save(pendingBooking);
         rentedCar.setCarStatus(CarStatus.RENTED);
         carRepository.save(rentedCar);
@@ -239,7 +244,10 @@ public class BookingServiceImpl implements BookingService {
 
             currentBooking.setTotalPrice(currentBooking.getTotalPrice().add(extraPrice));
             currentBooking.setRentalEndDate(newEndDate);
-            currentBooking.setUpdateBookingDate(LocalDateTime.now());
+            currentBooking.setUpdateBookingDate(LocalDateTime.now()
+                    .withSecond(0)
+                    .withNano(0)
+                    .plusMinutes(1));;
             bookingRepository.save(currentBooking);
         }
         log.info("Successfully extended booking ID: {} to new end date: {}", id, newEndDate);
@@ -299,7 +307,10 @@ public class BookingServiceImpl implements BookingService {
         bookedCar.setCarStatus(CarStatus.AVAILABLE);
         carRepository.save(bookedCar);
 
-        booking.setUpdateBookingDate(LocalDateTime.now());
+        booking.setUpdateBookingDate(LocalDateTime.now()
+                .withSecond(0)
+                .withNano(0)
+                .plusMinutes(1));
         bookingRepository.save(booking);
 
         log.info("Successfully cancelled booking with ID: {}", id);
@@ -309,32 +320,30 @@ public class BookingServiceImpl implements BookingService {
     @Transactional
     @Override
     public BookingResponseDto closeBooking(Long id, String email) {
-
         log.info("Attempting to close booking with ID: {}", id);
-
         Booking existingBooking = bookingRepository.findById(id)
                 .orElseThrow(() -> new RestApiException("Booking with id: " + id + " not found"));
         Car bookedCar = carRepository.findById(existingBooking.getCar().getId())
                 .orElseThrow(() -> new RestApiException("Car from the booking not found"));
-
         if (existingBooking.getBookingStatus() == BookingStatus.CLOSED_BY_ADMIN) {
             throw new RestApiException("Booking is already closed");
         }
-
         if (existingBooking.getBookingStatus() == BookingStatus.CANCELLED_BY_ADMIN ||
                 existingBooking.getBookingStatus() == BookingStatus.CANCELLED_BY_USER) {
             throw new RestApiException("Cannot close a cancelled booking");
         }
-
         if (existingBooking.getBookingStatus() == BookingStatus.ACTIVE) {
             throw new RestApiException("Cannot close an active booking. Mark it as completed first.");
         }
-
         if (!isAdmin(email)) {
             throw new RestApiException("Close booking can only administrator");
         } else {
             existingBooking.setBookingStatus(BookingStatus.CLOSED_BY_ADMIN);
             existingBooking.setUpdateBookingDate(LocalDateTime.now());
+            existingBooking.setUpdateBookingDate(LocalDateTime.now()
+                    .withSecond(0)
+                    .withNano(0)
+                    .plusMinutes(1));
             bookingRepository.save(existingBooking);
             bookedCar.setCarStatus(CarStatus.UNDER_INSPECTION);
             carRepository.save(bookedCar);

@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
@@ -46,7 +47,7 @@ public class CarController {
     public CarResponseDto saveCar(
             @RequestBody
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Instance of a Car")
-            //@Valid
+            @Valid
             CarResponseDto carDto) {
         return carService.saveCar(carDto);
     }
@@ -211,6 +212,7 @@ public class CarController {
 
             @RequestBody
             @io.swagger.v3.oas.annotations.parameters.RequestBody(description = "Instance of a Car")
+            @Valid
             CarUpdateRequestDto carDto) {
         return carService.updateCar(carDto, carId);
     }
