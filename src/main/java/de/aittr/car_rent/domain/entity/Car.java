@@ -30,6 +30,7 @@ public class Car {
             // далее минимум 1 символ и может состоять из нескольких слов
             regexp = "[A-Za-z ]{1,}",
             message = "Car brand should be at list two characters length and start with capital letter")
+    @Size(max = 29, message = "Car brand must not exceed 19 characters")
     private String brand;
 
     @NotNull(message = "{car.model.notBlank}")
@@ -37,8 +38,9 @@ public class Car {
     @Pattern(
             // 1-я буква — любая латинская буква (заглавная или строчная)
             // далее минимум один символ: буквы или цифры
-            regexp = "([A-Z][a-zA-Z0-9]{2,})(\\s+([A-Z][a-zA-Z0-9]{2,}))*",
+            regexp = "([A-Z][a-zA-Z0-9]{1,})(\\s+([A-Z][a-zA-Z0-9]{1,}))*",
             message = "Product title should be at least three characters long and start with capital letter")
+    @Size(max = 14, message = "Car model must not exceed 14 characters")
     private String model;
 
     @NotNull(message = "{car.year.notBlank}")

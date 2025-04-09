@@ -67,6 +67,9 @@ public class AuthService {
         }
 
         Customer existingCustomer = foundCustomer.get();
+        if(!existingCustomer.isActive()) {
+            throw new RestApiException("Your profile is not active. Pleas confirm your email or contact the administrator", HttpStatus.FORBIDDEN);
+        }
         if (passwordEncoder.matches(inboundCustomer.password(), existingCustomer.getPassword())) {
             final String accessToken = tokenService.generateAccessToken(existingCustomer);
             final String refreshToken = tokenService.generateRefreshToken(existingCustomer);
