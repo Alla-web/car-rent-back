@@ -61,7 +61,8 @@ public class EmailServiceImpl implements EmailService {
 
             Map<String, Object> params = new HashMap<>();
             params.put("name", customer.getFirstName());
-            params.put("link", hostUrl + "/api/auth/confirm/" + code);
+//            params.put("link", hostUrl + "/api/auth/confirm/" + code);
+            params.put("link", hostUrl + "/#/confirm-email/" + code);
 
             return FreeMarkerTemplateUtils.processTemplateIntoString(template, params);
         } catch (Exception e) {
