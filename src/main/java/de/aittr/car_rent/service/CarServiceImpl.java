@@ -428,22 +428,16 @@ public class CarServiceImpl implements CarService {
     @SneakyThrows
     public String attachImageToCar(Long id, MultipartFile file) {
         log.info("Start uploading image for car ID: {}", id);
-
         Car car = carRepository.findById(id)
                 .orElseThrow(() -> new CarNotFoundException(id));
-
         String fileExtension = getFileExtension(file.getOriginalFilename());
         if (!"jpg".equalsIgnoreCase(fileExtension) && !"png".equalsIgnoreCase(fileExtension) && !"jpeg".equalsIgnoreCase(fileExtension)) {
             throw new IllegalArgumentException("Only jpg, png, and jpeg images are allowed");
         }
-
         String fileName = "cars/" + id + "_" + System.currentTimeMillis() + "." + fileExtension;
-
         String imageUrl = carImageService.uploadToSpaces(fileName, file);
-
         car.setCarImage(imageUrl);
         carRepository.save(car);
-
         log.info("Image uploaded successfully for car ID: {}", id);
         return imageUrl;
     }

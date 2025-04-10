@@ -24,14 +24,14 @@ public record CarResponseDto(
 
         @Schema(description = "Car brand", example = "VW")
         @Pattern(
-                regexp = "[A-Za-z ]{1,}",
+                regexp = "[A-Za-z -]{1,}",
                 message = "Car brand should be at list two characters length and start with capital letter")
         @Size(max = 29, message = "Car brand must not exceed 19 characters")
         String brand,
 
         @Schema(description = "Car model", example = "Golf")
         @Pattern(
-                regexp = "([A-Z0-9]{1,}[a-zA-Z0-9]*)(\\s+([A-Z0-9]{1,}[a-zA-Z0-9]*))*",
+                regexp = "([A-Z0-9]{1,}[a-zA-Z0-9]*)([ -]([A-Z0-9]{1,}[a-zA-Z0-9]*))*",
                 message = "Car model title must start with a letter or digit and may contain letters, digits, and spaces. Each word must start with a letter or digit")
         @Size(max = 14, message = "Car model must not exceed 14 characters")
         String model,
