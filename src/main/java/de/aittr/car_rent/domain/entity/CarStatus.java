@@ -5,7 +5,7 @@ public enum CarStatus {
     RENTED,
     AVAILABLE,
     UNDER_REPAIR,
-    REMOVED_FROM_RENT,
+    REMOVER_FROM_RENT,
     UNDER_INSPECTION,
     DELETED
 }

@@ -8,6 +8,7 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.lang.NonNull;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
@@ -17,6 +18,7 @@ import java.io.IOException;
 
 @Component
 @RequiredArgsConstructor
+@Slf4j
 public class TokenFilter extends OncePerRequestFilter {
 
     public final TokenService service;
@@ -28,11 +30,15 @@ public class TokenFilter extends OncePerRequestFilter {
 
         String token = getTokenFromRequest(request);
 
-        if (token != null && service.validateAccessToken(token)) {
-            Claims claims = service.getAccessClaims(token);
-            AuthInfo authInfo = service.mapClaimsToAuthInfo(claims);
-            authInfo.setAuthenticated(true);
-            SecurityContextHolder.getContext().setAuthentication(authInfo);
+        try {
+            if (token != null && service.validateAccessToken(token)) {
+                Claims claims = service.getAccessClaims(token);
+                AuthInfo authInfo = service.mapClaimsToAuthInfo(claims);
+                authInfo.setAuthenticated(true);
+                SecurityContextHolder.getContext().setAuthentication(authInfo);//
+            }
+        } catch (Exception e) {
+            log.error("Invalid or expired token. Request will proceed unauthenticated. Reason: {}", e.getMessage());
         }
         filterChain.doFilter(request, response);
     }
