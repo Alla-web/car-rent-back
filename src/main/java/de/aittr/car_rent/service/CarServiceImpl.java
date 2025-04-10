@@ -252,7 +252,7 @@ public class CarServiceImpl implements CarService {
         if(checkingCar.getCarStatus() == CarStatus.UNDER_REPAIR){
             throw new RestApiException("Car with id " + checkingCar.getId() + " is currently under repair. Please choose another car");
         }
-        if(checkingCar.getCarStatus() == CarStatus.REMOVED_FROM_RENT){
+        if(checkingCar.getCarStatus() == CarStatus.REMOVER_FROM_RENT){
             throw new RestApiException("Car with id " + checkingCar.getId() + " is currently deleted from renting. Please choose another car");
         }
         if(checkingCar.getCarStatus() == CarStatus.DELETED){

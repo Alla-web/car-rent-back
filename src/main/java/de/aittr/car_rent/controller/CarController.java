@@ -96,7 +96,7 @@ public class CarController {
             description = "Getting car that exist in the database by car model")
     public List<CarResponseDto> getCarsByModel(
             @RequestParam("model")
-            @Parameter(description = "Car model title", example = "Corolla")
+            @Parameter(description = "Car model title")
             String model) {
         return carService.getCarsByModel(model);
     }
@@ -107,7 +107,7 @@ public class CarController {
             description = "Getting car that exist in the database by car year")
     public List<CarResponseDto> getCarsByYear(
             @RequestParam("year")
-            @Parameter(description = "Car build year", example = "2020")
+            @Parameter(description = "Car build year")
             int year) {
         return carService.getCarsByYear(year);
     }
@@ -129,7 +129,7 @@ public class CarController {
             description = "Getting car that exist in the database by car fuel type")
     public List<CarResponseDto> getCarsByFuelType(
             @RequestParam("fuel-type")
-            @Parameter(description = "Car fuel type title", example = "PETROL")
+            @Parameter(description = "Car fuel type title")
             CarFuelType fuelType) {
         return carService.getCarsByFuelType(fuelType);
     }
@@ -140,7 +140,7 @@ public class CarController {
             description = "Getting car that exist in the database by car transmission type")
     public List<CarResponseDto> getCarsByTransmissionType(
             @RequestParam("transmission-type")
-            @Parameter(description = "Car transmission type title", example = "SEDAN")
+            @Parameter(description = "Car transmission type title")
             CarTransmissionType transmissionType) {
         return carService.getCarsByTransmissionType(transmissionType);
     }
@@ -153,7 +153,7 @@ public class CarController {
     @SecurityRequirement(name = "bearerAuth")
     public List<CarResponseDto> getCarsByCarStatus(
             @RequestParam("car-status")
-            @Parameter(description = "Car status", example = "AVAILABLE")
+            @Parameter(description = "Car status")
             CarStatus carStatus) {
         return carService.getCarsByCarStatus(carStatus);
     }
@@ -164,11 +164,11 @@ public class CarController {
             description = "Getting car that exist in the database by min und max car day rental price")
     public List<CarResponseDto> getCarsByDayRentalPrice(
             @RequestParam("from")
-            @Parameter(description = "Minimal day rental car price", example = "50.00")
+            @Parameter(description = "Minimal day rental car price")
             BigDecimal minDayRentalPrice,
 
             @RequestParam("to")
-            @Parameter(description = "Maximal day rental car price", example = "150.00")
+            @Parameter(description = "Maximal day rental car price")
             BigDecimal maxDayRentalPrice) {
         return carService.getCarsByDayRentalPrice(minDayRentalPrice, maxDayRentalPrice);
     }
@@ -179,11 +179,11 @@ public class CarController {
             description = "Checks whether the car is available during the period for extending a specific booking or not")
     public boolean checkIfCarAvailableByDates(
             @RequestParam(value = "booking-id", required = false)
-            @Parameter(description = "Booking unique identifier", example = "7")
+            @Parameter(description = "Booking unique identifier")
             Long bookingId,
 
             @RequestParam("car-id")
-            @Parameter(description = "Car unique identifier", example = "7")
+            @Parameter(description = "Car unique identifier")
             Long carId,
 
             @RequestParam("from")
@@ -207,7 +207,7 @@ public class CarController {
     @SecurityRequirement(name = "bearerAuth")
     public CarResponseDto updateCar(
             @PathVariable("id")
-            @Parameter(description = "Car unique identifier", example = "7")
+            @Parameter(description = "Car unique identifier")
             Long carId,
 
             @RequestBody
@@ -287,11 +287,11 @@ public class CarController {
             List<String> transmissionType,
 
             @RequestParam(required = false)
-            @Parameter(description = "Minimum rental price per day", example = "50.00")
+            @Parameter(description = "Minimum rental price per day")
             BigDecimal minPrice,
 
             @RequestParam(required = false)
-            @Parameter(description = "Maximum rental price per day", example = "150.00")
+            @Parameter(description = "Maximum rental price per day")
             BigDecimal maxPrice) {
         return carService.filterAvailableCars(startDateTime, endDateTime, brand, type, fuel, transmissionType, minPrice, maxPrice);
     }
