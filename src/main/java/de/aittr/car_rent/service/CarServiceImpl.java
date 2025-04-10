@@ -248,12 +248,24 @@ public class CarServiceImpl implements CarService {
             Long carId,
             LocalDateTime from,
             LocalDateTime to) {
+        Car checkingCar = getOrThrow(carId);
+        if(checkingCar.getCarStatus() == CarStatus.UNDER_REPAIR){
+            throw new RestApiException("Car with id " + checkingCar.getId() + " is currently under repair. Please choose another car");
+        }
+        if(checkingCar.getCarStatus() == CarStatus.REMOVED_FROM_RENT){
+            throw new RestApiException("Car with id " + checkingCar.getId() + " is currently deleted from renting. Please choose another car");
+        }
+        if(checkingCar.getCarStatus() == CarStatus.DELETED){
+          throw new RestApiException("Car with id " + checkingCar.getId() + " is currently out of stock for renting. Please choose another car");
+        }
         return bookingRepository.findAllByCarId(carId)
                 .stream()
+                .filter(booking ->
+                        booking.getBookingStatus() == BookingStatus.PENDING ||
+                        booking.getBookingStatus() == BookingStatus.ACTIVE)
                 .noneMatch(booking ->
                         booking.getRentalStartDate().isBefore(to) &&
-                                booking.getRentalEndDate().isAfter(from)
-                );
+                                booking.getRentalEndDate().isAfter(from));
     }
 
     @Override
