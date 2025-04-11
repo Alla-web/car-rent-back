@@ -23,17 +23,17 @@ public record BookingResponseDto(
         @Schema(
                 description = "Booking start day and time",
                 example = "2025-03-28T11:46")
-        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
         @NotNull
         @FutureOrPresent
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
         LocalDateTime rentalStartDate,
 
         @Schema(
                 description = "Booking rental end day and time",
                 example = "2025-03-29T10:00")
-        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
         @NotNull
         @FutureOrPresent
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
         LocalDateTime rentalEndDate,
 
         @Schema(description = "Customer info DTO")
@@ -53,12 +53,14 @@ public record BookingResponseDto(
         @Schema(
                 description = "Booking creating day and time",
                 example = "2025-03-25T11:46")
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
         LocalDateTime createBookingDate,
 
         @Schema(
                 description = "Booking updating day and time",
                 example = "2025-03-25T11:46"
         )
+        @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm")
         LocalDateTime updateBookingDate,
 
         @Schema(
