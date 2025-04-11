@@ -61,7 +61,7 @@ public class Booking {
         if (this.createBookingDate == null) {
             this.createBookingDate = LocalDateTime.now();
         }
-        this.updateBookingDate = LocalDateTime.now().withSecond(0).withNano(0).plusMinutes(1);
+        this.updateBookingDate = LocalDateTime.now().withSecond(0).withNano(0);
     }
 }
 
