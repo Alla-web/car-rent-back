@@ -78,12 +78,10 @@ public class BookingServiceImpl implements BookingService {
         Booking booking = new Booking();
         booking.setCreateBookingDate(LocalDateTime.now()
                 .withSecond(0)
-                .withNano(0)
-                .plusMinutes(1));
+                .withNano(0));
         booking.setUpdateBookingDate(LocalDateTime.now()
                 .withSecond(0)
-                .withNano(0)
-                .plusMinutes(1));
+                .withNano(0));
         booking.setRentalStartDate(bookingRequestDto.rentalStartDate());
         booking.setRentalEndDate(bookingRequestDto.rentalEndDate());
         booking.setCustomer(currentCustomer);
@@ -170,15 +168,14 @@ public class BookingServiceImpl implements BookingService {
         if (pendingBooking.getBookingStatus() != BookingStatus.PENDING) {
             throw new RestApiException("Booking status is not PENDING, but " + pendingBooking.getBookingStatus());
         }
-        if(!pendingBooking.getRentalStartDate().isBefore(LocalDateTime.now())){
+        if (!pendingBooking.getRentalStartDate().isBefore(LocalDateTime.now())) {
             throw new RestApiException("You can't activate booking before it starts");
         }
         Car rentedCar = pendingBooking.getCar();
         pendingBooking.setBookingStatus(BookingStatus.ACTIVE);
         pendingBooking.setUpdateBookingDate(LocalDateTime.now()
                 .withSecond(0)
-                .withNano(0)
-                .plusMinutes(1));
+                .withNano(0));
         bookingRepository.save(pendingBooking);
         rentedCar.setCarStatus(CarStatus.RENTED);
         carRepository.save(rentedCar);
@@ -218,10 +215,7 @@ public class BookingServiceImpl implements BookingService {
             }
             currentBooking.setTotalPrice(currentBooking.getTotalPrice().add(extraPrice));
             currentBooking.setRentalEndDate(newEndDate);
-            currentBooking.setUpdateBookingDate(LocalDateTime.now()
-                    .withSecond(0)
-                    .withNano(0)
-                    .plusMinutes(1));;
+            currentBooking.setUpdateBookingDate(LocalDateTime.now().withSecond(0).withNano(0));
             bookingRepository.save(currentBooking);
         }
         log.info("Successfully extended booking ID: {} to new end date: {}", id, newEndDate);
@@ -272,8 +266,7 @@ public class BookingServiceImpl implements BookingService {
         carRepository.save(bookedCar);
         booking.setUpdateBookingDate(LocalDateTime.now()
                 .withSecond(0)
-                .withNano(0)
-                .plusMinutes(1));
+                .withNano(0));
         bookingRepository.save(booking);
         log.info("Successfully cancelled booking with ID: {}", id);
         return bookingMapper.mapEntityToDto(booking);
@@ -304,8 +297,7 @@ public class BookingServiceImpl implements BookingService {
             existingBooking.setUpdateBookingDate(LocalDateTime.now());
             existingBooking.setUpdateBookingDate(LocalDateTime.now()
                     .withSecond(0)
-                    .withNano(0)
-                    .plusMinutes(1));
+                    .withNano(0));
             bookingRepository.save(existingBooking);
             bookedCar.setCarStatus(CarStatus.UNDER_INSPECTION);
             carRepository.save(bookedCar);
