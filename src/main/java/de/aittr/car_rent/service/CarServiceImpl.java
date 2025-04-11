@@ -288,7 +288,7 @@ public class CarServiceImpl implements CarService {
         if (id == null) {
             throw new RestApiException("Enter car id");
         }
-        Car existingCar = getOrThrow(id);
+        Car existingCar = this.getOrThrow(id);
         List<Booking> carBookingdList = bookingRepository.findAllByCarId(id)
                 .stream()
                 .filter(booking -> List.of(BookingStatus.ACTIVE, BookingStatus.PENDING)
