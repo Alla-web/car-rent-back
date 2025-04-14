@@ -287,9 +287,9 @@ public class BookingServiceImpl implements BookingService {
                 existingBooking.getBookingStatus() == BookingStatus.CANCELLED_BY_USER) {
             throw new RestApiException("Cannot close a cancelled booking");
         }
-        if (existingBooking.getBookingStatus() == BookingStatus.ACTIVE) {
-            throw new RestApiException("Cannot close an active booking. Mark it as completed first.");
-        }
+//        if (existingBooking.getBookingStatus() == BookingStatus.ACTIVE) {
+//            throw new RestApiException("Cannot close an active booking. Mark it as completed first.");
+//        }
         if (!isAdmin(email)) {
             throw new RestApiException("Close booking can only administrator");
         } else {
