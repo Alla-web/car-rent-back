@@ -153,7 +153,7 @@ public class BookingController {
     @Operation(
             summary = "Closes active booking",
             description = "Changes bookings status from ACTIVE to CLOSED")
-    @PreAuthorize("isAuthenticated()")
+    @PreAuthorize("hasAnyRole({'ROLE_ADMIN'})")
     @SecurityRequirement(name = "bearerAuth")
     public BookingResponseDto closeBooking(
             @PathVariable
